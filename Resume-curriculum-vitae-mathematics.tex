@@ -1,0 +1,376 @@
+\documentclass [11pt]{res}
+\def \resumefiles{mathematics,computer-science}
+  \def\cvfiles{curriculum-vitae,curriculum-vitae-mathematics,curriculum-vitae-computer-science,curriculum-vitae-long}
+  \def\highschoolfiles{curriculum-vitae-long}
+
+  %\usepackage[utf8x]{inputenc}
+  %\usepackage[T1]{fontenc}
+  %\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
+  %\usepackage{newcent}   % uses new century schoolbook postscript font
+  \usepackage{etoolbox}[2011/01/03]
+  \usepackage{etextools}
+  \usepackage[margin=1in,top=0.5in,bottom=0.5in]{geometry}
+  \usepackage{hyperref}
+  \usepackage{amsmath}
+  \begin{format}
+    \employer{l}\dates{r}\\
+    \title{l}\location{r} \\
+    \body
+  \end{format}
+  \let\oldemployer=\employer
+  \let\oldtitle=\title
+  \renewcommand{\employer}[1]{\oldemployer{\textbf{#1}}}
+  \renewcommand{\title}[1]{\oldtitle{\textit{#1}}}
+
+  % \let\oldposition=\position
+  % \let\oldendposition=\endposition
+  % \renewenvironment{position}{\oldposition\vspace*{-2\baselineskip}}{\endoldposition}
+
+  \makeatletter
+  \let\old@itemize=\itemize
+  \def\itemize{\old@itemize\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\setlength{\leftskip}{-1em}}
+  \renewenvironment{position}
+    {%
+    \begingroup
+      \par
+        \the\tabular@head
+  %     \addpenalty{-\@secpenalty}% bad place for a page break
+      \penalty -\@secpenalty % bad place for a page break
+      \penalty 10000
+      \ignorespaces
+      \vspace*{-\baselineskip}
+    }{%
+        \the\tabular@tail
+  %     \addpenalty{\@secpenalty}% good place for a page break
+      \penalty \@secpenalty % good place for a page break
+      \endgroup
+  }
+  \makeatother
+
+  \newsectionwidth{1em}
+  \resumewidth=7.5in
+
+
+  \name{\LARGE \bf \hspace{\stretch{1}} Jason Gross \hspace{\stretch{1}} \\
+    \hspace{\stretch{1}}\large \href{mailto:jgross@mit.edu}{jgross@mit.edu} --- (631) 790-8962 --- \url{http://people.csail.mit.edu/jgross/}\hspace{\stretch{1}} \\}
+
+  \address{\textsc{Present Address}\\258 Prospect Street, Apt \# 1L\\Cambridge, MA 02139}
+  \address{\textsc{Permanent Address}\\126 Hayrick Lane \\  Commack, NY 11725}
+\begin {document}
+\newcommand {\onlymultitex }[1]{\csname FE@ifstar\endcsname {#1}{\csname only@multitex\endcsname }{\csname only@multitex\endcsname }}\expandafter \newcommand \csname only@multitex\endcsname [2]{\renewcommand *{\do }[1]{\ifstrequal {##1}{curriculum-vitae-mathematics}{#2\listbreak }{}}{\edef \foo {#1}\expandafter }\expandafter \docsvlist \expandafter {\foo }} \expandafter \let \csname only@other@multitex\expandafter \endcsname \csname only@multitex\endcsname 
+\resume 
+\section {\textsc{Education}}
+    \textbf{Massachusetts Institute of Technology}, Cambridge, MA  \\
+    Began Doctorate of Philosophy in Computer Science in September 2013 \\
+    \onlymultitex*{\cvfiles}{Research Interests: Homotopy Type Theory, Category Theory, Program Synthesis, Type Theory \\}
+    Current G.P.A. 5.0/5.0 \\
+    \\
+    Bachelor of Science in Mathematics and Physics, June 2013   \\
+    G.P.A. 4.6/5.0 \\
+    \\
+%
+Coursework:
+\begin{itemize}
+\item Computer Science: Foundations of Program Analysis, Performance Engineering of Software Systems, Structure and Interpretation of Computer Programs
+\item Mathematics: Paradox and Infinity, Category Theory for Scientists, Algebraic Topology I, Seminar in Topology, Introduction to Topology, Real Analysis, Abstract Algebra I \& II, Differential Equations, Calculus I \& II, Linear Algebra
+\item Physics: Statistical Physics I \& II, Quantum Physics I, II, \& III, Classical Mechanics II, Waves and Vibrations, Special Relativity and the Physics of Spacetime
+\item Other Sciences: Introductory Biology, Introductory Chemistry, Design a Concentrated Solar Power Water Heater (seminar)
+\item Other: The Art and Science of Happiness, Metaphysics, Introduction to Musical Composition, Capitalism and Its Critics, Moral Psychology, Philosophy of Quantum Mechanics, Moral Problems and the Good Life, Philosophy of Love
+\end{itemize}
+\section {\textsc{Experience}}
+
+  \employer{MIT}
+  \dates{September 2013--Present}
+  \title{Researcher}
+  \location{Cambridge, MA}
+  \begin{position}
+    \begin{itemize}
+      \item Researching program synthesis as it applies to the Bedrock compiler, with Adam Chlipala
+      \item Collaboratively working on implementing one of the world's first algorithm-level-optimizing compilers
+    \end{itemize}
+  \end{position}
+\employer {MIT}
+  \dates{April 2012--Present}
+  \title{Researcher}
+  \location{Cambridge, MA}
+  \begin{position}
+    \begin{itemize}
+      \item Entered a significant amount of category theory into the automated proof assistant Coq \onlymultitex*{\cvfiles}{(\url{https://github.com/HoTT/HoTT/tree/master/theories/categories})}
+      \item Working on building an interface for databases and database migration on top of category theory in Coq with David Spivak and Adam Chlipala
+      \onlymultitex*{\cvfiles}{\item Presented ``Building Database Management on top of Category Theory in Coq'', January 25, 2013, POPL 2013: 40th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages}
+    \end{itemize}
+  \end{position}
+
+  \employer{MIT CSAIL}
+  \dates{November 2009--September 2011}
+  \title{Researcher}
+  \location{Cambridge, MA}
+  \begin{position}
+    \begin{itemize}
+      \item Designed from scratch a data collection webpage, collected data for, and helped with research \onlymultitex*{\cvfiles}{ of Brenden Lake, Ruslan Salakhutdinov, and Josh Tenenbaum, }on categorical and transfer learning (\url{http://jgross.scripts.mit.edu/alphabets/}).
+      \item Co-author of ``One shot learning of simple visual concepts''\onlymultitex*{\cvfiles}{ published in \emph{Proceedings of the 33rd Annual Meeting of the Cognitive Science Society}}.
+    \end{itemize}
+  \end{position}
+
+  \employer{MIT}
+  \dates{Fall 2009--Present}
+  \title{Teacher}
+  \location{Cambridge, MA}
+  \begin{position}
+    \begin{itemize}
+      \item Taught classes on \LaTeX, philosophy, linear algebra, and quantum mechanics for MIT Educational Studies Program's Splash, Spark, and Summer HSSP (High School Studies Program)
+      \item Teaching Assistant for 8.012 (Physics I) and 8.022 (Physics II) in Experimental Study Group
+    \end{itemize}
+  \end{position}
+
+
+  \employer{MIT OCW}
+    \dates{May--August 2010}
+    \title{}
+    \location{Cambridge, MA}
+    \begin{position}
+        \begin{itemize}
+            \item Evaluated and categorized videos of Walter Lewin solving physics problems for updating the 8.01 (Physics I) OpenCourseWare (OCW) website.
+        \end{itemize}
+    \end{position}
+
+
+  \employer{Commack High School}
+  \dates{Fall 2006--Summer 2009}
+  \title{Independent Researcher}
+  \location{Commack, NY}
+  \begin{position}
+    \begin{itemize}
+      \item Independently researched circuits over sets of natural numbers for three years.
+      \item Won fourth place award in mathematics in ISEF (Intel International Science and Engineering Fair) in 2009, third place award in ISEF 2008.
+    \end{itemize}
+  \end{position}
+
+
+  \employer{Turnpike Total Appliance}
+  \dates{Fall 2006--Summer 2009}
+  \title{Web Page Designer}
+  \location{Commack, NY}
+  \begin{position}
+    \begin{itemize}
+      \item Designed and improved main company website, took initiative to make more improvements.
+    \end{itemize}
+  \end{position}
+
+\section {\textsc{Computer Skills}}
+\begin {itemize}
+      \item
+        Proficient skills -- Coq, \TeX{} macro language, Mathematica, git, Python, JavaScript, BASIC
+      \item
+        Working knowledge -- \LaTeX{}, C, C++, Agda, Haskell, Scheme, HTML, CSS, Perl, Java
+      \item
+        Basic knowledge -- Matlab, OCaml, Idris, Ruby, Ur/Web
+    \end{itemize}
+\section {\textsc{Honors and Awards}}
+\begin {itemize}
+      \onlymultitex*{\highschoolfiles,\cvfiles}{%
+      \item
+        Mathematics Honor Society (Commack High School)
+      }
+      \item
+        Collection of 12 original K'NEX synagogue models exhibited in various museums (2004--2008)
+      \onlymultitex*{\highschoolfiles}{%
+        \begin{itemize}
+          \item
+            Collection of 12 original K'NEX synagogue models
+          \item
+            Volunteered to give speeches and conduct K'NEX workshops for children at opening of exhibits, as well as in many locations in NY area
+          \item
+            April 2008 --- Gave interview for April edition of BabagaNewz Magazine and audio interview for BabagaNewz.com
+          \item
+            October 2006 --- Displayed in Gurwin Nursing Home on Long Island
+          \item
+            February 2006 --- Exhibited at Lisa Ann Watson Children's Discovery Museum in Miami, Florida
+          \item
+            October 2005 --- Displayed at Shomrim (Society for New York City Jewish Police Officers)
+          \item
+            February--April 2005 --- Exhibited in Yeshiva University Museum in Manhattan
+          \item
+            December 2004 --- Displayed at Suffolk Y-JCC in Commack
+        \end{itemize}
+        }
+      \onlymultitex*{\cvfiles}{
+      \item
+        Graduated Cum Laude from Commack High School (June 2009)
+      }
+      \onlymultitex*{\highschoolfiles}{%
+      \item
+        Commack High School Outstanding Academic Performance (June 2009)
+      \item
+        Florence Burns Scholarship for Achievement of Excellence in Computer Science (June 2009)
+      \item
+        Theodore R. Spedalle Award for Achievement of Excellence in Mathematics (June 2009)
+      \item
+        Commack High School Mathematics Research Award (June 2009)
+      \item
+        President's Award for Educational Excellence (June 2009)
+      \item
+        AP Scholar with Distinction (2009)
+      \item
+        Robert C. Byrd Honors Scholarship (June 2009)
+      \item
+        ISEF (Intel International Science \& Engineering Fair)
+        \begin{itemize}
+          \item
+            Math research paper, ``Circuits over Sets of Natural Numbers'' won $3^\text{rd}$ Place in Math in Atlanta, May 2008
+          \item
+            Math research paper, ``An Investigation of the Closure of the Set of Singleton Sets of Natural Numbers under $\cup$, $\cap$, $\overline{\phantom{\emptyset}}$, $+$, $\times$'' won $4^\text{th}$ place in Math in Reno, May 2009
+       \end{itemize}
+      \item
+        LISEF (Long Island Science \& Engineering Fair) --- Won First Place Grand Award in Math in March 2009; selected to participate in ISEF 2009
+      \item
+        2009 National Merit Scholarship Finalist (February 2009)
+      \item
+        JSHS (Junior Science \& Humanities Symposium) --- Invited to present math research paper, February 2009 and February 2008
+      \item
+        Rensselaer Medal --- Awarded the Rensselaer Polytechnic Institute's Rensselaer Medal, June 2008
+      \item
+        Outstanding Junior Award --- sole recipient, awarded by Suffolk County Math Teacher's Association (June 2008)
+      \item
+        County All-Star Interscholastic Math League --- competed at NYSML (New York State Mathematics League) and ARML (American Regions Mathematics League) during junior, sophomore and freshmen years, 2006--2009; Achieved individual high score for team in 2009
+      \item
+        Suffolk County Senior High Interscholastic Math League --- $2^\text{nd}$ in county in 2009, $1^\text{st}$ in county in 2008, $3^\text{rd}$ in county in 2007
+      \item
+        NYSSEF (New York State Science and Engineering Fair)
+        \begin{itemize}
+          \item
+            2008 ($11^\text{th}$ grade) --- $1^\text{st}$ in math in Intel division, one of four first place individual winners in fair, Mu Alpha Theta award, Army award, Ohio Wesleyan University Scholarship
+          \item
+            2007 ($10^\text{th}$ grade) --- $1^\text{st}$ in math in Andromeda Division, earned Mu Alpha Theta Award from National Mathematics Honor Society
+        \end{itemize}
+      \item
+        Long Island Math Fair
+        \begin{itemize}
+          \item
+            2008 ($11^\text{th}$ grade) --- Earned gold medal for ``Group Theory'' project
+          \item
+            2007 ($10^\text{th}$ grade) --- Earned gold medal for ``Circuits over Sets of Natural Numbers'' project
+          \item
+            2006 ($9^\text{th}$ grade) --- Earned gold medal for ``Prime Numbers'' project
+          \item
+            2005 ($8^\text{th}$ grade) --- Earned gold medal for ``The Fourth Spatial Dimension'' project
+          \item
+            2004 ($7^\text{th}$ grade) --- Earned gold medal for ``The Seven Bridges of K\"onigsberg'' project
+        \end{itemize}
+      \item
+        AIME (American Invitational Mathematics Examination)
+        \begin{itemize}
+          \item
+            2009 ($12^\text{th}$ grade) - ???
+          \item
+            2008 ($11^\text{th}$ grade) - score of 8
+          \item
+            2007 ($10^\text{th}$ grade) - score of 4
+          \item
+            2006 ($9^\text{th}$ grade) - score of 1
+        \end{itemize}
+      \item
+        American Mathematics Contest 12 (AMC-12)
+        \begin{itemize}
+          \item
+            2009 ($12^\text{th}$ grade) - score of ???
+          \item
+            2008 ($11^\text{th}$ grade) - score of 120, top 1\% nationwide, earned title of ``School Winner''
+          \item
+            2007 ($10^\text{th}$ grade) - score of 103.5, top 1\% nationwide, earned title of ``School Winner''
+        \end{itemize}
+      \item
+        American Mathematics Contest 10 (AMC-10)
+        \begin{itemize}
+          \item
+            2006 ($9^\text{th}$ grade) - score of 127.5, top 1\% nationwide, earned title of ``School Winner''
+          \item
+            2005 ($8^\text{th}$ grade) - score of 118.5, earned title of ``School Winner'' in high school as an $8^\text{th}$ grader in the $9^\text{th}$ grade honors math class
+        \end{itemize}
+      \item
+        Suffolk County Mathematics Contest
+        \begin{itemize}
+          \item
+            2009 ($12^\text{th}$ grade) - ???
+          \item
+            2008 ($11^\text{th}$ grade) - $1^\text{st}$ place in county competing with $12^\text{th}$ graders
+          \item
+            2007 ($10^\text{th}$ grade) - $4^\text{th}$ place in county competing with $11^\text{th}$ graders
+          \item
+            2006 ($9^\text{th}$ grade) - $4^\text{th}$ place in county competing with $10^\text{th}$ graders
+          \item
+            2005 ($8^\text{th}$ grade) - 5th place in county competing with $9^\text{th}$ graders
+          \item
+            2004 ($7^\text{th}$ grade) - $1^\text{st}$ place in county
+        \end{itemize}
+      \item
+        Suffolk County Mathematics Teachers Association (SCMTA) Tournament
+        \begin{itemize}
+          \item
+            2009 ($12^\text{th}$ grade) - ??????th in county
+          \item
+            2008 ($11^\text{th}$ grade) - $4^\text{th}$ in county
+          \item
+            2007 ($10^\text{th}$ grade) - $2^\text{nd}$ in county
+          \item
+            2006 ($9^\text{th}$ grade) - $1^\text{st}$ in county
+        \end{itemize}
+      \item
+        Commack High School Mathematics Department Awards --- June 2008, June 2007, and June 2006
+      \item
+        Commack Middle School Mathematics Departmental Award --- was only student of 605 students to receive Commack Middle School mathematics departmental award, 2005
+      \item
+        Suffolk County Mathcounts --- placed first in county as individual, 2005
+      \item
+        USA Mathematics Talent Search (USAMTS), 2007--2008; Placed on National List of Students with 6 Commended Solutions in 2008, silver medal in 2008
+      \item
+        Harvard-MIT Mathematics Tournament (HMMT), February 2009, 2008, and 2007
+      \item
+        New York State Science Olympiads
+        \begin{itemize}
+          \item
+            February 2008 --- $2^\text{nd}$ place in Environmental Chemistry, $4^\text{th}$ place in Circuit Lab, $4^\text{th}$ place in Five Star Science
+          \item
+            February 2007 --- $4^\text{th}$ place in Circuit Lab
+        \end{itemize}
+      \item
+        Mandelbrot Competition, team that competes in national competitions, 2006--2009; Placed on National Leaderboard (Top Tier) in 2008; co-captain in 2007--2008, captain in 2008--2009
+      \item
+        American Computer Science League (ACSL) Club, 2005--present; President in 2008--2009
+      \item
+        United States of America Computer Olympiad (USACO), 2005--present
+      \item
+        Suffolk County Senior High Interscholastic Math League, 2005--present
+      \item
+        Article was published in Teen Ink Magazine (November 2007)
+      }
+    \end{itemize}
+
+\section {\textsc{Extracurricular Activities}}
+\begin {itemize}
+      \onlymultitex*{\cvfiles,computer-science}{%
+      \item Co-maintainer of the homotopy type theory Coq repository (\href{https://github.com/HoTT/HoTT}{\texttt{HoTT/HoTT} on GitHub})
+      \item Commiter to the SIPB BarnOwl project (\url{http://barnowl.mit.edu})
+      }
+      \item SIPB (Student Information and Processing Board) Member
+      \item Was project leader for MITeX, an online interface for composing \LaTeX
+      \onlymultitex*{\cvfiles}{%
+      \item HMMT Solutions Editor (2010)
+      }
+      \item Canada/USA Mathcamp (Summers 2006--2009)
+    \end{itemize}
+
+
+\section{\textsc{Interests}}
+    \begin{itemize}
+      \item Philosophy
+      \item Programming
+      \item Dancing, especially tango, contra, and square dancing
+      \item Psychology
+      \item Hiking
+      %\onlymultitex*{\highschoolfiles}{
+      \item MIT Mystery Hunt, Participated on Manic Sages Team, January 2008--2012
+      %  }
+    \end{itemize}
+\endresume 
+\end {document}
