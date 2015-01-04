@@ -3,11 +3,14 @@
 
 \documentclass[11pt]{res}
 \usepackage{etoolbox}[2011/01/03]
+\let\origforlistloop\forlistloop
 \usepackage{etextools}
+\let\forlistloop\origforlistloop
 \usepackage{xifthen,verbatim}
 \usepackage{hyperref}
-
-
+\usepackage[backend=bibtex,sorting=ydnt]{biblatex}
+\addbibresource{jason-gross.bib}
+  
 \makeatletter
 
 
@@ -26,6 +29,8 @@
   \immediate\expandafter\closeout\csname @multitex@#1@file\endcsname
   \ifmultitexcompile
     \immediate\write18{pdflatex \csname @multitex@#1@name\endcsname}%
+    \immediate\write18{bibtex \csname @multitex@#1@barename\endcsname}%
+    \immediate\write18{pdflatex \csname @multitex@#1@name\endcsname}%
   \fi
 }
 \newcommand{\onlymultitex}[1]{\FE@ifstar{#1}{\only@other@multitex}{\only@multitex}}
@@ -38,6 +43,8 @@
   \global\multitex@names=\expandafter{\the\multitex@names,#2}
   \expandafter\xdef\csname @multitex@#2\endcsname{\ifempty{#1}{#2}{#1}}
   \expandafter\xdef\csname @multitex@#2@name\endcsname{"\jobname\multitex@separator\csname @multitex@#2\endcsname.tex"}
+  \expandafter\xdef\csname @multitex@#2@auxname\endcsname{"\jobname\multitex@separator\csname @multitex@#2\endcsname.aux"}
+  \expandafter\xdef\csname @multitex@#2@barename\endcsname{"\jobname\multitex@separator\csname @multitex@#2\endcsname"}
   \expandafter\newwrite\csname @multitex@#2@file\endcsname
   \immediate\expandafter\openout\csname @multitex@#2@file\expandafter\endcsname\csname @multitex@#2@name\endcsname
   \AtBeginDocument{%
@@ -112,16 +119,21 @@
   \def\resumefiles{mathematics,computer-science}
   \def\cvfiles{curriculum-vitae,curriculum-vitae-mathematics,curriculum-vitae-computer-science,curriculum-vitae-long}
   \def\highschoolfiles{curriculum-vitae-long}
-
+  \def\mathfiles{mathematics,curriculum-vitae-mathematics}
   %\usepackage[utf8x]{inputenc}
   %\usepackage[T1]{fontenc}
   %\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
   %\usepackage{newcent}   % uses new century schoolbook postscript font
   \usepackage{etoolbox}[2011/01/03]
+  \let\origforlistloop\forlistloop
   \usepackage{etextools}
+  \let\forlistloop\origforlistloop
   \usepackage[margin=1in,top=0.5in,bottom=0.5in]{geometry}
   \usepackage{hyperref}
   \usepackage{amsmath}
+  %\bibliographystyle{plainyr-rev}
+  \usepackage[backend=bibtex,sorting=ydnt]{biblatex}
+  \addbibresource{jason-gross.bib}
   \begin{format}
     \employer{l}\dates{r}\\
     \title{l}\location{r} \\
@@ -190,15 +202,17 @@
     \\
 \end{multitex}
 \begin{multitex}[\resumefiles]%
-    Relevant Coursework: %Foundations of
+    Relevant Coursework: %Computer Systems 
+        Security, %Foundations of
         Program Analysis, Performance Engineering of Software% Systems
-        , Statistical Physics, Quantum Physics, Topology, Analysis, Waves \& Vibrations, Special Relativity% and the Physics of Spacetime%
+        , Statistical Physics, Quantum% Physics
+        , Topology, Analysis, Waves \& Vibrations, Special Relativity% and the Physics of Spacetime%
         , Algebra
 \end{multitex}
 \begin{multitex*}[\cvfiles]%
 		Coursework:
 		\begin{itemize}
-			\item Computer Science: Foundations of Program Analysis, Performance Engineering of Software Systems, Structure and Interpretation of Computer Programs
+			\item Computer Science: Inference and Information (current), Computer Systems Security, Geometric Computing, Foundations of Program Analysis, Performance Engineering of Software Systems, Structure and Interpretation of Computer Programs
 			\item Mathematics: Paradox and Infinity, Category Theory for Scientists, Algebraic Topology I, Seminar in Topology, Introduction to Topology, Real Analysis, Abstract Algebra I \& II, Differential Equations, Calculus I \& II, Linear Algebra
 			\item Physics: Statistical Physics I \& II, Quantum Physics I, II, \& III, Classical Mechanics II, Waves and Vibrations, Special Relativity and the Physics of Spacetime
 			\item Other Sciences: Introductory Biology, Introductory Chemistry, Design a Concentrated Solar Power Water Heater (seminar)
@@ -232,11 +246,37 @@
   \begin{position}
     \begin{itemize}
       \item Entered a significant amount of category theory into the automated proof assistant Coq \onlymultitex*{\cvfiles}{(\url{https://github.com/HoTT/HoTT/tree/master/theories/categories})}
-      \item Working on building an interface for databases and database migration on top of category theory in Coq with David Spivak and Adam Chlipala
+      \onlymultitex{\cvfiles}{\item Working on building an interface for databases and database migration on top of category theory in Coq with David Spivak and Adam Chlipala}
       \onlymultitex*{\cvfiles}{\item Presented ``Building Database Management on top of Category Theory in Coq'', January 25, 2013, POPL 2013: 40th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages}
+      \onlymultitex*{\cvfiles}{\item Presented	 ``Experience Implementing a Performant Category-Theory Library in Coq'', July 14, 2014, Interactive Theorem Proving 2014 Conference}
     \end{itemize}
   \end{position}
-
+\end{multitex}
+\begin{multitex}
+  \employer{MIT}
+  \dates{Fall 2009--Present}
+  \title{Teacher}
+  \location{Cambridge, MA}
+  \begin{position}
+    \begin{itemize}
+      \item Taught classes on \LaTeX, philosophy, linear algebra, and quantum mechanics for MIT Educational Studies Program's Splash, Spark, and Summer HSSP (High School Studies Program)
+      \onlymultitex{\cvfiles,\mathfiles}{\item Teaching Assistant for 8.012 (Physics I) and 8.022 (Physics II) in Experimental Study Group}
+    \end{itemize}
+  \end{position}
+\end{multitex}
+\begin{multitex}
+  \employer{Microsoft Research}
+  \dates{June 2014--August 2014}
+  \title{Intern}
+  \location{Cambridge, United Kingdom}
+  \begin{position}
+    \begin{itemize}
+      \item Created a language for specifying input/output behavior of x86 assembly programs with Andrew Kennedy and Nick Benton; Verified the I/O behavior of a number of simple programs
+      \onlymultitex*{\cvfiles}{\item Improved automation of the x86proved library}
+    \end{itemize}
+  \end{position}
+\end{multitex}
+\begin{multitex*}
   \employer{MIT CSAIL}
   \dates{November 2009--September 2011}
   \title{Researcher}
@@ -247,20 +287,7 @@
       \item Co-author of ``One shot learning of simple visual concepts''\onlymultitex*{\cvfiles}{ published in \emph{Proceedings of the 33rd Annual Meeting of the Cognitive Science Society}}.
     \end{itemize}
   \end{position}
-
-  \employer{MIT}
-  \dates{Fall 2009--Present}
-  \title{Teacher}
-  \location{Cambridge, MA}
-  \begin{position}
-    \begin{itemize}
-      \item Taught classes on \LaTeX, philosophy, linear algebra, and quantum mechanics for MIT Educational Studies Program's Splash, Spark, and Summer HSSP (High School Studies Program)
-      \item Teaching Assistant for 8.012 (Physics I) and 8.022 (Physics II) in Experimental Study Group
-    \end{itemize}
-  \end{position}
-
-\end{multitex}
-
+\end{multitex*}
 \begin{multitex*}[\cvfiles]
   \employer{MIT OCW}
     \dates{May--August 2010}
@@ -271,9 +298,7 @@
             \item Evaluated and categorized videos of Walter Lewin solving physics problems for updating the 8.01 (Physics I) OpenCourseWare (OCW) website.
         \end{itemize}
     \end{position}
-
 \end{multitex*}
-
 \begin{multitex*}[\cvfiles]
   \employer{Commack High School}
   \dates{Fall 2006--Summer 2009}
@@ -528,6 +553,8 @@
 \end{multitex}
 
 \begin{multitex*}[\cvfiles]
+% this is a hack
+\clearpage
 \section{\textsc{Interests}}
     \begin{itemize}
       \item Philosophy
@@ -539,6 +566,17 @@
       \item MIT Mystery Hunt, Participated on Manic Sages Team, January 2008--2012
       %  }
     \end{itemize}
+\end{multitex*}
+
+\begin{multitex}
+  \nocite{*}
+\end{multitex}
+
+\begin{multitex*}[\cvfiles]
+\section{\textsc{Presentations and Publications}}
+  %\renewcommand{\refname}{\textsc{Presentations and Publications}} 
+  %\bibliography{personal-website/jason-gross}
+  \printbibliography[title={$\left.\right.$}]
 \end{multitex*}
 
 \begin{multitex}

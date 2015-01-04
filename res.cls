@@ -203,7 +203,7 @@
 
 \LoadClass{article}
 
-\nofiles	     % resume's don't need .aux files
+%\nofiles	     % resume's don't need .aux files, but they do for bibliographies
 
 
 \newtoks\tabular@text		    % holds the current list being processed
@@ -802,5 +802,5 @@
 \body\\
 \end{format}
 
-\let\section\@@section
+\def\section{\@ifstar{\@@section}{\@@section}} % gobble stars
 
