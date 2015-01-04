@@ -1,0 +1,22 @@
+- Incompleteness theorems ─ Gӧdel's incompleteness theorem, the halting problem, Lӧb's theorem, diagonalization arguments
+
+- Exploring Noether's theorem through parametricity and programming languages ─ Noether's theorem is a very general and beautiful result in theoretical physics that relates differentiable symmetries to conserved quantities.  Parametricity is the property that programs are invariant under changes of data representation; it allows you to derive "theorems for free", such as that the only (computable) function of type ∀ X, X → X is the identity function.  A recently published paper relates these two ideas, allowing automatic derivation of conserved quantities from appropriate descriptions of physical systems.
+
+- Prisoner's Dilemma with source code ─ There is a variant of the prisoner's dilemma where each competitor receives their opponent's source code.  In this variant, it's trivial to beat the Nash equilibrium of the standard presentation, but it's highly non-trivial to figure out what "optimal" might mean.  This project could serve as an introduction to provability logic and model theory, in addition to game theory.
+
+
+
+  %\item Design your own type-theory-based proof assistant --- Proof assistants allow computers to check your proofs, and allow exploration of theorems and definitions with a guide to ensure that you don't break any rules unintentionally.  %As computers get faster, these programs have gradually become more popular, showing up in more undergraduate classes and research papers.
+  %The idea, for students familiar with programming, would be to learn about how such programs work in theory and how type theory provides an alternative to axiomatic logic, by designing, and possibly implementing, a basic proof checker.
+  %\item Introductory category theory --- I enjoyed Dan Zaharapol's Day Zero ``Sets, Maps, Limits, and Colimits'' class in 2009, and Noah's class on category theory through pictures.  This would be similar to one of those.
+  %\item Circuits over sets of natural numbers (project originally run by Dan Zaharopol) --- Consider the following operations on sets of natural numbers: union, intersection, pointwise addition, pointwise multiplication, and set complement.  What kinds of sets can you make if you start from one-element sets?  How hard is it to decide if a number is in the set defined by a given formula?  (If you can do it in general, then you've solved Goldbach's Conjecture.)  What if you restrict which operations you're allowed to use?  (student-guided project)
+  \item
+  %\item Formalizing $\langle$\emph{insert your favorite math here}$\rangle$ in a proof assistant; it turns theorem proving into a game!
+  %\item Exploring homotopy type theory (probably a student-directed project)
+  %\item Learn functional programming (short class, after-hours activity, or project)
+  %\item Learn type theory, an alternative to axiomatic logic
+  %\item Relationships between the various truncated axioms of choice and laws of excluded middle; here, truncated refers to the homotopy type of the spaces to which the axioms are restricted to. (student-directed project)
+  %\item Linear logic --- In standard logic, if you have $A$, then you have $A$ and $A$.  So if you have a quarter, then you have a quarter and another quarter, right?  Linear logic is the logic of resources.
+  %\item Introductory topology class, following, e.g., Munkres' \emph{Topology}
+  %\item Proof techniques class, or possibly a variant of it which also introduces what a proof is, as a mathematical object.
+  %\item Basic theoretical computer science --- lambda calculus, Turing machines, halting problem, computational complexity
