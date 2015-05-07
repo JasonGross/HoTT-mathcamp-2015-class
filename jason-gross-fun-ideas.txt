@@ -1,5 +1,0 @@
-- 30 constructions in 30 minutes --- like 30 proofs in 30 minutes, but rather than trying to prove things, we instead construct or define them, possibly with the necessary mathematical background definitions
-
-- Indoor skydiving
-
-- Glassblowing
