@@ -6,27 +6,63 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{amsthm}
 
 \newcommand{\chili}{\includegraphics[height=1ex]{chili}}
 
 \lhead{Jason Gross}
-\chead{Mathcamp Mentor Application}
+\chead{Mathcamp Mentor Classes}
 \rhead{\today}
 \cfoot{\thepage\space of \lastpageref{LastPage}}
 \pagestyle{fancy}
 
 \begin{document}
 \pagenumbering{arabic}
-\subsubsection*{Class: Exploring equality via homotopy and proof assistants\texorpdfstring{ (\chili\chili\,--\chili\chili\chili)}{}}
+\section*{Colloquium: The Curry-Howard Isomorphism}
+\noindent \textbf{Possible Blurb 1}: Proofs and functional programs are \emph{the same thing}!  Theorems and types of functional programs are \emph{the same thing}!  The Halting Problem and G\"odel's Incompleteness Theorem are \emph{the same thing}!  If a devil offered you a deal that either he would give you a million dollars, or he would grant any wish of yours for the price of a million dollars (his choice which one), would you take the deal?  And could you explain how the devil could implement the deal with a time machine, and how this implementation \emph{is} a proof that Pierce's Law ($((P\to Q)\to P)\to P$) implies the law of excluded middle ($\forall P, P \vee \neg P$)?  What happens when you shove the foundations of mathematics across this isomorphism, make some obvious adjustments on the programming side, and pull it back?  What pops out is not the set theory you started with, but topology instead!
+
+\noindent \textbf{Possible Blurb 2}: The Curry-Howard Isomorphism is a formal correspondence between two things that might seem very different at a first glance: proofs, and (functional) programs.  Under this isomorphism, theorem statements correspond to types of functional programs.  After going over the basics of the correspondence, we will look at some cool applications.  For example, The Halting Problem corresponds to G\"odel's Incompleteness Theorem.  Pierce's Law ($((P\to Q)\to P)\to P$) corresponds to a particular kind of time machine, and the proof that Pierce's Law implies the law of excluded middle ($\forall P, P \vee \neg P$) can be grasped intuitively using this fact.  In the past decade, mathematicians have started using the Curry-Howard correspondence to find interestingly new proofs about theorems in topology.
+
+\subsection*{Outline of talk}
+\begin{itemize}
+  \item
+    Basic correspondences
+    \begin{itemize}
+      \item logical implication $\longleftrightarrow$ function types
+      \item theorem statement $\longleftrightarrow$ set of proofs of that statement
+      \item conjunction $\longleftrightarrow$ cartesian product
+      \item disjunction $\longleftrightarrow$ disjoint union
+      \item True $\longleftrightarrow$ singleton ($\{\star\}$, $\top$)
+      \item False $\longleftrightarrow$ empty ($\emptyset$, $\bot$)
+      \item universal quantification $\longleftrightarrow$ dependent function type ($\Pi$)
+      \item existential quantification $\longleftrightarrow$ dependent pair type ($\Sigma$)
+      \item negation $\longleftrightarrow$ function to $\emptyset$
+      \item proof by induction $\longleftrightarrow$ case analysis and recursion
+    \end{itemize}
+  \item
+    Fun Story 1: Implementing a LEM--shaped deal with the devil with a Pierce's Law--shaped time machine
+  \item
+    Fun Story 2: The Halting Problem, and G\"odel's Incompleteness Theorem
+  \item
+    Application of CH: Homotopy Type Theory, new synthetic proofs (TODO for me: Look up which ones)
+\end{itemize}
+
+\clearpage
+\section*{Class: Exploring equality via homotopy and proof assistants\texorpdfstring{ (\chili\chili\chili)}{}}
 %- Class description (0.5--1 pages)
 %  - Prompt
 %    - Describe, in a half-page to a page, a class or independent student project that you would like to run at Mathcamp. Feel free to design your dream class or ideal project. Make sure to include some details, like difficulty, pacing, problems you might assign, etc. Keep in mind that these are bright high school students who can accomplish a lot -- but have limited time, and varying mathematical backgrounds. Some of them may meet modular arithmetic for the very first time at camp (but will be quick to pick it up and run with it); a few will have already taken classes at college, and will happily follow a development of Stokes' Theorem on manifolds; most fall somewhere in between. What we are most looking for is a coherent, interesting curriculum that demonstrates your creativity as a teacher.
-\noindent \textbf{Blurb}: What does it mean for two things to be equal?  What if the things are themselves proofs of equality?  Homotopy type theory, and exciting new branch of mathematics which could replace set theory as the foundation of mathematics, has recently provided a new way of looking at equality proofs as paths in a topological space.  In this class, we will explore the nature of equality using Coq, an interactive theorem prover.
+\noindent \textbf{Possible Blurb 1}: What does it mean for two things to be equal?  What if the things are themselves proofs of equality?  Homotopy type theory, an exciting new branch of mathematics which provides an alternative to set theory as a foundation of mathematics, has recently provided a new way of looking at equality proofs as paths in a topological space.  In this class, we will explore the nature of equality using Coq, an interactive theorem prover.
 
-\noindent\textbf{Prerequisites}: Proof by induction, formal logic.  Optionally, programming.
+\noindent \textbf{Possible Blurb 2}: Equality has recently become a HoTT topic.  By noticing and exploring the similarities between equalities and paths in topological spaces, mathematicians have discovered an alternative foundation of mathematics based on homotopy theory and type theory.  Come explore the nature of equality, learn what it takes for a proof to be computer-checkable, and experience first-hand how theorem-proving can be a game.
 
-\noindent\textbf{Syllabus Outline}:
+\noindent\textbf{Homework Suggested}
 
+\noindent\textbf{Prerequisites}: Proof by induction, basic exposure to formal logic (comfort with \textit{modus ponens}, and the difference between axioms and theorems).  Helpful but not required: programming.
+
+\subsection*{Syllabus Outline}
+
+\subsubsection*{Day 1}
 \begin{itemize}
   \item
     Guided discussion --- How do we use equality?  What properties should equality have?  What properties should it not have?
@@ -40,50 +76,74 @@
       \item substitution
         %- Except +0 = -0, but +inf != -inf in floating point
       \item isomorphism
+      \item homogenous --- only valid to \emph{state} between things of the same type
       \item How do we prove equality?
       \begin{itemize}
         \item by transitivity% (each equal to something we already know)
         , symmetry, reflexivity
         %- by symmetry
         %- by reflexivity
-        \item by computation rules, or other axioms, maybe with substitution ($n + n = 2 \times n$; or $2 \times 3 = 6$)
-        \item by induction (e.g., on natural numbers, showing $+$ commutes)
-        \item by functional extensionality ($(\forall x, f(x) = g(x)) \to f = g$)
+        \item by computation rules, or other axioms, maybe with substitution ($n + n =_{\mathbb{N}} 2 \times n$; or $2 \times 3 =_{\mathbb{N}} 6$)
+        \item by induction (e.g., on natural numbers, showing $x + 1 =_{\mathbb{N}} 1 + x$)
+        \item by functional extensionality ($(\forall x, f(x) =_{B} g(x)) \to f =_{A \to B} g$)
+        \item by isomorphism (set extensionality)
       \end{itemize}
       \item What do we do with proofs of equality?  (One answer: substitution)
-      \item Parting question: When are two proofs of equality the same? (e.g., proof that $x + y = y + x$ by induction on $x$ then on $y$, vs.~on $y$ then on $x$, vs.~first apply symmetry then do double induction)
-      \item Homework
-      \begin{itemize}
-        \item Think about when proofs of equality are the same, try to prove things in two ways related ways, and see if you can prove that the proofs are equal.
-        \begin{itemize}
-          \item $\forall x\ y, x + y = y + x$
-          \item $\forall x\ y\ z, (x + y) + z = x + (y + z)$
-        \end{itemize}
-        \item Stare at J rule \\
-          (\texttt{$\forall$~(A~:~Type) (x~:~A) (P~:~$\forall$ y, x = y $\to$ Type), \\ P x refl $\to$ $\forall$~y (H~:~x = y), P y H}) \\
-          and K rule \\
-          (\texttt{$\forall$~(A~:~Type) (x~:~A) (P~:~x = x $\to$ Type), \\ P refl $\to$ $\forall$~(H~:~x~=~x), P H}), \\
-          say what they mean in words
-      \end{itemize}
     \end{itemize}
-    \item Exploring the J rule and the K rule in a proof assistant
+  \item
+    Paths
     \begin{itemize}
-      \item Introduce Coq, how to prove things by induction (lecture and demo)
+      \item path reversal, constant path, concatenation
+      \item substitution? (continuity)
+    \end{itemize}
+  \item Parting question: When are two proofs of equality the same? (e.g., proof that $x + y =_{\mathbb{N}} y + x$ by induction on $x$ then on $y$, vs.~on $y$ then on $x$, vs.~first apply symmetry then do double induction)
+  \item Homework
+    \begin{itemize}
+      \item Think about when proofs of equality are the same, try to prove things in two ways related ways, and see if you can prove that the proofs are equal.
       \begin{itemize}
-        \item simplification by computation
+        \item $\forall x\ y, x + 0 =_{\mathbb{N}} 0 + x$ (assuming you know that $0 + x =_{\mathbb{N}} x$ and $(1 + x) + y =_{\mathbb{N}} 1 + (x + y)$, and nothing else about natural numbers, other than induction)
+        \item $\forall x\ y, x + 1 =_{\mathbb{N}} 1 + x$
+        \item $\forall x\ y, x + y =_{\mathbb{N}} y + x$
+        \item $\forall x\ y\ z, (x + y) + z =_{\mathbb{N}} x + (y + z)$
+      \end{itemize}
+      \item Stare at J rule \\
+        (\texttt{$\forall$~(A~:~Type) (x~:~A) (P~:~$\forall$ y, x = y $\to$ Type), \\ P x refl $\to$ $\forall$~y (H~:~x = y), P y H}) \\
+        and K rule \\
+        (\texttt{$\forall$~(A~:~Type) (x~:~A) (P~:~x = x $\to$ Type), \\ P refl $\to$ $\forall$~(H~:~x~=~x), P H}), \\
+        say what they mean in words
+      \item
+        Here is an informal proof that the J rule implies that all proofs of $x = y$ are themselves equal: \\
+        The J rule says that if you have a proof $p$ of $x = y$, it suffices to assume that $y$ \emph{is} $x$ (to substitute $x$ for $y$ in what you are trying to prove), and to assume that $p$ is \texttt{refl} (to substitute \texttt{refl} for $p$ in what you are trying to prove).  Suppose we have a type $A$, two inhabitants $x$ and $y$ of type $A$, and two proofs $p$ and $q$ that $x = y$.  By J, it suffices to assume that $y$ is $x$, that $p$ is \texttt{refl}, and hence it suffices to prove that $\texttt{refl} = q$, where $q$ now has type $x = x$.  To prove this, again by J, it suffices to assume that $x$ is $x$ (it already is) and that $q$ is \texttt{refl}, and hence it suffices to prove $\texttt{refl} = \texttt{refl}$.  We can prove this by \texttt{refl}.  Thus for any proofs $p$ and $q$ that $x = y$, we have $p = q$. \qed \\
+        This proof does not, in fact, work.  What went wrong? \\
+        Hint 1: It may help to write out the arguments to J explicitly each time it is used informally. \\
+        Hint 2: It may help to annotate each equality with the type of the two things being compared; recall that the statement $a = b$ is only a valid type (a valid assertion) if $a$ and $b$ have the same type.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{Day 2 (90 Minutes?)}
+TODO: email Ruthi and Asilata about more time -- 1.5-1.75 hours; also ask about students all having computer access during TAU
+\begin{itemize}
+  \item Exploring the J rule and the K rule in a proof assistant
+    \begin{itemize}
+      \item Introduce Coq, how to prove tautologies by function application (lecture and demo)
+      \begin{itemize}
+        \item various tautologies
+        \item simplification by computation / judgmental equality
         \item reflexivity of equality
-        \item induction on natural numbers to prove addition is commutative, associative (students attempt themselves)
-      \end{itemize}
-      \item Introduce definition of equality in Coq (lecture)
-      \begin{itemize}
         \item explain syntactic equality, computation
+        \item state and prove J rule by pattern matching
+        \item prove symmetry by pattern matching, and separately by J
+        %\item induction on natural numbers to prove addition is commutative, associative (students attempt themselves)
       \end{itemize}
-      \item eliminator (J rule) (in-class exercises)
+      \item In-class Exercises)
       \begin{itemize}
-        \item prove symmetry, transitivity
+        \item re-prove symmetry, prove transitivity
         \item Prove \texttt{sym (sym p) = p}
         \item Prove \texttt{trans refl p = p}
         \item Prove \texttt{trans p refl = p}
+        \item re-do the above using the J rule explicitly
+        \item See what Coq says about the informal proof that J proves UIP
+        \item higher $\infty$-groupoid structure?
       \end{itemize}
       \item Homework
       \begin{itemize}
@@ -98,9 +158,42 @@
         \end{itemize}
       \end{itemize}
     \end{itemize}
-    \item Univalence --- isomorphism (equivalence) and equality
+\end{itemize}
+
+\subsubsection*{Day 3 (90 minutes?)}
+\begin{itemize}
+  \item Inductive types and their equalities
     \begin{itemize}
+      \item pattern matching and induction as fundamental
+      \item some examples of inductive definitions (demoed in Coq)
+      \begin{itemize}
+        \item unit type
+        \item booleans
+        \item natural numbers
+        \item empty type
+        \item cartesian product/sigma types
+        \item disjoint union/sum types
+        \item function types/pi types (not inductive, but have intro and elim)
+      \end{itemize}
+      \item decidable equality $\to$ UIP
+      \item classify equalities up to equivalence
+      \item Homework
+        \begin{itemize}
+          \item
+            interesting puzzle (homework problem?): The type \texttt{\{ x : A | y = x \}} is contractible (it has an inhabitant, and all inhabitants are provably equal), even though the type \texttt{x = x} isn't.  But equals are interchangeable, so why aren't all proofs of \texttt{x = x} equal?
+          \item
+            If UIP holds for a type $A$, then for any $x$ of type $A$, it also holds for the type $x = x$.  Prove this.
+        \end{itemize}
+      \end{itemize}
+\end{itemize}
+
+\subsubsection*{Day 4}
+\begin{itemize}
+  \item Univalence --- isomorphism (equivalence) and equality
+    \begin{itemize}
+      \item Define isomorphism ($\cong$) for students (an isomorphism is a pair of functions $f : A \to B$ and $g : B \to A$ with $g \circ f = 1$ and $f \circ g = 1$)
       \item Define equivalence ($\simeq$) for students (by bi-invertible map: $f : A \to B$ is an equivalence if we have $g, h : B \to A$ and $g \circ f = 1$ and $f \circ h = 1$)
+      \item Describe univalence (\texttt{idtoequiv}$ : x = y \to x \simeq y$ is an equivalence)
       \item Proofs about equivalence (student-guided)
       \begin{itemize}
         \item all proofs that $f$ is an equivalence are equal
@@ -109,38 +202,37 @@
         \item symmetry
         \item transitivity
       \end{itemize}
-      \item Describe univalence (\texttt{idtoequiv}$ : x = y \to x \simeq y$ is an equivalence)
       \begin{itemize}
         \item how many proofs are there of bool = bool?
       \end{itemize}
     \end{itemize}
-    \item Inductive types and their equalities (possibly lecture, or possibly guided exploration individually or in small groups)
-    \begin{itemize}
-      \item decidable equality $\to$ UIP
-      \begin{itemize}
-        \item natural numbers
-        \item booleans
-      \end{itemize}
-      \item pattern matching and induction as fundamental
-      \item disjoint union/sum types
-      \item cartesian product/sigma types
-      \item function types/pi types
-      \item classify equalities up to equivalence
-      \item interesting puzzle (homework problem?): The type \texttt{\{ x : A | y = x \}} is contractible (it has an inhabitant, and all inhabitants are provably equal), even though the type \texttt{x = x} isn't.  But equals are interchangeable, so why aren't all proofs of \texttt{x = x} equal?
-    \end{itemize}
-    \item Higher inductive types --- custom equalities
+\end{itemize}
+
+\subsubsection*{Day 5 (More Advanced Topics)}
+\begin{itemize}
+  \item Higher inductive types --- custom equalities
     \begin{itemize}
       \item Define the interval (two points and a path (proof of equality) between them)
       \begin{itemize}
         \item Challenge: prove functional extensionality from the interval
       \end{itemize}
+      \item Describe hackish way to implement HITs in Coq; mention dev version of Coq with more native HITs
       \item Define truncation
       \item Define the circle
       \begin{itemize}
+        \item Re-emphasize: every function is continuous; cannot prove that all points in the circle have a path between them
         \item Challenge: prove that the truncation of the type \texttt{base = base} is isomorphic to the integers (i.e., $\pi_1(S^1) \simeq \mathbb{Z}$)
       \end{itemize}
       \item Further exploration: truncation types, homotopies, axioms of choice, laws of excluded middle
   \end{itemize}
+  \item Models of type theory
+  \begin{itemize}
+    \item How do we know univalence is consistent?
+    \item Interpretation functions
+    \item Model in sets (not of univalence, though)
+    \item Model in topological spaces?
+    \item Model in Quillen Model Categories?
+  \end{itemize}
+  \item Homework --- list of open problems in HoTT, reference to the HoTT Book
 \end{itemize}
-
 \end{document}
