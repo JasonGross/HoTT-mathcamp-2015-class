@@ -1,3 +1,14 @@
+*.vo
+*.html
+*.synctex
+coqdoc.css
+coqdoc.sty
+*~
+*.glob
+*.v.d
+*.toc
+Makefile.coq
+exercises_and_homework_day_*.tex
 *.log
 *.pdf
 *.out
