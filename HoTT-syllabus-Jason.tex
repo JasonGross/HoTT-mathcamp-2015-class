@@ -18,36 +18,6 @@
 
 \begin{document}
 \pagenumbering{arabic}
-\section*{Colloquium: The Curry-Howard Isomorphism}
-\noindent \textbf{Possible Blurb 1}: Proofs and functional programs are \emph{the same thing}!  Theorems and types of functional programs are \emph{the same thing}!  The Halting Problem and G\"odel's Incompleteness Theorem are \emph{the same thing}!  If a devil offered you a deal that either he would give you a million dollars, or he would grant any wish of yours for the price of a million dollars (his choice which one), would you take the deal?  And could you explain how the devil could implement the deal with a time machine, and how this implementation \emph{is} a proof that Pierce's Law ($((P\to Q)\to P)\to P$) implies the law of excluded middle ($\forall P, P \vee \neg P$)?  What happens when you shove the foundations of mathematics across this isomorphism, make some obvious adjustments on the programming side, and pull it back?  What pops out is not the set theory you started with, but topology instead!
-
-\noindent \textbf{Possible Blurb 2}: The Curry-Howard Isomorphism is a formal correspondence between two things that might seem very different at a first glance: proofs, and (functional) programs.  Under this isomorphism, theorem statements correspond to types of functional programs.  After going over the basics of the correspondence, we will look at some cool applications.  For example, The Halting Problem corresponds to G\"odel's Incompleteness Theorem.  Pierce's Law ($((P\to Q)\to P)\to P$) corresponds to a particular kind of time machine, and the proof that Pierce's Law implies the law of excluded middle ($\forall P, P \vee \neg P$) can be grasped intuitively using this fact.  In the past decade, mathematicians have started using the Curry-Howard correspondence to find interestingly new proofs about theorems in topology.
-
-\subsection*{Outline of talk}
-\begin{itemize}
-  \item
-    Basic correspondences
-    \begin{itemize}
-      \item logical implication $\longleftrightarrow$ function types
-      \item theorem statement $\longleftrightarrow$ set of proofs of that statement
-      \item conjunction $\longleftrightarrow$ cartesian product
-      \item disjunction $\longleftrightarrow$ disjoint union
-      \item True $\longleftrightarrow$ singleton ($\{\star\}$, $\top$)
-      \item False $\longleftrightarrow$ empty ($\emptyset$, $\bot$)
-      \item universal quantification $\longleftrightarrow$ dependent function type ($\Pi$)
-      \item existential quantification $\longleftrightarrow$ dependent pair type ($\Sigma$)
-      \item negation $\longleftrightarrow$ function to $\emptyset$
-      \item proof by induction $\longleftrightarrow$ case analysis and recursion
-    \end{itemize}
-  \item
-    Fun Story 1: Implementing a LEM--shaped deal with the devil with a Pierce's Law--shaped time machine
-  \item
-    Fun Story 2: The Halting Problem, and G\"odel's Incompleteness Theorem
-  \item
-    Application of CH: Homotopy Type Theory, new synthetic proofs (TODO for me: Look up which ones)
-\end{itemize}
-
-\clearpage
 \section*{Class: Exploring equality via homotopy and proof assistants\texorpdfstring{ (\chili\chili\chili)}{}}
 %- Class description (0.5--1 pages)
 %  - Prompt
