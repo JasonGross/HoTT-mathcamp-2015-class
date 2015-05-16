@@ -41,8 +41,135 @@ Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
 
 Arguments trans {A x y z} p q, A x y z p q.
 
+(** ** Guiding Puzzles *)
+
+(** There are two guiding questions for today:
+
+    1. What are (inductive) types?
+    2. What does it mean to say that two inhabitants of a given type are equal? *)
+
+(** *** Puzzle 1: contractibility of based path spaces *)
+
+(** We use the notation [{ x : T | P x }] to denote the type of pairs
+    [(x; p)] which consist of an inhabitant [x : T] and a proof [p : P
+    x]. *)
+
+Notation "{ x  |  P }" := ({ x : _ & P }) : type_scope.
+Notation "{ x : A  |  P }" := ({ x : A & P }) : type_scope.
+Notation "( x ; p )" := (exist _ x p).
+
+(** A type is called contractible if there is a (continuous!) function
+    showing that all inhabitants are equal to a particular one. *)
+
+Definition is_contractible : Type -> Type
+  := fun A => { center : A | forall y : A, center = y }.
+
+(** Puzzle: The following theorem is provable.  Prove it. *)
+
+Definition contractible_pointed : forall (A : Type) (y : A),
+                                    is_contractible { x : A | y = x }
+  := admit.
+
+(** Note that [x = y :> T] means [x : T], [y : T], and [x = y].  It is
+    the notation for [@eq T x y].  It is how we write $x =_T y$ #<span
+    class="inlinecode">x =<sub>T</sub> y</span># in Coq. *)
+
+(** Since equals are inter-substitutable, we should be able to prove: *)
+
+Definition contractible_to_UIP : forall (A : Type) (y : A)
+                                        (x : A)
+                                        (p p' : y = x),
+                                   ((x; p) = (x; p') :> { x : A | y = x })
+                                   -> p = p'
+  := admit.
+
+(** But it turns out that we can't prove this.  Why not?  Give both a
+    formal, type theoretic reason (what terms don't typecheck?), and a
+    topological reason. *)
+
+(** *** Puzzle 2: understanding the encode-decode method *)
+
+(** Here is a concrete puzzle for the second question:
+
+    To classify the equality of a given type, we give a "code" for
+    each pair of elements.  We must say how to "encode" equality
+    proofs, and how to "decode" codes into equality proofs.  We want
+    this to be an isomorphism, i.e., [encode ∘ decode] and [decode ∘
+    encode] should both be the identity function.  It turns out that
+    we don't need to know anything about [encode] or [decode] other
+    than their existance to ensure this; we can always adjust [decode]
+    to create an inverse to [encode], as long as a particular property
+    holds of [code].  What is that property?
+
+    More concretely, the puzzle is to fill in the following holes. *)
+
+Section general_classification.
+
+  Definition code_correct_P : forall {A : Type} (code : A -> A -> Type), Type
+    := admit.
+
+  (** We assume we are given a type, a [code], an [encode], and a
+      [decode].  We introduce the assumptions as we get to definitions
+      that should need them. *)
+
+  Context {A : Type} (code : A -> A -> Type)
+          (decode' : forall x y, code x y -> x = y).
+
+  Definition decode : forall {x y}, code x y -> x = y
+    := admit.
+
+  Context (encode : forall x y, x = y -> code x y).
+
+  Definition deencode : forall {x y} (p : x = y),
+                          decode (encode _ _ p) = p
+    := admit.
+
+  (** For this last one, we'll need the correctness property on codes. *)
+
+  Context (code_correct : code_correct_P code).
+
+  Definition endecode : forall {x y} (p : code x y),
+                          encode _ _ (decode p) = p
+    := admit.
+
+End general_classification.
+
+(** The following sanity check on the classification should be provable: *)
+
+Section sanity_checks.
+
+  (** [x = y] should be a valid code *)
+
+  Definition eq_is_valid_code : forall {A : Type},
+                                  code_correct_P (fun x y : A => x = y)
+    := admit.
+
+  (** If you didn't choose a silly correctness property like [code =
+      (fun x y => x = y)], then your proof should generalize to the
+      following: *)
+
+  (** Suppose we are given a valid encoding. *)
+
+  Context {A : Type} (code : A -> A -> Type)
+          (encode : forall x y, x = y -> code x y)
+          (decode : forall x y, code x y -> x = y)
+          (endecode : forall x y (p : code x y), encode _ _ (decode _ _ p) = p)
+          (deencode : forall x y (p : x = y), decode _ _ (encode _ _ p) = p).
+
+  (** Then it should satisfy your validity principle. *)
+
+  Definition valid_code_is_valid : code_correct_P code
+    := admit.
+
+End sanity_checks.
+
+(** This was all very abstract.  Let's drill down with some
+    exmples. *)
 
 (** ** Inductive Types *)
+
+(** First, we must understand the types which we are classifying the
+    path-spaces of. *)
 
 (** An inductive type is specified by introduction and elimination
     rules; introduction rules tell you how to create inhabitants
@@ -118,6 +245,8 @@ Notation "{ x : A  & P }" := (sigma (A:=A) (fun x => P)) : type_scope.
 Notation "{ x  |  P }" := ({ x : _ & P }) : type_scope.
 Notation "{ x : A  |  P }" := ({ x : A & P }) : type_scope.
 Notation "( x ; p )" := (exist _ x p).
+Notation "x .1" := (projT1 x) (at level 3, format "x '.1'").
+Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 
 (** Inductive option (A : Type) : Type := ... *)
 
@@ -262,6 +391,13 @@ Definition sigma_deencode : forall {A B} {x y : { a : A | B a }} (p : x = y),
 
 (** Homework: *)
 
+(** Warmup: *)
+Definition zero_ne_one : 0 = 1 -> Empty_set
+  := admit.
+
+Definition zero_ne_succ : forall n, 0 = S n -> Empty_set
+  := admit.
+
 Definition nat_code : forall (x y : nat), Type
   := admit.
 
@@ -328,37 +464,104 @@ Definition list_deencode : forall {A} {x y : list A} (p : x = y),
 
 (** *** arrow types *)
 
-Definition arrow_code : forall {A B} (x y : A -> B), Type
+Definition arrow_code : forall {A B} (f g : A -> B), Type
   := admit.
 
-Definition arrow_encode : forall {A B} {x y : A -> B}, x = y -> arrow_code x y
+Definition arrow_encode : forall {A B} {f g : A -> B}, f = g -> arrow_code f g
   := admit.
 
 (** The rest aren't currently provable in Coq; it's the axiom of
     functional extensionality. *)
 
-Axiom arrow_decode : forall {A B} {x y : A -> B}, arrow_code x y -> x = y.
-Axiom arrow_endecode : forall {A B} {x y : A -> B} (p : arrow_code x y),
+Axiom arrow_decode : forall {A B} {f g : A -> B}, arrow_code f g -> f = g.
+Axiom arrow_endecode : forall {A B} {f g : A -> B} (p : arrow_code f g),
                          arrow_encode (arrow_decode p) = p.
-Axiom arrow_deencode : forall {A B} {x y : A -> B} (p : x = y),
+Axiom arrow_deencode : forall {A B} {f g : A -> B} (p : f = g),
                          arrow_decode (arrow_encode p) = p.
 
 (** *** Pi types (dependent function types) *)
 
-Definition function_code : forall {A B} (x y : forall a : A, B a), Type
+Definition function_code : forall {A B} (f g : forall a : A, B a), Type
   := admit.
 
-Definition function_encode : forall {A B} {x y : forall a : A, B a}, x = y -> function_code x y
+Definition function_encode : forall {A B} {f g : forall a : A, B a}, f = g -> function_code f g
   := admit.
 
 (** The rest aren't currently provable in Coq; it's the axiom of
     functional extensionality. *)
 
-Axiom function_decode : forall {A B} {x y : forall a : A, B a}, function_code x y -> x = y.
-Axiom function_endecode : forall {A B} {x y : forall a : A, B a} (p : function_code x y),
+Axiom function_decode : forall {A B} {f g : forall a : A, B a}, function_code f g -> f = g.
+Axiom function_endecode : forall {A B} {f g : forall a : A, B a} (p : function_code f g),
                             function_encode (function_decode p) = p.
-Axiom function_deencode : forall {A B} {x y : forall a : A, B a} (p : x = y),
+Axiom function_deencode : forall {A B} {f g : forall a : A, B a} (p : f = g),
                             function_decode (function_encode p) = p.
+
+(** **** Homework: mere propositions *)
+
+(** Homework; challenging problem *)
+
+(** Recall the definition of contractibility above.  The reason that
+    we can safely call this contractible is that all of the higher
+    structure collapses.  That is, if all inhabitants of [A] are
+    (continuously) equal, then all inhabitants of [x = y] for [x : A]
+    and [y : A] are also equal.  Prove this, as follows. *)
+
+(** First we define what it means for a type to be a "mere
+    proposition", or to satisfy the uniqueness of identity proofs. *)
+
+Definition is_prop : Type -> Type
+  := fun A => forall x y : A, x = y.
+
+(** We classify the equality type of propositions. *)
+
+Definition prop_code : forall {A} (allpaths : is_prop A) (x y : A), Type
+  := fun A allpaths x y => unit.
+
+Definition prop_encode : forall {A} (allpaths : is_prop A) {x y : A},
+                           x = y -> prop_code allpaths x y
+  := admit.
+
+Definition prop_decode : forall {A} (allpaths : is_prop A) {x y : A},
+                           prop_code allpaths x y -> x = y
+  := admit.
+
+Definition prop_endecode : forall {A} (allpaths : is_prop A) {x y : A} (p : prop_code allpaths x y),
+                            prop_encode allpaths (prop_decode allpaths p) = p
+  := admit.
+
+(** If you find this proof hard, and can't figure out why, think about
+    the proof of [dec_deencode].  If you're still having trouble, look
+    a bit further down for a hint. *)
+
+Definition prop_deencode : forall {A} (allpaths : is_prop A) {x y : A} (p : x = y),
+                             prop_decode allpaths (prop_encode allpaths p) = p
+  := admit.
+
+(** TODO/Question for Steve: Should I remove this hint from the
+    source, and wait for campers to come ask me about it?
+    Calibration: Even after reading the solution once, I gave up on
+    trying to figure it out the next time and looked up the hint, and
+    even after reading the solution twice, I had a bit of trouble
+    figuring out how to implement it, and it's only now, after having
+    read the solution twice and coded it up myself twice, that I was
+    able to re-engineer it from scratch without much work. *)
+
+(** Hint: you may need to rewrite your [prop_decode] function.  The
+    following lemmas may prove helpful. *)
+
+(** Try to write an "adjuster" for [is_prop] that will always return
+    something equal to [refl] (provably) when handed two judgmentally
+    equal things. *)
+
+Definition adjust_allpaths : forall {A}, is_prop A -> is_prop A
+  := admit.
+
+Definition adjust_allpaths_refl : forall {A} (allpaths : is_prop A) x,
+                                   adjust_allpaths allpaths x x = refl
+  := admit.
+
+(** Now move these lemmas above [prop_decode] and try re-writing the
+    codes so that you expect [prop_deencode] to work. *)
 
 (** *** decidable types *)
 
@@ -398,17 +601,11 @@ Definition dec_deencode : forall {A} (dec : decidable A) {x y : A} (p : x = y),
   := admit.
 
 (** TODO/Question for Steve: Should I remove this hint from the
-    source, and wait for campers to come ask me about it?
-    Calibration: Even after reading the solution once, I gave up on
-    trying to figure it out the next time and looked up the hint, and
-    even after reading the solution twice, I had a bit of trouble
-    figuring out how to implement it, and it's only now, after having
-    read the solution twice and coded it up myself twice, that I was
-    able to re-engineer it from scratch without much work. *)
+    source? *)
 
 (** Hint: you may need to rewrite your [dec_decode], [dec_code], and
-    [dec_encode] functions.  The following lemmas may prove
-    helpful. *)
+    [dec_encode] functions, just as you did with [prop_decode].  The
+    following lemmas may prove helpful. *)
 
 (** Try to write an "adjuster" for decidable equality that will always
     return something equal to [refl] (provably) when handed two
@@ -424,94 +621,26 @@ Definition adjust_dec_refl : forall {A} (dec : decidable A) (x : A),
 (** Now move these lemmas above [dec_code] and try re-writing the
     codes so that you expect [dec_deencode] to work. *)
 
-(** *** contractibility *)
+(** *** Pushing Further *)
 
-(** A type is called contractible if there is a (continuous!) function
-    showing that all inhabitants are equal to a particular one. *)
+(** Homework: Generalize the above two proofs to solve "Puzzle 2" far
+    above.  (Don't forget to also do puzzle 1 while you're at it.) *)
 
-Definition is_contractible : Type -> Type
-  := fun A => { center : A | forall y : A, center = y }.
+(** Homework: Using the solution to Puzzle 2, show that it is
+    sufficient to assume [function_decode] an axiom; the endecode and
+    [deencode] proofs follow from puzzle 2. *)
 
-(** **** Homework puzzle 1: *)
-
-(**  The following theorem is provable.  Prove it. *)
-
-Definition contractible_pointed : forall (A : Type) (y : A),
-                                    is_contractible { x : A | y = x }
+Definition function_code' : forall {A B} (f g : forall a : A, B a), Type
   := admit.
 
-(** Note that [x = y :> T] means [x : T], [y : T], and [x = y].  It is
-    the notation for [@eq T x y].  It is how we write $x =_T y$ #<span
-    class="inlinecode">x =<sub>T</sub> y</span># in Coq. *)
-
-(** Since equals are inter-substitutable, we should be able to prove: *)
-
-Definition contractible_to_UIP : forall (A : Type) (y : A)
-                                        (x : A)
-                                        (p p' : y = x),
-                                   ((x; p) = (x; p') :> { x : A | y = x })
-                                   -> p = p'
+Definition function_encode' : forall {A B} {f g : forall a : A, B a}, f = g -> function_code' f g
   := admit.
 
-(** But it turns out that we can't prove this.  Why not?  Give both a
-    formal, type theoretic reason (what terms don't typecheck?), and a
-    topological reason. *)
+Axiom function_decode' : forall {A B} {f g : forall a : A, B a}, function_code' f g -> f = g.
 
-(** **** Further exploration: *)
-
-(** The reason that we can safely call this contractible is that all
-    of the higher structure collapses.  That is, if all inhabitants of
-    [A] are (continuously) equal, then all inhabitants of [x = y] for
-    [x : A] and [y : A] are also equal.  Prove this, as follows. *)
-
-(** First we define what it means for a type to be a "mere
-    proposition", or to satisfy the uniqueness of identity proofs. *)
-
-Definition is_prop : Type -> Type
-  := fun A => forall x y : A, x = y.
-
-(** We classify the equality type of propositions. *)
-
-Definition prop_code : forall {A} (allpaths : is_prop A) (x y : A), Type
-  := fun A allpaths x y => unit.
-
-Definition prop_encode : forall {A} (allpaths : is_prop A) {x y : A},
-                           x = y -> prop_code allpaths x y
+Definition function_endecode' : forall {A B} {f g : forall a : A, B a} (p : function_code' f g),
+                                  function_encode' (function_decode' p) = p
   := admit.
-
-Definition prop_decode : forall {A} (allpaths : is_prop A) {x y : A},
-                           prop_code allpaths x y -> x = y
+Definition function_deencode' : forall {A B} {f g : forall a : A, B a} (p : f = g),
+                                  function_decode' (function_encode' p) = p
   := admit.
-
-Definition prop_endecode : forall {A} (allpaths : is_prop A) {x y : A} (p : prop_code allpaths x y),
-                            prop_encode allpaths (prop_decode allpaths p) = p
-  := admit.
-
-(** If you find this proof hard, and can't figure out why, think about
-    the proof of [dec_deencode].  If you're still having trouble, look
-    a bit further down for a hint. *)
-
-Definition prop_deencode : forall {A} (allpaths : is_prop A) {x y : A} (p : x = y),
-                             prop_decode allpaths (prop_encode allpaths p) = p
-  := admit.
-
-(** TODO/Question for Steve: Should I remove this hint from the
-    source? *)
-
-(** Hint: you may need to rewrite your [prop_decode] function, just as
-    you did with [dec_decode].  The following lemmas may prove
-    helpful. *)
-
-(** Try to write an "adjuster" for [is_prop] that will always return
-    something equal to [refl] (provably) when handed two judgmentally
-    equal things. *)
-
-Definition adjust_allpaths : forall {A}, is_prop A -> is_prop A
-  := admit.
-
-Definition adjust_allpaths_refl : forall {A} (allpaths : is_prop A) x,
-                                   adjust_allpaths allpaths x x = refl
-  := admit.
-
-(** Now move these lemmas above [prop_decode] and try re-writing the
-    codes so that you expect [prop_deencode] to work. *)

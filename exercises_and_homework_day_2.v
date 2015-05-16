@@ -56,6 +56,29 @@ Definition introduce_intermediate : forall A B C, (A -> (B -> C)) -> ((A -> B) -
 Definition swap_args : forall A B C, (A -> B -> C) -> (B -> A -> C)
   := admit.
 
+(** Challenge Homework Problems *)
+
+(** Prove that the Law of Excluded Middle implies Double Negation Elimination *)
+
+Definition LEM_implies_DNE
+: (forall P, P \/ ~P)
+  -> (forall P, ~~P -> P)
+  := admit.
+
+(** Prove that Double Negation Elimination implies Peirce's Law *)
+
+Definition DNE_implies_Peirce
+: (forall P, ~~P -> P)
+  -> (forall P Q : Prop, ((P -> Q) -> P) -> P)
+  := admit.
+
+(** Prove that Peirce's Law implies the Law of Excluded Middle *)
+
+Definition Peirce_implies_LEM
+: (forall P Q : Prop, ((P -> Q) -> P) -> P)
+  -> (forall P, P \/ ~P)
+  := admit.
+
 (** ** Judgmental equality. *)
 
 About eq_refl.
@@ -163,17 +186,17 @@ Arguments trans_J {A x y z} p q, A x y z p q.
 
 (** First prove this by pattern matching. *)
 
-Definition subst : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
   := admit.
 
-Arguments subst {A B} f {x y} p, {A B} f x y p, A B f x y p.
+Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 (** Now prove this by passing arguments to [J]. *)
 
-Definition subst_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+Definition ap_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
   := admit.
 
-Arguments subst_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
+Arguments ap_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 (** Exercises to do individually, or with the people next to you. *)
 
@@ -302,18 +325,55 @@ Definition trans_sym : forall A (x y z : A) (p : x = y) (q : y = z),
                          sym (trans p q) = trans (sym q) (sym p)
   := admit.
 
+(** *** Category theory *)
 
-(** Further exploration:
+(** Those of you familiar with category theory might find the
+    following properties interesting. *)
+
+(** All exercises in this section are optional homework. *)
+
+(** We can look at [ap] as describing the action on morphisms
+    (equality proofs) of any function; the type of morphisms from [x :
+    A] to [y : A] is the type [x = y]; the action of [f : A -> B] on a
+    morphism [m : x = y] is [ap f m : f x = f y].  We can prove the
+    relevant functoriality properties. *)
+
+(** Action on identity: *)
+
+Definition ap_refl : forall {A B} (f : A -> B) x, ap f (refl x) = refl (f x)
+  := admit.
+
+(** Action on composition: *)
+
+Definition ap_trans : forall {A B} (f : A -> B) {x y z : A} (p : x = y) (q : y = z),
+                           ap f (trans p q) = trans (ap f p) (ap f q)
+  := admit.
+
+(** Action on inverses (additional rule for groupoids): *)
+
+Definition ap_sym : forall {A B} (f : A -> B) {x y : A} (p : x = y),
+                         ap f (sym p) = sym (ap f p)
+  := admit.
+
+(** Furthermore, every function that specifies the action of a natural
+    transformation on objects is automatically natural: *)
+
+Definition concat_Ap
+: forall {A B} (f g : A -> B)
+         (T : forall x, f x = g x),
+    forall {x y : A} (m : x = y),
+      trans (ap f m) (T y) = trans (T x) (ap g m)
+  := admit.
+
+(** *** Further exploration:
 
 1. Can you find and prove a statement relating [sym_sym] to [sym_trans]?
 
-2. Can you find and prove a statement relating [sym] to [subst]?
+2. Can you find and prove a statement relating [trans] to [ap]?
 
-3. Can you find and prove a statement relating [trans] to [subst]?
+3. Can you find and prove a statement relating [sym] to [trans_assoc] and [sym_trans] via [ap]?
 
-4. Can you find and prove a statement relating [sym] to [trans_assoc] and [sym_trans] via [subst]?
-
-5. The equality relation on a type forms a weak ω-groupoid (sometimes
+4. The equality relation on a type forms a weak ω-groupoid (sometimes
    written as a weak ∞-groupoid).  This means that there is structure
    at every level.  The first few levels are given by [refl], [sym],
    and [trans] (level 1); [sym_sym], [sym_trans], [trans_assoc],
