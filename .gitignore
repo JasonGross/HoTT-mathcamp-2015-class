@@ -1,6 +1,7 @@
 *.vo
 *.html
 *.synctex
+*.synctex.gz(busy)
 coqdoc.css
 coqdoc.sty
 *~
