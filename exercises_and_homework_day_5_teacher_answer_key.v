@@ -1,26 +1,5 @@
-(** * Exploring equality via homotopy and proof assistants - Day 4 - Equality of types *)
-(** This file contains the exercises for Day 4.  Some are explicitly
-    marked as "Homework"; the rest can be done either in class or for
-    homework.
-
-    When doing exercises on your own, feel free to skip around; there
-    are some interesting puzzles near the bottom.
-
-    If you feel like you know exactly how a proof will go, but find it
-    painful and tedius to write out the proof terms explicitly, come
-    find me.  Coq has a lot of support for automation and taking care
-    of things that are easy and verbose, so you don't have to.
-    Proving should feel like a game.  If it doesn't, I can probably
-    help you with that.
-
-    This file is set up a bit differently from previous days; I want
-    you to generate more of the ideas for this one.  So I've left in
-    only the stubs at the top for you, without the comments that
-    pepper my version of the file.  You should follow along, copying
-    the the code as I reveal or type it on the screen, so you can play
-    with it to make suggestions.  I'll be releasing my (filled in)
-    version of the file after class today, so that you have the
-    comments for future reference. *)
+(* -*- coq-prog-name: "d:/Documents/GitHub/coq-hit/bin/coqtop.exe" -*- *)
+(** * Exploring equality via homotopy and proof assistants - Day 5 - Further topics *)
 
 (** The following are placeholders; [admit] indicates that something
     should be filled in later. *)
@@ -50,20 +29,18 @@ Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
 
 Arguments trans {A x y z} !p !q, A x y z !p !q.
 
-Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
-  := fun A B f x y p
-     => match p with
-          | refl => refl
-        end.
-
-Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
-
 Definition J : forall {A} {x : A} (P : forall y, x = y -> Type),
                  P x refl -> forall {y} (H : x = y), P y H
   := fun A x P k y H
      => match H with
           | eq_refl => k
         end.
+
+Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+  := fun A B f x y p
+     => J (fun y _ => f x = f y) refl p.
+
+Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 Definition sym_sym : forall A (x y : A) (p : x = y), sym (sym p) = p
   := fun A x y p
@@ -290,157 +267,6 @@ Definition prop_deencode : forall {A} (allpaths : is_prop A) {x y : A} (p : x = 
                              prop_decode allpaths (prop_encode allpaths p) = p
   := admit.
 
-(** ** Equality of types *)
-
-(** *** Motivating Puzzle *)
-
-(** Puzzle for the day: classify the equalities of types.  That is,
-    fill in the following: *)
-
-Definition Type_code : forall (x y : Type), Type
-  := admit.
-
-Definition Type_encode : forall {x y : Type}, x = y -> Type_code x y
-  := admit.
-
-(** The following are unprovable in Coq, currently.  They are
-    collectively known as the "univalence axiom". *)
-
-Axiom Type_decode : forall {x y : Type}, Type_code x y -> x = y.
-Axiom Type_endecode : forall {x y : Type} (p : Type_code x y),
-                        Type_encode (Type_decode p) = p.
-Axiom Type_deencode : forall {x y : Type} (p : x = y),
-                        Type_decode (Type_encode p) = p.
-
-(** *** Provable equalities *)
-
-(** What equalities of types are provable? *)
-
-(** Ask the students to come up with this. *)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Definition unit_refl : unit = unit
-  := admit.
-
-(** Can you prove this one?  (Take a minute to try on your own.) *)
-
-Inductive unit1 := tt1.
-Inductive unit2 := tt2.
-
-Definition unit12 : unit1 = unit2
-  := admit.
-
-(** Can you prove other ones? *)
-
-(** *** Provable inequalities *)
-
-(** What equalities of types are provably absurd? *)
-
-(** Ask the students to come up with this. *)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Definition unit_Empty_set_absurd : unit = Empty_set -> Empty_set
-  := admit.
-
-(** More generally, when are two types provably different? *)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(** *** Isomorphisms *)
-
-(** We can define a notion of isomorphism: *)
 
 Class IsIsomorphism {A B} (f : A -> B)
   := { iso_inv : B -> A;
@@ -493,114 +319,6 @@ Definition Isomorphic_compose : forall {A B C}, A ≅ B -> B ≅ C -> A ≅ C
                           left_inv x := trans (ap (iso_inv e1) (left_inv e2 (e1 x)))
                                               (left_inv e1 x) |} |}.
 
-(** We would like to prove the last corresponding law: *)
-
-Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f B
-  := admit.
-
-(** But it's not provable!  Here's a counter-example: *)
-
-(** Recall the taboo from earlier; we can't prove equality of two
-    identical types defined separately.  But if we could prove
-    [Isomorphic_ap], then we could prove this! *)
-
-Definition iso_unit2_unit1 : unit2 ≅ unit1
-  := admit.
-
-Definition taboo1 : unit1 = unit2 :> Type
-  := Isomorphic_ap (fun T => T = unit2) iso_unit2_unit1 refl.
-
-(** Ooops!  We'll be coming back to this soon. *)
-
-(** More practice: You can prove the higher groupoid laws about
-    isomorphisms, but it's a bit of a pain. *)
-
-(** Before dealing with the taboo above, let's classify the equality
-    space of isomorphisms. *)
-
-(** Recall the encode-decode method of yesterday: *)
-
-Definition unit_code : forall (x y : unit), Type
-  := fun _ _ => unit.
-
-(** We use curlie braces to not have to pass the [x] and [y] around
-    all the time. *)
-
-Definition unit_encode : forall {x y : unit}, x = y -> unit_code x y
-  := fun _ _ _ => tt.
-
-Definition unit_decode : forall {x y : unit}, unit_code x y -> x = y
-  := fun x y _
-     => match x, y with
-          | tt, tt => refl
-        end.
-
-Definition unit_endecode : forall {x y} (p : unit_code x y),
-                             unit_encode (unit_decode p) = p
-  := fun x y p
-     => match p with
-          | tt => refl
-        end.
-
-Definition unit_deencode : forall {x y} (p : x = y),
-                             unit_decode (unit_encode p) = p
-  := fun x y p
-     => match p with
-          | refl => match x with
-                      | tt => refl
-                    end
-        end.
-
-(** Let's add another piece to this puzzle, tying some more things together. *)
-
-(** Ask the students if anyone notices anything. *)
-
-Definition unit_iso : forall x y : unit, (x = y) ≅ unit
-  := fun x y
-     => {| iso_fun := unit_encode;
-           iso_isiso := {| iso_inv := unit_decode;
-                           right_inv := unit_endecode;
-                           left_inv := unit_deencode |} |}.
-
-(** Now, continuing on to isomorphisms... *)
-
-(** Let's assume functional extensionality; it's needed, here. *)
-
-Section assume_funext.
-  Context (function_decode : forall {A B} {f g : forall a : A, B a}, function_code f g -> f = g)
-          (function_endecode : forall {A B} {f g : forall a : A, B a} (p : function_code f g),
-                                 function_encode (function_decode p) = p)
-          (function_deencode : forall {A B} {f g : forall a : A, B a} (p : f = g),
-                                 function_decode (function_encode p) = p).
-
-  Definition iso_code : forall {A B} (x y : A ≅ B), Type
-    := admit.
-
-  Definition iso_encode : forall {A B} {x y : A ≅ B}, x = y -> iso_code x y
-    := admit.
-
-  Definition iso_decode : forall {A B} {x y : A ≅ B}, iso_code x y -> x = y
-    := admit.
-
-  Definition iso_endecode : forall {A B} {x y : A ≅ B} (p : iso_code x y),
-                              iso_encode (iso_decode p) = p
-    := admit.
-
-  Definition iso_deencode : forall {A B} {x y : A ≅ B} (p : x = y),
-                              iso_decode (iso_encode p) = p
-    := admit.
-
-  (** Ooops.  Turns out this isn't provable.  Challenge: Figure out why. *)
-
-End assume_funext.
-
-(** *** Equivalences *)
-
-(** We can define a slight variation on isomorphisms, called
-    "contractible fibers", which generalizes the notion of
-    injective+surjective.  If you're interested in the various ways of
-    formulating equivalences, Chapter 4 of the HoTT Book
-    (http://homotopytypetheory.org/book/) is an excellent resource. *)
 
 Class Contr (A : Type)
   := { center : A;
@@ -629,6 +347,14 @@ Existing Instance equiv_isequiv.
 
 Notation "A <~> B" := (Equiv A B) (at level 70).
 Notation "A ≃ B" := (Equiv A B) (at level 70).
+
+Definition equiv_refl : forall {A}, A ≃ A.
+Proof.
+  refine (fun A => {| equiv_fun := fun x => x;
+                      equiv_isequiv := fun b => {| center := (b; refl) |} |}).
+  intros [a p].
+  destruct p; reflexivity.
+Defined.
 
 (** We can prove that an equivalence gives us an isomorphism very
     easily. *)
@@ -688,145 +414,245 @@ Proof.
     rewrite trans_pV, trans_1p; reflexivity. }
 Defined.
 
-(** Now, we prove the following helper lemma, which lets us get the
-    right codes for [Equiv].  We again assume functional
-    extensionality. *)
 
-Section assume_funext'.
-  Context (function_decode : forall {A B} {f g : forall a : A, B a}, function_code f g -> f = g)
-          (function_endecode : forall {A B} {f g : forall a : A, B a} (p : function_code f g),
-                                 function_encode (function_decode p) = p)
-          (function_deencode : forall {A B} {f g : forall a : A, B a} (p : f = g),
-                                 function_decode (function_encode p) = p).
-
-  Definition allpath_contr : forall {A} (x y : Contr A), x = y.
-  Proof.
-    intros A x y.
-    destruct x as [x p], y as [y q].
-    cut ((x; p) = (y; q) :> { center : A | forall y, center = y }).
-    { intro H.
-      apply sigma_encode in H.
-      destruct H as [H0 H1]; simpl in *.
-      destruct H0.
-      destruct H1; simpl.
-      reflexivity. }
-    { apply sigma_decode.
-      exists (trans (p y) (q y)).
-      simpl.
-      apply function_decode; intro a.
-      cut (forall p q : y = a, p = q).
-      { intro H; apply H. }
-      { intros p0 q0.
-        refine (trans (sym _) _).
-        { refine (@prop_deencode A (fun x y => trans (sym (p x)) (p y)) _ _ p0). }
-        { refine (@prop_deencode A (fun x y => trans (sym (p x)) (p y)) _ _ q0). } } }
-  Defined.
-
-  Definition allpath_isequiv : forall {A B} (f : A -> B) (e1 e2 : IsEquiv f), e1 = e2.
-  Proof.
-    intros A B f e1 e2.
-    apply function_decode; intro a.
-    apply allpath_contr.
-  Defined.
-
-  Definition equiv_code : forall {A B} (f g : A ≃ B), Type
-    := admit.
-
-  Definition equiv_encode : forall {A B} {f g : A ≃ B}, f = g -> equiv_code f g
-    := admit.
-
-  Definition equiv_decode : forall {A B} {f g : A ≃ B}, equiv_code f g -> f = g
-    := admit.
-
-  Definition equiv_endecode : forall {A B} {f g : A ≃ B} (p : equiv_code f g),
-                              equiv_encode (equiv_decode p) = p
-    := admit.
-
-  Definition equiv_deencode : forall {A B} {f g : A ≃ B} (p : f = g),
-                              equiv_decode (equiv_encode p) = p
-    := admit.
-End assume_funext'.
-
-(** Now that we have a "good" type of isomorphism/equivalence (one
-    with the right equality type), we can go back to the question of
-    [Isomorphic_ap]; Recall that we want to prove:
-
-<<
-Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f B.
->> *)
-
-(** We can prove this by axiomatizing the codes for types: *)
-
-Definition Type_code' : forall (x y : Type), Type
+Definition Type_code : forall (x y : Type), Type
   := fun x y => x ≃ y.
 
-Definition Type_encode' : forall {x y : Type}, x = y -> Type_code' x y
-  := admit.
+Definition Type_encode : forall {x y : Type}, x = y -> Type_code x y
+  := fun x y p
+     => match p with
+          | refl => equiv_refl
+        end.
 
 (** The following are unprovable in Coq, currently.  They are
     collectively known as the "univalence axiom". *)
 
-Axiom Type_decode' : forall {x y : Type}, Type_code' x y -> x = y.
-Axiom Type_endecode' : forall {x y : Type} (p : Type_code' x y),
-                         Type_encode' (Type_decode' p) = p.
-Axiom Type_deencode' : forall {x y : Type} (p : x = y),
-                         Type_decode' (Type_encode' p) = p.
+Axiom Type_decode : forall {x y : Type}, Type_code x y -> x = y.
+Axiom Type_endecode : forall {x y : Type} (p : Type_code x y),
+                         Type_encode (Type_decode p) = p.
+Axiom Type_deencode : forall {x y : Type} (p : x = y),
+                         Type_decode (Type_encode p) = p.
 
-Definition Univalence : forall {x y : Type}, IsEquiv (@Type_encode' x y)
+Definition Univalence : forall {x y : Type}, IsEquiv (@Type_encode x y)
   := fun x y
      => equiv_isequiv
           (equiv_of_iso
-             {| iso_fun := @Type_encode' x y;
-                iso_isiso := {| iso_inv := @Type_decode' x y;
-                                right_inv := Type_endecode';
-                                left_inv := Type_deencode' |} |}).
+             {| iso_fun := @Type_encode x y;
+                iso_isiso := {| iso_inv := @Type_decode x y;
+                                right_inv := Type_endecode;
+                                left_inv := Type_deencode |} |}).
 
-(** *** Homework: Playing with univalence *)
+Definition transport {A} (P : A -> Type) {x y} (p : x = y) (u : P x) : P y
+  := eq_rect _ P u _ p.
 
-(** Using univalence, we can prove some things. *)
+Definition apD {A} {B} (f : forall a : A, B a) {x y} (p : x = y) : transport B p (f x) = f y
+  := J (fun y' p => transport B p (f x) = f y') refl p.
 
-Definition Empty_set_eq : (Empty_set = Empty_set) = unit :> Type
-  := admit.
+Definition J_transport_const : forall {A} {P k} {x y : A} {p : x = y},
+                                 J (fun _ _ => P) k p = k
+  := fun A P k x y p
+     => match p with
+          | refl => refl
+        end.
 
-Definition unit_eq : (unit = unit) = unit :> Type
-  := admit.
+Definition ap' {A B} (f : A -> B) {x y} (p : x = y) : f x = f y
+  := trans (sym J_transport_const) (apD f p).
 
-Definition bool_eq : (bool = bool) = bool :> Type
-  := admit.
+Module Import Interval.
+  Local Unset Elimination Schemes.
+  Inductive Interval := zero | one.
+  Axiom seg : zero = one.
+  Definition Interval_rect
+  : forall (P : Interval -> Type) (a : P zero) (b : P one)
+           (c : J (fun y _ => P y) a seg = b)
+           (i : Interval),
+      P i
+    := fun P a b c i
+       => match i with
+            | zero => fun _ => a
+            | one => fun _ => b
+          end c.
 
-Definition bool_arrow_bool_eq : (bool -> bool) = (bool * bool)%type
-  := admit.
+  Axiom Interval_rect_beta_seg
+  : forall (P : Interval -> Type)
+           (a : P zero) (b : P one) (p : transport _ seg a = b),
+      apD (Interval_rect P a b p) seg = p.
+End Interval.
 
-Definition prod_commutes : forall (A B : Type), (A * B = B * A)%type
-  := admit.
+Definition Interval_rectnd (P : Type) (a b : P) (p : a = b)
+: Interval -> P
+  := Interval_rect (fun _ => P) a b (trans J_transport_const p).
 
-(** Challenge: Show, without axioms, that univalence implies
-    functional extensionality: *)
+Definition Interval_rectnd_beta_seg (P : Type) (a b : P) (p : a = b)
+  : ap' (Interval_rectnd P a b p) seg = p.
+Proof.
+  unfold ap'.
+  unfold Interval_rectnd.
+  rewrite Interval_rect_beta_seg.
+  rewrite <- trans_pp_p.
+  rewrite trans_Vp.
+  rewrite trans_1p.
+  reflexivity.
+Defined.
 
-Definition univalence_implies_funext
-: (forall A B, IsEquiv (@Type_encode' A B))
-  -> (forall A B (f g : forall a : A, B a), (forall a, f a = g a) -> f = g)
-  := admit.
+Definition funext : forall {A B} (f g : forall a : A, B a)
+                           (H : forall a, f a = g a),
+                      f = g.
+Proof.
+  intros A B f g H.
+  pose ((fun k => ap (fun i a => Interval_rect (fun _ => B a) (f a) (g a) (k a) i) seg)) as r.
+  simpl in r.
+  refine (r _).
+  case seg.
+  exact H.
+Defined.
 
-(** Exercise 2.17 from the HoTT Book:
+(**
+<<
+Inductive interval : Set :=
+| zero : interval
+| one : interval
+with paths :=
+  seg : zero = one.
 
-  Show that if [A ≃ A'] and [B ≃ B'], then [(A * B) ≃ (A' * B')] in
-  two ways: once using univalence, and once without assuming it. *)
+Definition funext' : forall {A B} (f g : forall a : A, B a)
+                            (H : forall a, f a = g a),
+                       f = g
+  := fun A B f g H
+     => ap (fun i a => fixmatch {h} i with
+           | zero => f a
+           | one => g a
+           | seg => match seg as seg in (_ = one') return eq_rect zero (fun _ => B a) (f a) one' seg = g a with
+                      | refl => H a
+                    end
+            end)
+           seg.
 
-Definition equiv_functor_prod_univalence
-: (forall A B, IsEquiv (@Type_encode A B))
-  -> forall A A' B B',
-       A ≃ A' -> B ≃ B' -> (A * B ≃ A' * B')%type
-  := admit.
+Lemma interval_rect_beta_seg
+: forall (P : interval -> Type)
+         (a : P zero) (b : P one) (p : transport _ seg a = b),
+    apD (interval_rect P a b p) seg = p.
+Proof.
+  intros P a b p.
+  transitivity (interval_rect2 P a b p _ _ seg); [ | reflexivity ].
+  generalize seg; intro e.
+  destruct e; reflexivity.
+Defined.
 
-Definition equiv_functor_prod_no_univalence
-: forall A A' B B',
-    A ≃ A' -> B ≃ B' -> (A * B ≃ A' * B')%type
-  := admit.
+Definition interval_rectnd (P : Type) (a b : P) (p : a = b)
+: interval -> P
+  := interval_rect (fun _ => P) a b (trans J_transport_const p).
 
-(** Now prove that these two ways are equal *)
+Definition interval_rectnd_beta_seg (P : Type) (a b : P) (p : a = b)
+  : ap' (interval_rectnd P a b p) seg = p.
+Proof.
+  unfold ap'.
+  unfold interval_rectnd.
+  rewrite interval_rect_beta_seg.
+  rewrite <- trans_pp_p.
+  rewrite trans_Vp.
+  rewrite trans_1p.
+  reflexivity.
+Defined.
 
-Definition equiv_functor_prod_eq
-: forall univalence,
-    equiv_functor_prod_univalence univalence = equiv_functor_prod_no_univalence
-  := admit.
+>> *)
+
+Definition i : bool -> Interval := fun x => if x then one else zero.
+
+(** Puzzle: invert this function; define a function [myst] such that
+    [myst (i true) ≡ true] and [myst (i false) ≡ false]. *)
+
+Definition negb_involutive : forall {b}, negb (negb b) = b
+  := fun b => if b return negb (negb b) = b
+              then refl
+              else refl.
+
+Global Instance isequiv_negb : IsEquiv negb.
+Proof.
+  refine (fun b => _).
+  refine {| center := (negb b; negb_involutive) |}.
+  intros [a p].
+  destruct p.
+  destruct a; reflexivity.
+Defined.
+
+Lemma transport_idmap_ap : forall {A P x y p u},
+                             @transport A P x y p u = transport (fun x => x) (ap' P p) u.
+Proof.
+  destruct p; reflexivity.
+Defined.
+
+Lemma transport_path_universe
+: forall {A B} (f : A ≃ B) u,
+    transport (fun x => x) (Type_decode f) u = f u.
+Proof.
+  intros A B f u.
+  rewrite <- (Type_endecode f), Type_deencode.
+  generalize (Type_decode f).
+  intro e; destruct e; reflexivity.
+Defined.
+
+Definition tboH : eq_rect _ (fun _ => Type) _ one seg = bool
+  := trans J_transport_const (Type_decode {| equiv_fun := negb |}).
+
+(**
+<<
+Definition twisted_bool_of (x : interval) : Type
+  := (fixmatch {h} x with
+     | zero => bool : Type
+     | one => bool : Type
+     | seg => tboH
+      end).
+>> *)
+Definition twisted_bool_of (x : Interval) : Type
+  := Interval_rect (fun _ => Type) bool bool tboH x.
+
+Definition nearly_if_helper : eq_rect zero twisted_bool_of false one seg = true.
+Proof.
+  change (transport twisted_bool_of seg false = true).
+  transitivity (transport (fun x => x) (ap' twisted_bool_of seg) false).
+  { exact transport_idmap_ap. }
+  { symmetry; transitivity (transport (fun x => x) (Type_decode {| equiv_fun := negb |}) (negb true)).
+    { rewrite transport_path_universe; simpl; reflexivity. }
+    { cut (Type_decode {| equiv_fun := negb; equiv_isequiv := isequiv_negb |}
+           = ap' twisted_bool_of seg).
+      { intro H; rewrite H; reflexivity. }
+      { change twisted_bool_of with (Interval_rectnd Type bool bool (Type_decode {| equiv_fun := negb |})).
+        rewrite Interval_rectnd_beta_seg.
+        reflexivity. } } }
+Defined.
+
+Definition nearly_if : forall x, twisted_bool_of x.
+Proof.
+  exact (Interval_rect twisted_bool_of false true nearly_if_helper).
+Defined.
+
+Definition id_factored_true : nearly_if (i true) = true := refl.
+Definition id_factored_false : nearly_if (i false) = false := refl.
+
+Module Import Minus1Trunc.
+  Local Unset Elimination Schemes.
+  Inductive Minus1Trunc (A : Type) := trunc (x : A).
+  Global Arguments trunc A x, {A} x.
+  Axiom istrunc_trunc : forall {A} (x y : A), trunc x = trunc y.
+  Definition Minus1Trunc_rect
+  : forall (A : Type)
+           (P : Minus1Trunc A -> Type) (k : forall x : A, P (trunc x))
+           (c : forall x y, J (fun y _ => P y) (k x) (istrunc_trunc x y) = (k y))
+           (x : Minus1Trunc A),
+      P x
+    := fun A P k c x
+       => match x with
+            | trunc x' => fun _ => k x'
+          end c.
+End Minus1Trunc.
+
+(**
+<<
+Inductive minus1Trunc (A : Type) :=
+| trunc (x : A)
+with paths :=
+  istrunc_trunc (x y : A) : (trunc x) = (trunc y).
+
+Global Arguments trunc {A} x, A x.
+>> *)

@@ -8,7 +8,7 @@
     [J_implies_UIP]).
 
     If you feel like you know exactly how a proof will go, but find it
-    painful and tedius to write out the proof terms explicitly, come
+    painful and tedious to write out the proof terms explicitly, come
     find me.  Coq has a lot of support for automation and taking care
     of things that are easy and verbose, so you don't have to.
     Proving should feel like a game.  If it doesn't, I can probably
@@ -90,8 +90,8 @@ Print eq.
 Notation refl := eq_refl.
 
 (** Coq knows some things about equality.  If Coq judges that two
-    things are equal, then you can prove them equal by reflexivity,
-    with [refl].  For example: *)
+    things are equal, then you can prove them (propositionally) equal
+    by reflexivity, with [refl].  For example: *)
 
 Definition one_plus_one_equals_two : 1 + 1 = 2
   := refl.
@@ -134,13 +134,13 @@ Fail Check 1 = true. (* [1] is a [nat], and so isn't comparable to [true], which
 
 (** We can prove the J-rule by pattern matching. *)
 
-Definition J : forall (A : Type) (x : A) (P : forall (y : A), x = y -> Type),
+Definition J : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type),
                  P x refl -> forall (y : A) (H : x = y), P y H
   := admit.
 
 (** [J] also has a computation rule, which holds judgmentally: *)
 
-Definition J_computes : forall (A : Type) (x : A) (P : forall (y : A), x = y -> Type)
+Definition J_computes : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type)
                                (k : P x refl),
                           J A x P k x refl = k
   := admit.

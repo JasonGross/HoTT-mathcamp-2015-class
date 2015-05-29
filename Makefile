@@ -42,7 +42,16 @@ HASNATDYNLINK = true
 
 FAST_TARGETS := clean archclean Makefile.coq HoTT-syllabus-Jason.pdf HoTT-homework.pdf
 
-all: HoTT-syllabus-Jason.pdf HoTT-homework.pdf exercises_and_homework_day_2.pdf exercises_and_homework_day_3.pdf exercises_and_homework_day_2.html exercises_and_homework_day_3.html
+EXERCISES = \
+	exercises_and_homework_day_2 \
+	exercises_and_homework_day_3 \
+	exercises_and_homework_day_4_student \
+	exercises_and_homework_day_4_teacher_answer_key \
+	exercises_and_homework_day_5_teacher_answer_key
+
+all: HoTT-syllabus-Jason.pdf HoTT-homework.pdf \
+	$(addsuffix .pdf,$(EXERCISES)) \
+	$(addsuffix .html,$(EXERCISES))
 
 COQDOCFLAGS?=-interpolate -utf8 -s
 
@@ -50,10 +59,10 @@ COQDOCFLAGS?=-interpolate -utf8 -s
 	@ pdflatex -synctex=1 $<
 	@ pdflatex -synctex=1 $<
 
-exercises_and_homework_day_2.tex exercises_and_homework_day_3.tex : %.tex : %.v %.vo
+$(addsuffix .tex,$(EXERCISES)) : %.tex : %.v %.vo
 	$(COQDOC) $(COQDOCFLAGS) -latex $(COQDOCLIBS) -o $@ $<
 
-exercises_and_homework_day_2.html exercises_and_homework_day_3.html : %.html : %.v %.vo
+$(addsuffix .html,$(EXERCISES)) : %.html : %.v %.vo
 	$(COQDOC) $(COQDOCFLAGS) -html $(COQDOCLIBS) -d . $<
 	sed s'/background-color: #90bdff;/background-color: aliceblue;/g' -i coqdoc.css
 

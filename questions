@@ -1,0 +1,31 @@
+Coq: Prove ∀ x, x = base
+~~~
+you: intro
+~~~
+Coq: Now prove
+
+x : S¹
+--------------
+x = base
+~~~
+You: "which x do I have?"
+~~~
+Coq: case 1:
+-------- "you have base!"
+base = base
+~~~
+You: by reflexivity!
+~~~
+Coq: Great!
+~~~
+Coq: "now vary that continuously along loop"
+Prove:
+------
+transport (λ x. x = base) loop refl = refl
+
+
+the data of an isomorphism A ≅ B is:
+  f  : A → B
+  f⁻¹ : B → A
+  right_inv : ∀ x, f(f⁻¹(x)) = x
+  left_inv  : ∀ x, f⁻¹ (f x) = x

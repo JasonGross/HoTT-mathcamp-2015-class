@@ -7,7 +7,7 @@
     are some interesting puzzles near the bottom.
 
     If you feel like you know exactly how a proof will go, but find it
-    painful and tedius to write out the proof terms explicitly, come
+    painful and tedious to write out the proof terms explicitly, come
     find me.  Coq has a lot of support for automation and taking care
     of things that are easy and verbose, so you don't have to.
     Proving should feel like a game.  If it doesn't, I can probably
