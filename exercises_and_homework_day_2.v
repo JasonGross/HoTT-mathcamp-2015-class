@@ -58,6 +58,9 @@ Definition swap_args : forall A B C, (A -> B -> C) -> (B -> A -> C)
 
 (** Challenge Homework Problems *)
 
+(** Come ask me about disjunction and negation during TAU if you are
+    interested in playing with these. *)
+
 (** Prove that the Law of Excluded Middle implies Double Negation Elimination *)
 
 Definition LEM_implies_DNE
@@ -323,7 +326,7 @@ Definition K_implies_UIP : forall (K : K_rule_type),
                            forall A (x y : A) (p q : x = y), p = q
   := admit.
 
-(** Can you prove [K] from [J]?  (Don't worry if you can't figure this one out.) *)
+(** Note that it's impossible to prove [K] from [J].  See if you can get any insight into this by attempting to construct a proof. *)
 
 Definition J_implies_K : K_rule_type
   := admit.
@@ -415,6 +418,10 @@ Definition concat_Ap
   := admit.
 
 (** *** Further exploration:
+
+    These are completely optional, and moderately challenging.  If you
+    are interested, here are some problems that draw interesting
+    connections between this material and category theory.
 
 1. Can you find and prove a statement relating [sym_sym] to [sym_trans]?
 

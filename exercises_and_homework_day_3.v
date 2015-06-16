@@ -255,6 +255,8 @@ Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 (** Function types also have intro and elim rules, though they don't
     have syntactic forms.  Can you describe them? *)
 
+(** Note well: [J] is the eliminator for the equality type. *)
+
 (** ** Equality classification *)
 
 (** We can classify the equality types.  For each type, we come up
@@ -537,15 +539,6 @@ Definition prop_deencode : forall {A} (allpaths : is_prop A) {x y : A} (p : x = 
                              prop_decode allpaths (prop_encode allpaths p) = p
   := admit.
 
-(** TODO/Question for Steve: Should I remove this hint from the
-    source, and wait for campers to come ask me about it?
-    Calibration: Even after reading the solution once, I gave up on
-    trying to figure it out the next time and looked up the hint, and
-    even after reading the solution twice, I had a bit of trouble
-    figuring out how to implement it, and it's only now, after having
-    read the solution twice and coded it up myself twice, that I was
-    able to re-engineer it from scratch without much work. *)
-
 (** Hint: you may need to rewrite your [prop_decode] function.  The
     following lemmas may prove helpful. *)
 
@@ -599,9 +592,6 @@ Definition dec_endecode : forall {A} (dec : decidable A) {x y : A} (p : dec_code
 Definition dec_deencode : forall {A} (dec : decidable A) {x y : A} (p : x = y),
                              dec_decode dec (dec_encode dec p) = p
   := admit.
-
-(** TODO/Question for Steve: Should I remove this hint from the
-    source? *)
 
 (** Hint: you may need to rewrite your [dec_decode], [dec_code], and
     [dec_encode] functions, just as you did with [prop_decode].  The

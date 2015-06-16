@@ -808,10 +808,12 @@ Definition univalence_implies_funext
   -> (forall A B (f g : forall a : A, B a), (forall a, f a = g a) -> f = g)
   := admit.
 
-(** Exercise 2.17 from the HoTT Book:
+(** Exercise 2.17 from the HoTT Book
+    (http://homotopytypetheory.org/book/ - don't worry about reading
+    the book):
 
-  Show that if [A ≃ A'] and [B ≃ B'], then [(A * B) ≃ (A' * B')] in
-  two ways: once using univalence, and once without assuming it. *)
+    Show that if [A ≃ A'] and [B ≃ B'], then [(A * B) ≃ (A' * B')] in
+    two ways: once using univalence, and once without assuming it. *)
 
 Definition equiv_functor_prod_univalence
 : (forall A B, IsEquiv (@Type_encode A B))
