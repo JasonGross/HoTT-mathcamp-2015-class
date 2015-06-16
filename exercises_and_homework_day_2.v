@@ -89,9 +89,25 @@ Print eq.
 
 Notation refl := eq_refl.
 
+(** Interesting question: Are all proofs of equality themselves equal?
+    Keep this in the back of your mind as we define what equality is.
+    To do this we need to define two notions of equality: judgmental,
+    and propositional.  *)
+
 (** Coq knows some things about equality.  If Coq judges that two
-    things are equal, then you can prove them (propositionally) equal
-    by reflexivity, with [refl].  For example: *)
+    things are equal (and equally trivially), then you can prove them
+    (propositionally) equal by reflexivity, with [refl].  In this
+    case, we say that they are also judgmentally equal.  For example:
+    *)
+
+(** Propositional equality is denoted as [x = y]. *)
+
+(** Definition of judgmental equality, version 1: intuitively, [x] and
+    [y] are judgmentally equal if there is a really stupid, trivial
+    proof that [x = y]. *)
+
+(** Definition of judgmental equality, version 2: [x] and [y] are
+    judgmentally equal if (Coq says that) [refl] proves [x = y]. *)
 
 Definition one_plus_one_equals_two : 1 + 1 = 2
   := refl.
@@ -114,6 +130,9 @@ The command has indeed failed with message:
     while it is expected to have type "1 = 0".
 >> *)
 
+Fail Definition addition_is_not_judgmentally_commutative : forall x y, x + y = y + x
+  := fun x y => refl.
+
 (** You can see the "normal form" of something with [Compute]: *)
 
 Compute 1 + 1.
@@ -122,7 +141,13 @@ Compute 2 + 2.
 
 Compute 2 * 3.
 
-(** Note that equality is homogenous.  You can ask if a statement is valid using [Check]: *)
+(** Definition of judgmental equality, version 3: [x] and [y] are
+    judgmentally equal if [Compute] gives you the same normal form for
+    [x] and [y].  N.B.  This is what Coq is doing internally. *)
+
+(** Note that equality is homogeneous; the things you're comparing for
+    equality need to already have the same type.  You can ask if a
+    statement is valid using [Check]: *)
 
 Check 1. (* [1] is a number (a [nat]) *)
 
@@ -132,7 +157,31 @@ Check true. (* [true] is a boolean *)
 
 Fail Check 1 = true. (* [1] is a [nat], and so isn't comparable to [true], which is a [bool] *)
 
-(** We can prove the J-rule by pattern matching. *)
+(** A note on syntax *)
+Definition id' : forall A, A -> A
+  := admit.
+
+Definition id'' : forall (A : Type), A -> A
+  := admit.
+
+Definition id''' : forall (A : Type) (pf : A), A
+  := admit.
+
+(** Pattern matching is case analysis, on things that are defined by cases (like, [bool], [nat]). *)
+
+Definition is_positive : nat -> bool
+  := admit.
+
+Definition is_zero : nat -> bool
+  := admit.
+
+Definition If_Then_Else : forall {A : Type} (b : bool) (true_case : A) (false_case : A), A
+  := admit.
+
+(** Recall: Are all proofs of equality themselves equal?  Here we
+    define what equality is, i.e., how to use it. *)
+
+(** We can prove the J-rule by pattern matching.  *)
 
 Definition J : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type),
                  P x refl -> forall (y : A) (H : x = y), P y H
