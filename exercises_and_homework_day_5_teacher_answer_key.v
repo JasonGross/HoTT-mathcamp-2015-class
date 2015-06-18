@@ -656,3 +656,44 @@ with paths :=
 
 Global Arguments trunc {A} x, A x.
 >> *)
+
+Module Import Circle.
+  Local Unset Elimination Schemes.
+  Inductive S1 : Set := base : S1.
+  Axiom loop : base = base.
+  Definition S1_rect
+  : forall (P : S1 -> Type) (k : P base)
+           (c : J (fun y _ => P y) k loop = k)
+           (x : S1),
+      P x
+    := fun P k c x
+       => match x with
+            | base => fun _ => k
+          end c.
+End Circle.
+
+(**
+<<
+Inductive S¹ :=
+| base : S¹
+with paths :=
+  loop : base = base.
+>> *)
+
+
+(** Challenge: prove that the 0-truncation of the type [base = base] is
+    isomorphic to the integers (i.e., π₁(S¹) ≃ ℤ) *)
+
+
+(** Other topic ideas: homotopies, axioms of choice, laws of excluded middle.
+
+    Löb's theorem, quining
+
+    More ideas: Models of type theory:
+
+    * How do we know univalence is consistent?
+    * Interpretation functions
+    * Model in sets (not of univalence, though)
+    * Model in topological spaces?
+    * Model in Quillen Model Categories?
+    * cubical model/proof assistant that runs on Kan complexes *)

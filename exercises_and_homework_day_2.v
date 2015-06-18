@@ -12,7 +12,10 @@
     find me.  Coq has a lot of support for automation and taking care
     of things that are easy and verbose, so you don't have to.
     Proving should feel like a game.  If it doesn't, I can probably
-    help you with that. *)
+    help you with that.
+
+    N.B. There are many theorem provers out there, e.g., Agda, Idris,
+    NuPRL, Otter, Twelf, Isabelle/HOL, Mizar, Metamath *)
 
 (** The following are placeholders; [admit] indicates that something
     should be filled in later. *)

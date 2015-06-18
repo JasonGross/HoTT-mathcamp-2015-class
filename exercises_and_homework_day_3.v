@@ -193,6 +193,9 @@ Add Printing If bool.
 
 (** Inductive Empty_set : Type := ... *)
 
+(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by
+    recursion on [unit], if we assume that [False = (True -> True)] *)
+
 (** Inductive prod (A B : Type) : Type := ... *)
 
 (** Some notational helpers *)
