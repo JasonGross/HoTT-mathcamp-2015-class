@@ -48,7 +48,7 @@
 
 \begin{enumerate}
   \item[0.]
-    If you plan to use your laptop in class tomorrow instead of the lab computers, please install Coq on it tonight from \url{https://coq.inria.fr/coq-85}.  If you need help doing this, come find me during TAU, or afterwards.
+    If you have your laptop at camp, please install Coq on it tonight from \url{https://coq.inria.fr/coq-85}, and bring it to class tomorrow.  If you need help doing this, come find me during TAU, or afterwards.
 \end{enumerate}
 
 \noindent Recall that equality has the following properties, which you may take as given:
@@ -84,9 +84,9 @@ Suppose you are given a function $p : \mathbb N \times \mathbb N \to \mathbb N$ 
     \textbf{For more practice:} Find three ways to prove that $p(x, p(y, z)) = p(p(x, y), z)$, and prove that they are all equal.
   \item
     \textbf{For more practice:} Go through the above exercises again, this time with the function $m$ specified by $m(x, 0) = 0$ and $m(x, 1 + y) = x + m(x, y)$.  
-\interitemtext{\subsection*{Proofs about equality more generally}}\
+\interitemtext{\subsection*{Proofs about equality more generally}}
 \interitemtext{
-TODO: add comments about purpose, puzzle things out, familiarity, playing if you found the above easy
+The following problems are intended to be somewhat puzzling; the goal is to encourage you to think deeply about equality, and these rules in particular. %  Tomorrow's class will go more smoothly if you have spent time trying to puzzle these things out, and have become somewhat familiar with them.
 
 
 The \emph{\texttt{J} rule} states, formally:
@@ -97,7 +97,8 @@ The \emph{\texttt{K} rule} states, formally:
 \begin{center}
 (\texttt{$\forall$~(A~:~Type) (x~:~A) (P~:~x = x $\to$ Type), \\ P(refl$_{\texttt{x}}$) $\to$ $\forall$~(H~:~x~=~x), P(H)})
 \end{center}
-The notation \texttt{Type} can be interpreted as denoting, roughly, the set of all sets\footnote{There are subtleties required to avoid Cantor's paradox, but they are not relevant right now; come find me during TAU to ask about this if you are curious.}.  The $\rightarrow$ means either a function type, or logical implication.  %\footnote{Secretly, they are the same.  Come find me during TAU if you want to know more.}
+The notation \texttt{Type} can be interpreted as denoting, roughly, the set of all sets%\footnote{There are subtleties required to avoid Cantor's paradox, but they are not relevant right now; come find me during TAU to ask about this if you are curious.}%
+.  The $\rightarrow$ means either a function type, or logical implication.  %\footnote{Secretly, they are the same.  Come find me during TAU if you want to know more.}
 The notation \texttt{x~:~A} means that \texttt{x} is an \emph{inhabitant} or \emph{element} of the set (or type) \texttt{A}.  The notation \texttt{P(y,~H)} means that you are passing the function \texttt{P} two arguments, one called \texttt{y}, and one called \texttt{H}.  The notation \texttt{refl}$_{\texttt{x}}$ is the reflexivity proof that \texttt{x~=~x}.
 }
   \item

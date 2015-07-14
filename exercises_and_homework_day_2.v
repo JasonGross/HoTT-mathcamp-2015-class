@@ -1,5 +1,7 @@
 (** * Exploring equality via homotopy and proof assistants - Day 2 - Equality in Coq *)
-(** This file contains the exercises for Day 2.  Some are explicitly
+(** Note: You may use either the lab computers, or your laptop.
+
+    This file contains the exercises for Day 2.  Some are explicitly
     marked as "Homework"; the rest can be done either in class or for
     homework.
 
