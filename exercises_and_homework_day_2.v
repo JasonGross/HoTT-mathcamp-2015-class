@@ -38,7 +38,7 @@ Definition modus_ponens : forall P Q, (P -> Q) -> P -> Q
 
 (** N.B. [A -> (B -> C)] and [A -> B -> C] are the same; [->] associates to the right. *)
 
-Definition second_argument : forall A B, A -> (B -> A)
+Definition first_argument : forall A B, A -> (B -> A)
   := admit.
 
 Definition compose : forall A B C, (A -> B) -> (B -> C) -> (A -> C)
@@ -59,6 +59,21 @@ Definition introduce_intermediate : forall A B C, (A -> (B -> C)) -> ((A -> B) -
   := admit.
 
 Definition swap_args : forall A B C, (A -> B -> C) -> (B -> A -> C)
+  := admit.
+
+(** Optional Homework Problems for More Practice *)
+
+Definition second_argument : forall A B, A -> B -> B
+  := admit.
+
+Definition id_either : forall A, A -> A -> A
+  := admit.
+
+Definition third_argument : forall A B C, A -> B -> C -> C
+  := admit.
+
+(** This one is a bit different; one of the arguments has a [forall] *)
+Definition explode : forall A B F, (forall C, F -> C) -> (A -> F) -> (A -> B)
   := admit.
 
 (** Challenge Homework Problems *)
@@ -183,8 +198,81 @@ Definition is_positive : nat -> bool
 Definition is_zero : nat -> bool
   := admit.
 
-Definition If_Then_Else : forall {A : Type} (b : bool) (true_case : A) (false_case : A), A
+Definition If_Then_Else : forall (A : Type) (b : bool) (true_case : A) (false_case : A), A
   := admit.
+
+(** Optional Homework for More Practice *)
+
+(** This should send [true] to [false], and [false] to [true]. *)
+Definition boolean_negation : bool -> bool
+  := admit.
+
+(** This should implement the truth table for "and":
+<<
+  A B │ A ∧ B
+  ────┼──────
+  T T │   T
+  T F │   F
+  F T │   F
+  F F │   F
+>> *)
+
+Definition boolean_conjunction : bool -> bool -> bool
+  := admit.
+
+(** This should implement the truth table for "or":
+<<
+  A B │ A ∨ B
+  ────┼──────
+  T T │   T
+  T F │   T
+  F T │   T
+  F F │   F
+>> *)
+
+Definition boolean_disjunction : bool -> bool -> bool
+  := admit.
+
+(** This should implement the truth table for "xor":
+<<
+  A B │ A ⊕ B
+  ────┼──────
+  T T │   F
+  T F │   T
+  F T │   T
+  F F │   F
+>> *)
+
+Definition boolean_exclusive_or : bool -> bool -> bool
+  := admit.
+
+(** This should implement the truth table for "implication":
+<<
+  A B │ A → B
+  ────┼──────
+  T T │   T
+  T F │   F
+  F T │   T
+  F F │   T
+>> *)
+
+Definition boolean_implication : bool -> bool -> bool
+  := admit.
+
+(** This should implement the truth table for "biconditional":
+<<
+  A B │ A ↔ B
+  ────┼──────
+  T T │   T
+  T F │   F
+  F T │   F
+  F F │   T
+>> *)
+
+Definition boolean_biconditional : bool -> bool -> bool
+  := admit.
+
+
 
 (** Recall: Are all proofs of equality themselves equal?  Here we
     define what equality is, i.e., how to use it. *)
@@ -211,7 +299,14 @@ Arguments J {A} {x} P _ {y} H.
 Arguments J_computes {A x} P k.
 >> *)
 
-(** First prove this by pattern matching. *)
+(** First prove this by passing arguments to [J]. *)
+
+Definition sym_J : forall A (x y : A), x = y -> y = x
+  := admit.
+
+Arguments sym_J {A x y} p, A x y p.
+
+(** Now prove this by pattern matching. *)
 
 Definition sym : forall A (x y : A), x = y -> y = x
   := admit.
@@ -220,26 +315,19 @@ Definition sym : forall A (x y : A), x = y -> y = x
 
 Arguments sym {A x y} p, A x y p.
 
-(** Now prove this by passing arguments to [J]. *)
-
-Definition sym_J : forall A (x y : A), x = y -> y = x
-  := admit.
-
-Arguments sym_J {A x y} p, A x y p.
-
-(** First prove this by pattern matching. *)
-
-Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
-  := admit.
-
-Arguments trans {A x y z} p q, A x y z p q.
-
-(** Now prove this by passing arguments to [J]. *)
+(** First prove this by passing arguments to [J]. *)
 
 Definition trans_J : forall A (x y z : A), x = y -> y = z -> x = z
   := admit.
 
 Arguments trans_J {A x y z} p q, A x y z p q.
+
+(** Now prove this by pattern matching. *)
+
+Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
+  := admit.
+
+Arguments trans {A x y z} p q, A x y z p q.
 
 (** First prove this by pattern matching. *)
 
