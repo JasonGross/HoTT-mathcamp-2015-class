@@ -190,7 +190,10 @@ Definition id'' : forall (A : Type), A -> A
 Definition id''' : forall (A : Type) (pf : A), A
   := admit.
 
-(** Pattern matching is case analysis, on things that are defined by cases (like, [bool], [nat]). *)
+(** Pattern matching is case analysis, on things that are defined by
+    cases (like, [bool], [nat]).  This is a technical meaning for
+    "pattern matching" or "case analysis", namely, "using a [match
+    ... with ... end] statement in Coq". *)
 
 Definition is_positive : nat -> bool
   := admit.
@@ -199,6 +202,15 @@ Definition is_zero : nat -> bool
   := admit.
 
 Definition If_Then_Else : forall (A : Type) (b : bool) (true_case : A) (false_case : A), A
+  := admit.
+
+(** [unit] is a type with one element. *)
+Print unit.
+(** But [refl] does not prove that all units are equal. *)
+Fail Definition all_units_equal : forall x y : unit, x = y
+  := fun x y => refl.
+(** But we can pattern match *)
+Definition all_units_equal : forall x y : unit, x = y
   := admit.
 
 (** Optional Homework for More Practice *)
@@ -329,44 +341,47 @@ Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
 
 Arguments trans {A x y z} p q, A x y z p q.
 
-(** First prove this by pattern matching. *)
-
-Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
-  := admit.
-
-Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
-
-(** Now prove this by passing arguments to [J]. *)
+(** First prove this by passing arguments to [J]. *)
 
 Definition ap_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
   := admit.
 
 Arguments ap_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
+(** Now prove this by pattern matching. *)
+
+Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+  := admit.
+
+Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
+
 (** Exercises to do individually, or with the people next to you. *)
 
-(** First prove this by pattern matching. *)
+(** First prove this by filling in arguments to [J] explicitly. *)
 
-Definition sym_sym : forall A (x y : A) (p : x = y), sym (sym p) = p
+Definition sym_sym_J : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
+  := admit.
+
+(** Now prove this by pattern matching. *)
+
+Definition sym_sym : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
   := admit.
 
 Arguments sym_sym {A x y} p, A x y p.
 
-(** Now prove this by filling in arguments to [J] explicitly. *)
-
-Definition sym_sym_J : forall A (x y : A) (p : x = y), sym (sym p) = p
+Definition trans_1p_J : forall A (x y : A) (p : x = y), trans refl p = p
   := admit.
 
 Definition trans_1p : forall A (x y : A) (p : x = y), trans refl p = p
   := admit.
 
-Definition trans_1p_J : forall A (x y : A) (p : x = y), trans refl p = p
+Definition trans_p1_J : forall A (x y : A) (p : x = y), trans p refl = p
   := admit.
 
 Definition trans_p1 : forall A (x y : A) (p : x = y), trans p refl = p
   := admit.
 
-Definition trans_p1_J : forall A (x y : A) (p : x = y), trans p refl = p
+Definition sym_refl_J : forall A (x : A), sym (refl x) = refl x
   := admit.
 
 Definition sym_refl : forall A (x : A), sym (refl x) = refl x
