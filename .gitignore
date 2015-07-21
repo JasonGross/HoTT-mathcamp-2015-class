@@ -16,3 +16,4 @@ exercises_and_homework_day_*.tex
 *.synctex.gz
 *.aux
 .*.swp
+*.v#

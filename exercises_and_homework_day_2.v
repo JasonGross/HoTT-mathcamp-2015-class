@@ -311,14 +311,7 @@ Arguments J {A} {x} P _ {y} H.
 Arguments J_computes {A x} P k.
 >> *)
 
-(** First prove this by passing arguments to [J]. *)
-
-Definition sym_J : forall A (x y : A), x = y -> y = x
-  := admit.
-
-Arguments sym_J {A x y} p, A x y p.
-
-(** Now prove this by pattern matching. *)
+(** First prove this by pattern matching. *)
 
 Definition sym : forall A (x y : A), x = y -> y = x
   := admit.
@@ -327,14 +320,14 @@ Definition sym : forall A (x y : A), x = y -> y = x
 
 Arguments sym {A x y} p, A x y p.
 
-(** First prove this by passing arguments to [J]. *)
+(** Now prove this by passing arguments to [J]. *)
 
-Definition trans_J : forall A (x y z : A), x = y -> y = z -> x = z
+Definition sym_J : forall A (x y : A), x = y -> y = x
   := admit.
 
-Arguments trans_J {A x y z} p q, A x y z p q.
+Arguments sym_J {A x y} p, A x y p.
 
-(** Now prove this by pattern matching. *)
+(** First prove this by pattern matching. *)
 
 Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
   := admit.
@@ -343,48 +336,55 @@ Arguments trans {A x y z} p q, A x y z p q.
 
 (** First prove this by passing arguments to [J]. *)
 
-Definition ap_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+Definition trans_J : forall A (x y z : A), x = y -> y = z -> x = z
   := admit.
 
-Arguments ap_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
+Arguments trans_J {A x y z} p q, A x y z p q.
 
-(** Now prove this by pattern matching. *)
+(** First prove this by pattern matching. *)
 
 Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
   := admit.
 
 Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
-(** Exercises to do individually, or with the people next to you. *)
+(** Now prove this by passing arguments to [J]. *)
 
-(** First prove this by filling in arguments to [J] explicitly. *)
-
-Definition sym_sym_J : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
+Definition ap_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
   := admit.
 
-(** Now prove this by pattern matching. *)
+Arguments ap_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
-Definition sym_sym : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
+(** Exercises to do individually, or with the people next to you. *)
+
+(** First prove this by pattern matching. *)
+
+Definition sym_sym : forall A (x y : A) (p : x = y), sym (sym p) = p
   := admit.
 
 Arguments sym_sym {A x y} p, A x y p.
 
-Definition trans_1p_J : forall A (x y : A) (p : x = y), trans refl p = p
+(** Now prove this by filling in arguments to [J] explicitly. *)
+
+Definition sym_sym_J : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
   := admit.
 
 Definition trans_1p : forall A (x y : A) (p : x = y), trans refl p = p
   := admit.
 
-Definition trans_p1_J : forall A (x y : A) (p : x = y), trans p refl = p
+Definition trans_1p_J : forall A (x y : A) (p : x = y), trans_J refl p = p
   := admit.
 
 Definition trans_p1 : forall A (x y : A) (p : x = y), trans p refl = p
   := admit.
 
-Definition sym_refl_J : forall A (x : A), sym (refl x) = refl x
+Definition trans_p1_J : forall A (x y : A) (p : x = y), trans_J p refl = p
   := admit.
 
 Definition sym_refl : forall A (x : A), sym (refl x) = refl x
+  := admit.
+
+Definition sym_refl_J : forall A (x : A), sym_J (refl x) = refl x
   := admit.
 
 (** Recall the informal proof from yesterday's homework, which

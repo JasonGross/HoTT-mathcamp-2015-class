@@ -41,6 +41,14 @@ Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
 
 Arguments trans {A x y z} p q, A x y z p q.
 
+Definition J : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type),
+                 P x refl -> forall (y : A) (H : x = y), P y H
+  := fun A x P k y H => match H with
+                          | refl => k
+                        end.
+
+Arguments J {A} {x} P _ {y} H.
+
 (** ** Guiding Puzzles *)
 
 (** There are two guiding questions for today:
@@ -56,7 +64,7 @@ Arguments trans {A x y z} p q, A x y z p q.
 
 Notation "{ x  |  P }" := ({ x : _ & P }) : type_scope.
 Notation "{ x : A  |  P }" := ({ x : A & P }) : type_scope.
-Notation "( x ; p )" := (exist _ x p).
+Notation "( x ; p )" := (existT _ x p).
 
 (** A type is called contractible if there is a (continuous!) function
     showing that all inhabitants are equal to a particular one. *)
@@ -209,6 +217,11 @@ Add Printing Let prod.
 Notation "x * y" := (prod x y) : type_scope.
 Notation "( x , y , .. , z )" := (pair .. (pair x y) .. z) : core_scope.
 
+Example prod_1 := (1, 1) : nat * nat.
+Example prod_2 := (1, 2) : nat * nat.
+Example prod_3 := (true, true) : bool * bool.
+Example prod_4 := (1, true) : nat * bool.
+
 (** We use curlie braces so that we don't have to pass the arguments
     explicitly all the time. *)
 
@@ -234,20 +247,49 @@ Arguments inl {A B} _ , [A] B _.
 Arguments inr {A B} _ , A [B] _.
 >> *)
 
-(** Inductive sigma A (P : A -> Type) : Type := ... *)
+Example sum_1 := inl tt : unit + nat.
+Example sum_2 := inr 0 : unit + nat.
+
+(** Inductive sigT A (B : A -> Type) : Type := ... *)
 
 (** Notational helpers *)
 
 (**
 <<
-Arguments sigma {A} P.
-Arguments exist {A} P _ _.
-Notation "{ x : A  & P }" := (sigma (A:=A) (fun x => P)) : type_scope.
+Arguments sigT {A} B.
+Arguments existT {A} B _ _.
+Notation "{ a : A  & B }" := (sigT (A:=A) (fun a => B)) : type_scope.
 >> *)
 
-Notation "{ x  |  P }" := ({ x : _ & P }) : type_scope.
-Notation "{ x : A  |  P }" := ({ x : A & P }) : type_scope.
-Notation "( x ; p )" := (exist _ x p).
+Notation "{ a  |  B }" := ({ a : _ & B }) : type_scope.
+Notation "{ a : A  |  B }" := ({ a : A & B }) : type_scope.
+Notation "( a ; b )" := (existT _ a b).
+
+Example non_dependent_pair_1 :=
+  (true; 0) : sigT (fun a : bool => nat).
+Example non_dependent_pair_2 :=
+  (true; 1) : { a : bool | nat }.
+Example non_dependent_pair_3 :=
+  (false; 1) : { a : bool | nat }.
+Example dependent_pair_1 :=
+  (true; 1) : { a : bool | if a then nat else unit }.
+Example dependent_pair_2 :=
+  (true; 0) : { a : bool | if a then nat else unit }.
+Example dependent_pair_3 :=
+  (false; tt) : { a : bool | if a then nat else unit }.
+Fail Example dependent_pair_4 :=
+  (false; 0) : { a : bool | if a then nat else unit }.
+
+(** The projections *)
+
+Definition projT1 : forall {A B}, { a : A | B a } -> A
+  := admit.
+
+Definition projT2 : forall {A B} (x : { a : A | B a}), B (projT1 x)
+  := admit.
+
+(** Notational helpers for the projections *)
+
 Notation "x .1" := (projT1 x) (at level 3, format "x '.1'").
 Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 
@@ -397,8 +439,11 @@ Definition sigma_deencode : forall {A B} {x y : { a : A | B a }} (p : x = y),
 (** Homework: *)
 
 (** Warmup: *)
+
 Definition zero_ne_one : 0 = 1 -> Empty_set
   := admit.
+
+(** Hint for the above: Use [J]. *)
 
 Definition zero_ne_succ : forall n, 0 = S n -> Empty_set
   := admit.
@@ -631,9 +676,12 @@ Definition function_encode' : forall {A B} {f g : forall a : A, B a}, f = g -> f
 
 Axiom function_decode' : forall {A B} {f g : forall a : A, B a}, function_code' f g -> f = g.
 
+Definition function_decode_adjusted' : forall {A B} {f g : forall a : A, B a}, function_code' f g -> f = g
+  := admit.
+
 Definition function_endecode' : forall {A B} {f g : forall a : A, B a} (p : function_code' f g),
-                                  function_encode' (function_decode' p) = p
+                                  function_encode' (function_decode_adjusted' p) = p
   := admit.
 Definition function_deencode' : forall {A B} {f g : forall a : A, B a} (p : f = g),
-                                  function_decode' (function_encode' p) = p
+                                  function_decode_adjusted' (function_encode' p) = p
   := admit.
