@@ -17,3 +17,15 @@ exercises_and_homework_day_*.tex
 *.aux
 .*.swp
 *.v#
+*.sty
+*.dtx
+*.drv
+*.ins
+*.xml
+*.cfg
+atveryend*.tex
+kvoptions*.tex
+ltxcmds*.tex
+pageslts*.tex
+rerunfilecheck*.tex
+undolabl*.tex
