@@ -291,6 +291,13 @@ Definition boolean_biconditional : bool -> bool -> bool
 
 (** We can prove the J-rule by pattern matching.  *)
 
+(** We start off with the simpler version, called the "non-dependent"
+    version. *)
+
+Definition J_nondep : forall (A : Type) (x : A) (P : A -> Type),
+                        P x -> forall (y : A), P y
+  := admit.
+
 Definition J : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type),
                  P x refl -> forall (y : A) (H : x = y), P y H
   := admit.
