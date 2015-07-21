@@ -38,7 +38,7 @@ not-containing = $(foreach v,$2,$(if $(findstring $1,$v),,$v))
 
 HASNATDYNLINK = true
 
-.PHONY: all clean
+.PHONY: all clean download-packages
 
 FAST_TARGETS := clean archclean Makefile.coq HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf
 
@@ -72,6 +72,17 @@ Makefile.coq: Makefile _CoqProject
 
 -include Makefile.coq
 
+download-packages::
+	wget -N http://mirrors.ctan.org/macros/latex/contrib/pageslts/pageslts.dtx
+	tex pageslts.dtx
+	wget -N http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/atveryend.dtx
+	tex atveryend.dtx
+	wget -N http://mirrors.ctan.org/macros/latex/contrib/undolabl/undolabl.dtx
+	tex undolabl.dtx
+	for i in atveryend rerunfilecheck kvoptions ltxcmds; do \
+		wget -N http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/$$i.dtx; \
+		tex $$i.dtx; \
+	done
 
 clean::
 	$(VECHO) "RM *.CMO *.CMI *.CMA"
