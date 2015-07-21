@@ -1,6 +1,6 @@
 (* -*- coq-prog-name: "d:/Documents/GitHub/coq-hit/bin/coqtop.exe" -*- *)
 (** * Exploring equality via homotopy and proof assistants - Day 5 - Further topics *)
-
+Set Universe Polymorphism.
 (** The following are placeholders; [admit] indicates that something
     should be filled in later. *)
 
@@ -367,7 +367,7 @@ Proof.
   { intro x.
     apply (center {a : A | e a = x}).2. }
   { intro x.
-    refine (@trans _ _ (x; _).1 _ _ _).
+    refine (@trans _ _ (x; _).1 _ _ _); shelve_unifiable.
     { apply ap.
       apply contr. }
     { exact (refl (x; refl).1). } }
@@ -576,6 +576,9 @@ Proof.
   destruct a; reflexivity.
 Defined.
 
+Definition equiv_negb : bool ≃ bool
+  := {| equiv_fun := negb |}.
+
 Lemma transport_idmap_ap : forall {A P x y p u},
                              @transport A P x y p u = transport (fun x => x) (ap' P p) u.
 Proof.
@@ -592,8 +595,10 @@ Proof.
   intro e; destruct e; reflexivity.
 Defined.
 
-Definition tboH : eq_rect _ (fun _ => Type) _ one seg = bool
-  := trans J_transport_const (Type_decode {| equiv_fun := negb |}).
+Notation Type0 := Set.
+
+Definition tboH : eq_rect _ (fun _ => Type0) _ one seg = bool
+  := trans J_transport_const (Type_decode equiv_negb).
 
 (**
 <<
@@ -605,19 +610,19 @@ Definition twisted_bool_of (x : interval) : Type
       end).
 >> *)
 Definition twisted_bool_of (x : Interval) : Type
-  := Interval_rect (fun _ => Type) bool bool tboH x.
+  := Interval_rect (fun _ => Type0) bool bool tboH x.
 
 Definition nearly_if_helper : eq_rect zero twisted_bool_of false one seg = true.
 Proof.
   change (transport twisted_bool_of seg false = true).
   transitivity (transport (fun x => x) (ap' twisted_bool_of seg) false).
   { exact transport_idmap_ap. }
-  { symmetry; transitivity (transport (fun x => x) (Type_decode {| equiv_fun := negb |}) (negb true)).
+  { symmetry; transitivity (transport (fun x => x) (Type_decode equiv_negb) (negb true)).
     { rewrite transport_path_universe; simpl; reflexivity. }
-    { cut (Type_decode {| equiv_fun := negb; equiv_isequiv := isequiv_negb |}
+    { cut (Type_decode equiv_negb
            = ap' twisted_bool_of seg).
       { intro H; rewrite H; reflexivity. }
-      { change twisted_bool_of with (Interval_rectnd Type bool bool (Type_decode {| equiv_fun := negb |})).
+      { change twisted_bool_of with (Interval_rectnd Type0 bool bool (Type_decode equiv_negb)).
         rewrite Interval_rectnd_beta_seg.
         reflexivity. } } }
 Defined.
