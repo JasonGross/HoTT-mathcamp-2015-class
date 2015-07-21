@@ -1,0 +1,29 @@
+Installing Coq on the web:
+
+0. Download https://coq.inria.fr/distrib/V8.5beta2/files/coq-8.5beta2.tar.gz and http://proofgeneral.inf.ed.ac.uk/releases/ProofGeneral-4.3pre150313.tgz (locally)
+1. Browse to http://cloud.sagemath.com/
+2. Create an account and log in
+4. Click "Create a new project" and name it Coq
+5. Click on that project
+6. Click "+ New", click to upload a file, and upload the coq-8.5beta2.tar.gz file
+7. Click "+ New", click ">_ Terminal"
+8. Type the following commands
+```
+cd ~
+ls
+tar -xzvf ProofGeneral-4.3pre150313.tgz
+tar -xzvf coq-8.5beta2.tar.gz
+cd ~/ProofGeneral-4.3pre150313
+echo '(load-file "~/ProofGeneral-4.3pre150313/generic/proof-site.el")' >> ~/.emacs
+echo '(defun my-coq-hook ()' >> ~/.emacs
+echo "  (local-set-key (kbd \"C-c RET\") 'proof-goto-point)" >> ~/.emacs
+echo ')' >> ~/.emacs
+echo >> ~/.emacs
+echo "(add-hook 'coq-mode-hook 'my-coq-hook)" >> ~/.emacs
+echo 'export PATH="$HOME/coq-8.5beta2/bin${PATH:+:}$PATH"' >> ~/.bashrc
+source ~/.bashrc
+cd ~/coq-8.5beta2/
+./configure -local
+make
+```
+9. Run emacs
