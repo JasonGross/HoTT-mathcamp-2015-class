@@ -641,7 +641,7 @@ Proof.
   { intro x.
     apply (center {a : A | e a = x}).2. }
   { intro x.
-    refine (@trans _ _ (x; _).1 _ _ _); shelve_unifiable.
+    refine (@trans _ _ (existT (fun a => e a = e x) x (refl (e x))).1 _ _ _).
     { apply ap.
       apply contr. }
     { exact (refl (x; refl).1). } }
@@ -717,8 +717,8 @@ Section assume_funext'.
       cut (forall p q : y = a, p = q).
       { intro H; apply H. }
       { intros p0 q0.
-        refine (trans (sym _) _); shelve_unifiable.
-        { refine (@prop_deencode A (fun x y => trans (sym (p x)) (p y)) _ _ p0). }
+        etransitivity.
+        { refine (sym (@prop_deencode A (fun x y => trans (sym (p x)) (p y)) _ _ p0)). }
         { refine (@prop_deencode A (fun x y => trans (sym (p x)) (p y)) _ _ q0). } } }
   Defined.
 

@@ -8,6 +8,30 @@ Axiom admit : forall {T}, T.
 
 (** Some filled in exercises from yesterday; feel free to paste more here. *)
 
+(** We redefine some constants to get universe-polymorphic versions. *)
+
+Record sigT {A} P := existT { projT1 : A ; projT2 : P projT1 }.
+Arguments projT1 {A P} _.
+Arguments projT2 {A P} _.
+Arguments existT {A} P _ _.
+Notation "{ x : A  & P }" := (sigT (fun x:A => P)) : type_scope.
+
+Inductive eq (A:Type) (x:A) : A -> Type :=
+    eq_refl : x = x :>A
+
+where "x = y :> A" := (@eq A x y) : type_scope.
+
+Notation "x = y" := (x = y :>_) : type_scope.
+Notation "x <> y  :> T" := (~ x = y :>T) : type_scope.
+Notation "x <> y" := (x <> y :>_) : type_scope.
+
+Arguments eq {A} x _.
+Arguments eq_refl {A x} , [A] x.
+
+Arguments eq_ind [A] x P _ y _.
+Arguments eq_rec [A] x P _ y _.
+Arguments eq_rect [A] x P _ y _.
+
 Notation refl := eq_refl.
 Definition sym : forall A (x y : A), x = y -> y = x
   := fun A x y p
@@ -158,6 +182,9 @@ Proof.
   destruct (T x).
   reflexivity.
 Defined.
+
+Definition Type1 := Eval hnf in let U := Type in let lt := Set : U in U.
+Inductive bool : Type1 := true | false.
 
 Definition function_code : forall {A B} (f g : forall a : A, B a), Type
   := fun A B f g => forall a : A, f a = g a.
@@ -367,7 +394,7 @@ Proof.
   { intro x.
     apply (center {a : A | e a = x}).2. }
   { intro x.
-    refine (@trans _ _ (x; _).1 _ _ _); shelve_unifiable.
+    refine (@trans _ _ (existT (fun a => e a = e x) x (refl (e x))).1 _ _ _).
     { apply ap.
       apply contr. }
     { exact (refl (x; refl).1). } }
@@ -443,7 +470,7 @@ Definition Univalence : forall {x y : Type}, IsEquiv (@Type_encode x y)
                                 left_inv := Type_deencode |} |}).
 
 Definition transport {A} (P : A -> Type) {x y} (p : x = y) (u : P x) : P y
-  := eq_rect _ P u _ p.
+  := J (fun a _ => P a) u p.
 
 Definition apD {A} {B} (f : forall a : A, B a) {x y} (p : x = y) : transport B p (f x) = f y
   := J (fun y' p => transport B p (f x) = f y') refl p.
@@ -557,6 +584,8 @@ Defined.
 
 >> *)
 
+Definition negb (b : bool) := if b then false else true.
+
 Definition i : bool -> Interval := fun x => if x then one else zero.
 
 (** Puzzle: invert this function; define a function [myst] such that
@@ -567,7 +596,7 @@ Definition negb_involutive : forall {b}, negb (negb b) = b
               then refl
               else refl.
 
-Global Instance isequiv_negb : IsEquiv negb.
+Global Instance isequiv_negb : @IsEquiv bool bool negb.
 Proof.
   refine (fun b => _).
   refine {| center := (negb b; negb_involutive) |}.
@@ -595,9 +624,7 @@ Proof.
   intro e; destruct e; reflexivity.
 Defined.
 
-Notation Type0 := Set.
-
-Definition tboH : eq_rect _ (fun _ => Type0) _ one seg = bool
+Definition tboH : J (fun _ _ => Type) bool seg = bool :> Type
   := trans J_transport_const (Type_decode equiv_negb).
 
 (**
@@ -610,9 +637,9 @@ Definition twisted_bool_of (x : interval) : Type
       end).
 >> *)
 Definition twisted_bool_of (x : Interval) : Type
-  := Interval_rect (fun _ => Type0) bool bool tboH x.
+  := Interval_rect (fun _ => Type) bool bool tboH x.
 
-Definition nearly_if_helper : eq_rect zero twisted_bool_of false one seg = true.
+Definition nearly_if_helper : @J _ zero (fun x _ => twisted_bool_of x) false one seg = true.
 Proof.
   change (transport twisted_bool_of seg false = true).
   transitivity (transport (fun x => x) (ap' twisted_bool_of seg) false).
@@ -622,7 +649,7 @@ Proof.
     { cut (Type_decode equiv_negb
            = ap' twisted_bool_of seg).
       { intro H; rewrite H; reflexivity. }
-      { change twisted_bool_of with (Interval_rectnd Type0 bool bool (Type_decode equiv_negb)).
+      { change twisted_bool_of with (Interval_rectnd Type bool bool (Type_decode equiv_negb)).
         rewrite Interval_rectnd_beta_seg.
         reflexivity. } } }
 Defined.
