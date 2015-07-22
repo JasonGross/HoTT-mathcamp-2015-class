@@ -22,20 +22,28 @@ Axiom admit3 : forall {T}, T.
 Definition id : forall A, A -> A
   := admit.
 
-Definition modus_ponens : forall P Q, (P -> Q) -> P -> Q
+(** We can also write the colon on a line of its own; I set up this file in this way so that I can use a large font in my presentation. *)
+
+Definition modus_ponens
+: forall P Q, (P -> Q) -> P -> Q
   := admit.
 
 (** N.B. [A -> (B -> C)] and [A -> B -> C] are the same; [->] associates to the right. *)
 
-Definition first_argument : forall A B, A -> (B -> A)
+Definition first_argument
+: forall A B, A -> (B -> A)
   := admit.
 
-Definition compose : forall A B C, (A -> B) -> (B -> C) -> (A -> C)
+Definition compose
+: forall A B C,
+    (A -> B) -> (B -> C) -> (A -> C)
   := admit.
 
 (** We can also fill in the functions bit by bit, as follows: *)
 
-Definition compose' : forall A B C, (A -> B) -> (B -> C) -> (A -> C).
+Definition compose'
+: forall A B C,
+    (A -> B) -> (B -> C) -> (A -> C).
 Proof.
   refine _.
   refine admit.
@@ -43,25 +51,37 @@ Defined.
 
 (** These two are exercises to do individually or with the people sitting next to you. *)
 
-Definition introduce_intermediate : forall A B C, (A -> (B -> C)) -> ((A -> B) -> (A -> C))
+Definition introduce_intermediate
+: forall A B C,
+    (A -> (B -> C))
+    -> ((A -> B) -> (A -> C))
   := admit.
 
-Definition swap_args : forall A B C, (A -> B -> C) -> (B -> A -> C)
+Definition swap_args
+: forall A B C,
+    (A -> B -> C) -> (B -> A -> C)
   := admit.
 
 (** Optional Homework Problems for More Practice *)
 
-Definition second_argument : forall A B, A -> B -> B
+Definition second_argument
+: forall A B, A -> B -> B
   := admit.
 
-Definition id_either : forall A, A -> A -> A
+Definition id_either
+: forall A, A -> A -> A
   := admit.
 
-Definition third_argument : forall A B C, A -> B -> C -> C
+Definition third_argument
+: forall A B C, A -> B -> C -> C
   := admit.
 
 (** This one is a bit different; one of the arguments has a [forall] *)
-Definition explode : forall A B F, (forall C, F -> C) -> (A -> F) -> (A -> B)
+Definition explode
+: forall A B F,
+    (forall C, F -> C)
+    -> (A -> F)
+    -> (A -> B)
   := admit.
 
 (** Challenge Homework Problems *)
@@ -79,13 +99,15 @@ Definition LEM_implies_DNE
 
 Definition DNE_implies_Peirce
 : (forall P, ~~P -> P)
-  -> (forall P Q : Prop, ((P -> Q) -> P) -> P)
+  -> (forall P Q : Prop,
+        ((P -> Q) -> P) -> P)
   := admit.
 
 (** Prove that Peirce's Law implies the Law of Excluded Middle *)
 
 Definition Peirce_implies_LEM
-: (forall P Q : Prop, ((P -> Q) -> P) -> P)
+: (forall P Q : Prop,
+     ((P -> Q) -> P) -> P)
   -> (forall P, P \/ ~P)
   := admit.
 
@@ -109,18 +131,22 @@ Notation refl := eq_refl.
 
 (** Definition of judgmental equality, version 2: [x] and [y] are judgmentally equal if (Coq says that) [refl] proves [x = y]. *)
 
-Definition one_plus_one_equals_two : 1 + 1 = 2
+Definition one_plus_one_equals_two
+: 1 + 1 = 2
   := refl.
 
-Definition two_plus_two_equals_four : 2 + 2 = 4
+Definition two_plus_two_equals_four
+: 2 + 2 = 4
   := refl.
 
-Definition two_times_three_equals_six : 2 * 3 = 6
+Definition two_times_three_equals_six
+: 2 * 3 = 6
   := refl.
 
 (** Just so that you don't think Coq believes everything is equal: *)
 
-Fail Definition one_does_not_equal_zero : 1 = 0
+Fail Definition one_does_not_equal_zero
+: 1 = 0
   := refl.
 
 (** This gives
@@ -130,7 +156,8 @@ The command has indeed failed with message:
     while it is expected to have type "1 = 0".
 >> *)
 
-Fail Definition addition_is_not_judgmentally_commutative : forall x y, x + y = y + x
+Fail Definition addition_is_not_judgmentally_commutative
+: forall x y, x + y = y + x
   := fun x y => refl.
 
 (** You can see the "normal form" of something with [Compute]: *)
@@ -154,13 +181,16 @@ Check true. (* [true] is a boolean *)
 Fail Check 1 = true. (* [1] is a [nat], and so isn't comparable to [true], which is a [bool] *)
 
 (** A note on syntax *)
-Definition id' : forall A, A -> A
+Definition id'
+: forall A, A -> A
   := admit.
 
-Definition id'' : forall (A : Type), A -> A
+Definition id''
+: forall (A : Type), A -> A
   := admit.
 
-Definition id''' : forall (A : Type) (pf : A), A
+Definition id'''
+: forall (A : Type) (pf : A), A
   := admit.
 
 (** Pattern matching is case analysis, on things that are defined by cases (like, [bool], [nat]).  This is a technical meaning for "pattern matching" or "case analysis", namely, "using a [match ... with ... end] statement in Coq". *)
@@ -171,13 +201,19 @@ Definition is_positive : nat -> bool
 Definition is_zero : nat -> bool
   := admit.
 
-Definition If_Then_Else : forall (A : Type) (b : bool) (true_case : A) (false_case : A), A
+Definition If_Then_Else
+: forall (A : Type)
+         (b : bool)
+         (true_case : A)
+         (false_case : A),
+    A
   := admit.
 
 (** [unit] is a type with one element. *)
 Print unit.
 (** But [refl] does not prove that all units are equal. *)
-Fail Definition all_units_equal : forall x y : unit, x = y
+Fail Definition all_units_equal
+: forall x y : unit, x = y
   := fun x y => refl.
 (** But we can pattern match *)
 Definition all_units_equal : forall x y : unit, x = y
@@ -199,7 +235,8 @@ Definition boolean_negation : bool -> bool
   F F │   F
 >> *)
 
-Definition boolean_conjunction : bool -> bool -> bool
+Definition boolean_conjunction
+: bool -> bool -> bool
   := admit.
 
 (** This should implement the truth table for "or":
@@ -212,7 +249,8 @@ Definition boolean_conjunction : bool -> bool -> bool
   F F │   F
 >> *)
 
-Definition boolean_disjunction : bool -> bool -> bool
+Definition boolean_disjunction
+: bool -> bool -> bool
   := admit.
 
 (** This should implement the truth table for "xor":
@@ -225,7 +263,8 @@ Definition boolean_disjunction : bool -> bool -> bool
   F F │   F
 >> *)
 
-Definition boolean_exclusive_or : bool -> bool -> bool
+Definition boolean_exclusive_or
+: bool -> bool -> bool
   := admit.
 
 (** This should implement the truth table for "implication":
@@ -238,7 +277,8 @@ Definition boolean_exclusive_or : bool -> bool -> bool
   F F │   T
 >> *)
 
-Definition boolean_implication : bool -> bool -> bool
+Definition boolean_implication
+: bool -> bool -> bool
   := admit.
 
 (** This should implement the truth table for "biconditional":
@@ -251,7 +291,8 @@ Definition boolean_implication : bool -> bool -> bool
   F F │   T
 >> *)
 
-Definition boolean_biconditional : bool -> bool -> bool
+Definition boolean_biconditional
+: bool -> bool -> bool
   := admit.
 
 
@@ -262,10 +303,11 @@ Definition boolean_biconditional : bool -> bool -> bool
 
 (** We start off with the simpler version, called the "non-dependent" version. *)
 
-Definition J_nondep : forall (A : Type) (x : A) (y : A)
-                             (H : x = y)
-                             (P : A -> Type),
-                        P x -> P y
+Definition J_nondep
+: forall (A : Type) (x : A) (y : A)
+         (H : x = y)
+         (P : A -> Type),
+    P x -> P y
   := admit.
 
 (** If you want to not always have to pass all of the arguments to [J] explicitly, you can uncomment the following lines, removing the << and >>, to make [A], [x], and [y] be inferred automatically. *)
@@ -278,14 +320,16 @@ Arguments J_nondep {A} {x} {y} H P _.
 
 (** First prove this by passing arguments to [J_nondep]. *)
 
-Definition sym_J : forall A (x y : A), x = y -> y = x
+Definition sym_J
+: forall A (x y : A), x = y -> y = x
   := admit.
 
 Arguments sym_J {A x y} p, A x y p.
 
 (** Now prove this by pattern matching. *)
 
-Definition sym : forall A (x y : A), x = y -> y = x
+Definition sym
+: forall A (x y : A), x = y -> y = x
   := admit.
 
 (** We allow writing [sym p] to mean [sym _ _ _ p] *)
@@ -294,37 +338,50 @@ Arguments sym {A x y} p, A x y p.
 
 (** First prove this by passing arguments to [J_nondep]. *)
 
-Definition trans_J : forall A (x y z : A), x = y -> y = z -> x = z
+Definition trans_J
+: forall A (x y z : A),
+    x = y -> y = z -> x = z
   := admit.
 
 Arguments trans_J {A x y z} p q, A x y z p q.
 
 (** Now prove this by pattern matching. *)
 
-Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
+Definition trans
+: forall A (x y z : A),
+    x = y -> y = z -> x = z
   := admit.
 
 Arguments trans {A x y z} p q, A x y z p q.
 
 (** First prove this by passing arguments to [J_nondep]. *)
 
-Definition ap_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+Definition ap_J
+: forall A B (f : A -> B) (x y : A),
+    x = y -> f x = f y
   := admit.
 
 Arguments ap_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 (** First prove this by pattern matching. *)
 
-Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+Definition ap
+: forall A B (f : A -> B) (x y : A),
+    x = y -> f x = f y
   := admit.
 
 Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 (** Now the version with more bells and whistles, again provable by pattern matching. *)
 
-Definition J : forall (A : Type) (x : A) (y : A) (H : x = y)
-                      (P : forall (y' : A) (H' : x = y'), Type),
-                 P x refl -> P y H
+Definition J
+: forall
+    (A : Type) (x : A) (y : A)
+    (H : x = y)
+    (P : forall (y' : A)
+                (H' : x = y'),
+           Type),
+    P x refl -> P y H
   := admit.
 
 (** [J] also has a computation rule, which holds judgmentally.  We start with the rule for [J_nondep]. *)
@@ -354,8 +411,9 @@ Arguments J_non_computes {A x} P k.
 
 (** First prove this by passing arguments to [J]. *)
 
-Definition trans_pV_J : forall A (x y : A) (p : x = y),
-                          trans_J p (sym_J p) = refl
+Definition trans_pV_J
+: forall A (x y : A) (H : x = y),
+    trans_J H (sym_J H) = refl
   := admit.
 
 (** Now prove this by pattern matching. *)
@@ -368,34 +426,50 @@ Definition trans_pV : forall A (x y : A) (p : x = y),
 
 (** First prove this by filling in arguments to [J] explicitly. *)
 
-Definition sym_sym_J : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
+Definition sym_sym_J
+: forall A (x y : A) (H : x = y),
+    sym_J (sym_J H) = H
   := admit.
 
-Arguments sym_sym_J {A x y} p, A x y p.
+Arguments sym_sym_J {A x y} H, A x y H.
 
 (** Now prove this by pattern matching. *)
 
-Definition sym_sym : forall A (x y : A) (p : x = y), sym (sym p) = p
+Definition sym_sym
+: forall A (x y : A) (H : x = y),
+    sym (sym H) = H
   := admit.
 
-Arguments sym_sym {A x y} p, A x y p.
+Arguments sym_sym {A x y} H, A x y H.
 
-Definition trans_1p_J : forall A (x y : A) (p : x = y), trans_J refl p = p
+Definition trans_1p_J
+: forall A (x y : A) (H : x = y),
+    trans_J refl H = H
   := admit.
 
-Definition trans_1p : forall A (x y : A) (p : x = y), trans refl p = p
+Definition trans_1p
+: forall A (x y : A) (H : x = y),
+    trans refl H = H
   := admit.
 
-Definition trans_p1_J : forall A (x y : A) (p : x = y), trans_J p refl = p
+Definition trans_p1_J
+: forall A (x y : A) (H : x = y),
+    trans_J H refl = H
   := admit.
 
-Definition trans_p1 : forall A (x y : A) (p : x = y), trans p refl = p
+Definition trans_p1
+: forall A (x y : A) (H : x = y),
+    trans H refl = H
   := admit.
 
-Definition sym_refl_J : forall A (x : A), sym_J (refl x) = refl x
+Definition sym_refl_J
+: forall A (x : A),
+    sym_J (refl x) = refl x
   := admit.
 
-Definition sym_refl : forall A (x : A), sym (refl x) = refl x
+Definition sym_refl
+: forall A (x : A),
+    sym (refl x) = refl x
   := admit.
 
 (** Recall the informal proof from yesterday's homework, which "proved" that all proofs of [x = y] are themselves equal:
@@ -404,7 +478,8 @@ Definition sym_refl : forall A (x : A), sym (refl x) = refl x
 
   Try to formalize this proof in Coq, and see what goes wrong.  It may help to use [refine] so that you can construct the proof sentence by sentence.  If you are having trouble figuring out how to instantiate [J] for a proof of equality [H : x = y], you can ask Coq to figure it out for you by running [destruct H.].  You can see what it did by typing [Show Proof.] afterwards. *)
 
-Definition J_implies_UIP : forall A (x y : A) (p q : x = y), p = q.
+Definition J_implies_UIP
+: forall A (x y : A) (H0 H1 : x = y), H0 = H1.
 Proof.
   refine _.
   refine admit.
@@ -419,22 +494,30 @@ Definition K_rule_type
 
 (** Prove that [K] implies uniqueness of identity proofs.  If you do this interactively with [refine], you may find it useful to [unfold K_rule_type in *] to see the definition of [K] in your goals window. *)
 
-Definition K_implies_UIP : forall (K : K_rule_type),
-                           forall A (x y : A) (p q : x = y), p = q
+Definition K_implies_UIP
+: forall (K : K_rule_type) A (x y : A) (H0 H1 : x = y), H0 = H1
   := admit.
 
-(** Note that it's impossible to prove [K] from [J].  See if you can get any insight into this by attempting to construct a proof. *)
+(** Note that it's impossible to prove [K] from [J].  See if you can get any insight into this by attempting to construct a proof.
+
+  Hint: Think about what these things (and UIP) mean in the paths interpretation of equality, and remember that _all_ of our functions are continuous. *)
 
 Definition J_implies_K : K_rule_type
   := admit.
 
 (** Can you write down three "different" proofs of transitivity (they should all be judgmentally different; [refl] should not prove any two of them the same. *)
 
-Definition trans1 : forall A (x y z : A), x = y -> y = z -> x = z
+Definition trans1
+: forall A (x y z : A),
+    x = y -> y = z -> x = z
   := admit1.
-Definition trans2 : forall A (x y z : A), x = y -> y = z -> x = z
+Definition trans2
+: forall A (x y z : A),
+    x = y -> y = z -> x = z
   := admit2.
-Definition trans3 : forall A (x y z : A), x = y -> y = z -> x = z
+Definition trans3
+: forall A (x y z : A),
+    x = y -> y = z -> x = z
   := admit3.
 
 (** Now we have Coq check that they are not the same; these lines should compile unmodified. *)
@@ -447,25 +530,30 @@ Fail Check refl : trans1 = trans3.
 
 (** Now prove that these are all equal (propositionally, but not judgmentally. *)
 
-Definition trans_12 : forall A (x y z : A) (p : x = y) (q : y = z),
-                        trans1 A x y z p q = trans2 A x y z p q
+Definition trans_12
+: forall A (x y z : A) (H0 : x = y) (H1 : y = z),
+    trans1 A x y z H0 H1 = trans2 A x y z H0 H1
   := admit.
-Definition trans_23 : forall A (x y z : A) (p : x = y) (q : y = z),
-                        trans2 A x y z p q = trans3 A x y z p q
+Definition trans_23
+: forall A (x y z : A) (H0 : x = y) (H1 : y = z),
+    trans2 A x y z H0 H1 = trans3 A x y z H0 H1
   := admit.
 
 (** We can also prove associativity. *)
 
-Definition trans_assoc : forall A (x y z w : A) (p : x = y) (q : y = z) (r : z = w),
-                           trans p (trans q r) = trans (trans p q) r
+Definition trans_assoc
+: forall A (x y z w : A) (H0 : x = y) (H1 : y = z) (H2 : z = w),
+    trans H0 (trans H1 H2) = trans (trans H0 H1) H2
   := admit.
 
-Definition trans_Vp : forall A (x y : A) (p : x = y),
-                        trans (sym p) p = refl
+Definition trans_Vp
+: forall A (x y : A) (H : x = y),
+    trans (sym H) H = refl
   := admit.
 
-Definition trans_sym : forall A (x y z : A) (p : x = y) (q : y = z),
-                         sym (trans p q) = trans (sym q) (sym p)
+Definition trans_sym
+: forall A (x y z : A) (H0 : x = y) (H1 : y = z),
+    sym (trans H0 H1) = trans (sym H1) (sym H0)
   := admit.
 
 (** *** Category theory *)
@@ -478,19 +566,25 @@ Definition trans_sym : forall A (x y z : A) (p : x = y) (q : y = z),
 
 (** Action on identity: *)
 
-Definition ap_refl : forall {A B} (f : A -> B) x, ap f (refl x) = refl (f x)
+Definition ap_refl
+: forall {A B} (f : A -> B) x,
+    ap f (refl x) = refl (f x)
   := admit.
 
 (** Action on composition: *)
 
-Definition ap_trans : forall {A B} (f : A -> B) {x y z : A} (p : x = y) (q : y = z),
-                           ap f (trans p q) = trans (ap f p) (ap f q)
+Definition ap_trans
+: forall {A B} (f : A -> B) {x y z : A}
+         (H0 : x = y) (H1 : y = z),
+    ap f (trans H0 H1) = trans (ap f H0) (ap f H1)
   := admit.
 
 (** Action on inverses (additional rule for groupoids): *)
 
-Definition ap_sym : forall {A B} (f : A -> B) {x y : A} (p : x = y),
-                         ap f (sym p) = sym (ap f p)
+Definition ap_sym
+: forall {A B} (f : A -> B) {x y : A}
+         (H : x = y),
+    ap f (sym H) = sym (ap f H)
   := admit.
 
 (** Furthermore, every function that specifies the action of a natural transformation on objects is automatically natural: *)

@@ -68,6 +68,9 @@ publish-1: HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
 publish-2: publish-1 exercises_and_homework_day_2.v exercises_and_homework_day_2.html
 	cp coqdoc.css exercises_and_homework_day_2.v exercises_and_homework_day_2.html $(PUBLISH_FOLDER)/
 
+exercises_and_homework_day_2_student.v: exercises_and_homework_day_2.v exercises_and_homework_day_2.patch
+	sed -f exercises_and_homework_day_2.patch exercises_and_homework_day_2.v > $@
+
 %.pdf: %.tex
 	@ pdflatex -synctex=1 $<
 	@ pdflatex -synctex=1 $<

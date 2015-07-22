@@ -1,20 +1,11 @@
 (** * Exploring equality via homotopy and proof assistants - Day 3 - Inductive types and their equalities *)
-(** This file contains the exercises for Day 3.  Some are explicitly
-    marked as "Homework"; the rest can be done either in class or for
-    homework.
+(** This file contains the exercises for Day 3.  Some are explicitly marked as "Homework"; the rest can be done either in class or for homework.
 
-    When doing exercises on your own, feel free to skip around; there
-    are some interesting puzzles near the bottom.
+  When doing exercises on your own, feel free to skip around; there are some interesting puzzles near the bottom.
 
-    If you feel like you know exactly how a proof will go, but find it
-    painful and tedious to write out the proof terms explicitly, come
-    find me.  Coq has a lot of support for automation and taking care
-    of things that are easy and verbose, so you don't have to.
-    Proving should feel like a game.  If it doesn't, I can probably
-    help you with that.  *)
+  If you feel like you know exactly how a proof will go, but find it painful and tedious to write out the proof terms explicitly, come find me.  Coq has a lot of support for automation and taking care of things that are easy and verbose, so you don't have to. Proving should feel like a game.  If it doesn't, I can probably help you with that.  *)
 
-(** The following are placeholders; [admit] indicates that something
-    should be filled in later. *)
+(** The following are placeholders; [admit] indicates that something should be filled in later. *)
 
 Axiom admit : forall {T}, T.
 
@@ -58,21 +49,18 @@ Arguments J {A} {x} {y} H P _.
 
 (** There are two guiding questions for today:
 
-    1. What are (inductive) types?
-    2. What does it mean to say that two inhabitants of a given type are equal? *)
+ 1. What are (inductive) types?
+ 2. What does it mean to say that two inhabitants of a given type are equal? *)
 
 (** *** Puzzle 1: contractibility of based path spaces *)
 
-(** We use the notation [{ x : T | P x }] to denote the type of pairs
-    [(x; p)] which consist of an inhabitant [x : T] and a proof [p : P
-    x]. *)
+(** We use the notation [{ x : T | P x }] to denote the type of pairs [(x; p)] which consist of an inhabitant [x : T] and a proof [p : P x]. *)
 
 Notation "{ x  |  P }" := ({ x : _ & P }) : type_scope.
 Notation "{ x : A  |  P }" := ({ x : A & P }) : type_scope.
 Notation "( x ; p )" := (existT _ x p).
 
-(** A type is called contractible if there is a (continuous!) function
-    showing that all inhabitants are equal to a particular one. *)
+(** A type is called contractible if there is a (continuous!) function showing that all inhabitants are equal to a particular one. *)
 
 Definition is_contractible : Type -> Type
   := fun A => { center : A | forall y : A, center = y }.
@@ -83,9 +71,7 @@ Definition contractible_pointed : forall (A : Type) (y : A),
                                     is_contractible { x : A | y = x }
   := admit.
 
-(** Note that [x = y :> T] means [x : T], [y : T], and [x = y].  It is
-    the notation for [@eq T x y].  It is how we write $x =_T y$ #<span
-    class="inlinecode">x =<sub>T</sub> y</span># in Coq. *)
+(** Note that [x = y :> T] means [x : T], [y : T], and [x = y].  It is the notation for [@eq T x y].  It is how we write $x =_T y$ #<span class="inlinecode">x =<sub>T</sub> y</span># in Coq. *)
 
 (** Since equals are inter-substitutable, we should be able to prove: *)
 
@@ -96,34 +82,22 @@ Definition contractible_to_UIP : forall (A : Type) (y : A)
                                    -> p = p'
   := admit.
 
-(** But it turns out that we can't prove this.  Why not?  Give both a
-    formal, type theoretic reason (what terms don't typecheck?), and a
-    topological reason. *)
+(** But it turns out that we can't prove this.  Why not?  Give both a formal, type theoretic reason (what terms don't typecheck?), and a topological reason. *)
 
 (** *** Puzzle 2: understanding the encode-decode method *)
 
 (** Here is a concrete puzzle for the second question:
 
-    To classify the equality of a given type, we give a "code" for
-    each pair of elements.  We must say how to "encode" equality
-    proofs, and how to "decode" codes into equality proofs.  We want
-    this to be an isomorphism, i.e., [encode ∘ decode] and [decode ∘
-    encode] should both be the identity function.  It turns out that
-    we don't need to know anything about [encode] or [decode] other
-    than their existance to ensure this; we can always adjust [decode]
-    to create an inverse to [encode], as long as a particular property
-    holds of [code].  What is that property?
+  To classify the equality of a given type, we give a "code" for each pair of elements.  We must say how to "encode" equality proofs, and how to "decode" codes into equality proofs.  We want this to be an isomorphism, i.e., [encode ∘ decode] and [decode ∘ encode] should both be the identity function.  It turns out that we don't need to know anything about [encode] or [decode] other than their existance to ensure this; we can always adjust [decode] to create an inverse to [encode], as long as a particular property holds of [code].  What is that property?
 
-    More concretely, the puzzle is to fill in the following holes. *)
+  More concretely, the puzzle is to fill in the following holes. *)
 
 Section general_classification.
 
   Definition code_correct_P : forall {A : Type} (code : A -> A -> Type), Type
     := admit.
 
-  (** We assume we are given a type, a [code], an [encode], and a
-      [decode].  We introduce the assumptions as we get to definitions
-      that should need them. *)
+  (** We assume we are given a type, a [code], an [encode], and a [decode].  We introduce the assumptions as we get to definitions that should need them. *)
 
   Context {A : Type} (code : A -> A -> Type)
           (decode' : forall x y, code x y -> x = y).
@@ -157,9 +131,7 @@ Section sanity_checks.
                                   code_correct_P (fun x y : A => x = y)
     := admit.
 
-  (** If you didn't choose a silly correctness property like [code =
-      (fun x y => x = y)], then your proof should generalize to the
-      following: *)
+  (** If you didn't choose a silly correctness property like [code = (fun x y => x = y)], then your proof should generalize to the following: *)
 
   (** Suppose we are given a valid encoding. *)
 
@@ -176,19 +148,13 @@ Section sanity_checks.
 
 End sanity_checks.
 
-(** This was all very abstract.  Let's drill down with some
-    exmples. *)
+(** This was all very abstract.  Let's drill down with some exmples. *)
 
 (** ** Inductive Types *)
 
-(** First, we must understand the types which we are classifying the
-    path-spaces of. *)
+(** First, we must understand the types which we are classifying the path-spaces of. *)
 
-(** An inductive type is specified by introduction and elimination
-    rules; introduction rules tell you how to create inhabitants
-    (elements) of a type, and elimination rules tell you how to use
-    such inhabitants.  Coq generate eliminations rules automatically,
-    but we will try to come up with the first few without peeking. *)
+(** An inductive type is specified by introduction and elimination rules; introduction rules tell you how to create inhabitants (elements) of a type, and elimination rules tell you how to use such inhabitants.  Coq generate eliminations rules automatically, but we will try to come up with the first few without peeking. *)
 
 Inductive unit : Type := tt.
 
@@ -206,8 +172,7 @@ Add Printing If bool.
 
 (** Inductive Empty_set : Type := ... *)
 
-(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by
-    recursion on [unit], if we assume that [False = (True -> True)] *)
+(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by recursion on [unit], if we assume that [False = (True -> True)] *)
 
 (** Inductive prod (A B : Type) : Type := ... *)
 
@@ -227,8 +192,7 @@ Example prod_2 := (1, 2) : nat * nat.
 Example prod_3 := (true, true) : bool * bool.
 Example prod_4 := (1, true) : nat * bool.
 
-(** We use curlie braces so that we don't have to pass the arguments
-    explicitly all the time. *)
+(** We use curlie braces so that we don't have to pass the arguments explicitly all the time. *)
 
 Definition fst : forall {A B}, A * B -> A
 := admit.
@@ -302,25 +266,20 @@ Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 
 (** Inductive list (A : Type) : Type := ... *)
 
-(** Function types also have intro and elim rules, though they don't
-    have syntactic forms.  Can you describe them? *)
+(** Function types also have intro and elim rules, though they don't have syntactic forms.  Can you describe them? *)
 
 (** Note well: [J] is the eliminator for the equality type. *)
 
 (** ** Equality classification *)
 
-(** We can classify the equality types.  For each type, we come up
-    with a simpler type that represents ("codes for") its equality
-    type.  Then we prove that this type is isomorphic to the given
-    equality type. *)
+(** We can classify the equality types.  For each type, we come up with a simpler type that represents ("codes for") its equality type.  Then we prove that this type is isomorphic to the given equality type. *)
 
 (** *** [unit] *)
 
 Definition unit_code : forall (x y : unit), Type
   := admit.
 
-(** We use curlie braces to not have to pass the [x] and [y] around
-    all the time. *)
+(** We use curlie braces to not have to pass the [x] and [y] around all the time. *)
 
 Definition unit_encode : forall {x y : unit}, x = y -> unit_code x y
   := admit.
@@ -525,8 +484,7 @@ Definition arrow_code : forall {A B} (f g : A -> B), Type
 Definition arrow_encode : forall {A B} {f g : A -> B}, f = g -> arrow_code f g
   := admit.
 
-(** The rest aren't currently provable in Coq; it's the axiom of
-    functional extensionality. *)
+(** The rest aren't currently provable in Coq; it's the axiom of functional extensionality. *)
 
 Axiom arrow_decode : forall {A B} {f g : A -> B}, arrow_code f g -> f = g.
 Axiom arrow_endecode : forall {A B} {f g : A -> B} (p : arrow_code f g),
@@ -542,8 +500,7 @@ Definition function_code : forall {A B} (f g : forall a : A, B a), Type
 Definition function_encode : forall {A B} {f g : forall a : A, B a}, f = g -> function_code f g
   := admit.
 
-(** The rest aren't currently provable in Coq; it's the axiom of
-    functional extensionality. *)
+(** The rest aren't currently provable in Coq; it's the axiom of functional extensionality. *)
 
 Axiom function_decode : forall {A B} {f g : forall a : A, B a}, function_code f g -> f = g.
 Axiom function_endecode : forall {A B} {f g : forall a : A, B a} (p : function_code f g),
@@ -555,14 +512,9 @@ Axiom function_deencode : forall {A B} {f g : forall a : A, B a} (p : f = g),
 
 (** Homework; challenging problem *)
 
-(** Recall the definition of contractibility above.  The reason that
-    we can safely call this contractible is that all of the higher
-    structure collapses.  That is, if all inhabitants of [A] are
-    (continuously) equal, then all inhabitants of [x = y] for [x : A]
-    and [y : A] are also equal.  Prove this, as follows. *)
+(** Recall the definition of contractibility above.  The reason that we can safely call this contractible is that all of the higher structure collapses.  That is, if all inhabitants of [A] are (continuously) equal, then all inhabitants of [x = y] for [x : A] and [y : A] are also equal.  Prove this, as follows. *)
 
-(** First we define what it means for a type to be a "mere
-    proposition", or to satisfy the uniqueness of identity proofs. *)
+(** First we define what it means for a type to be a "mere proposition", or to satisfy the uniqueness of identity proofs. *)
 
 Definition is_prop : Type -> Type
   := fun A => forall x y : A, x = y.
@@ -584,20 +536,15 @@ Definition prop_endecode : forall {A} (allpaths : is_prop A) {x y : A} (p : prop
                             prop_encode allpaths (prop_decode allpaths p) = p
   := admit.
 
-(** If you find this proof hard, and can't figure out why, think about
-    the proof of [dec_deencode].  If you're still having trouble, look
-    a bit further down for a hint. *)
+(** If you find this proof hard, and can't figure out why, think about the proof of [dec_deencode].  If you're still having trouble, look a bit further down for a hint. *)
 
 Definition prop_deencode : forall {A} (allpaths : is_prop A) {x y : A} (p : x = y),
                              prop_decode allpaths (prop_encode allpaths p) = p
   := admit.
 
-(** Hint: you may need to rewrite your [prop_decode] function.  The
-    following lemmas may prove helpful. *)
+(** Hint: you may need to rewrite your [prop_decode] function.  The following lemmas may prove helpful. *)
 
-(** Try to write an "adjuster" for [is_prop] that will always return
-    something equal to [refl] (provably) when handed two judgmentally
-    equal things. *)
+(** Try to write an "adjuster" for [is_prop] that will always return something equal to [refl] (provably) when handed two judgmentally equal things. *)
 
 Definition adjust_allpaths : forall {A}, is_prop A -> is_prop A
   := admit.
@@ -606,20 +553,15 @@ Definition adjust_allpaths_refl : forall {A} (allpaths : is_prop A) x,
                                    adjust_allpaths allpaths x x = refl
   := admit.
 
-(** Now move these lemmas above [prop_decode] and try re-writing the
-    codes so that you expect [prop_deencode] to work. *)
+(** Now move these lemmas above [prop_decode] and try re-writing the codes so that you expect [prop_deencode] to work. *)
 
 (** *** decidable types *)
 
 (** Homework; challenging problem *)
 
-(** More generally, we can do this for any type with decidable
-    equality. *)
+(** More generally, we can do this for any type with decidable equality. *)
 
-(** First we define what it means for a type to have decidable
-    equality: it means that we have a (continuous!) function from
-    pairs of inhabitants to proofs that either they are equal, or that
-    their equality is absurd. *)
+(** First we define what it means for a type to have decidable equality: it means that we have a (continuous!) function from pairs of inhabitants to proofs that either they are equal, or that their equality is absurd. *)
 
 Definition decidable : Type -> Type
   := fun A => forall x y : A, (x = y) + (x = y -> Empty_set).
@@ -639,20 +581,15 @@ Definition dec_endecode : forall {A} (dec : decidable A) {x y : A} (p : dec_code
                             dec_encode dec (dec_decode dec p) = p
   := admit.
 
-(** If you find this proof hard, and can't figure out why, look a bit
-    further down for a hint. *)
+(** If you find this proof hard, and can't figure out why, look a bit further down for a hint. *)
 
 Definition dec_deencode : forall {A} (dec : decidable A) {x y : A} (p : x = y),
                              dec_decode dec (dec_encode dec p) = p
   := admit.
 
-(** Hint: you may need to rewrite your [dec_decode], [dec_code], and
-    [dec_encode] functions, just as you did with [prop_decode].  The
-    following lemmas may prove helpful. *)
+(** Hint: you may need to rewrite your [dec_decode], [dec_code], and [dec_encode] functions, just as you did with [prop_decode].  The following lemmas may prove helpful. *)
 
-(** Try to write an "adjuster" for decidable equality that will always
-    return something equal to [refl] (provably) when handed two
-    equal things. *)
+(** Try to write an "adjuster" for decidable equality that will always return something equal to [refl] (provably) when handed two equal things. *)
 
 Definition adjust_dec : forall {A}, decidable A -> decidable A
   := admit.
@@ -661,17 +598,13 @@ Definition adjust_dec_refl : forall {A} (dec : decidable A) (x : A),
                                adjust_dec dec x x = inl refl
   := admit.
 
-(** Now move these lemmas above [dec_code] and try re-writing the
-    codes so that you expect [dec_deencode] to work. *)
+(** Now move these lemmas above [dec_code] and try re-writing the codes so that you expect [dec_deencode] to work. *)
 
 (** *** Pushing Further *)
 
-(** Homework: Generalize the above two proofs to solve "Puzzle 2" far
-    above.  (Don't forget to also do puzzle 1 while you're at it.) *)
+(** Homework: Generalize the above two proofs to solve "Puzzle 2" far above.  (Don't forget to also do puzzle 1 while you're at it.) *)
 
-(** Homework: Using the solution to Puzzle 2, show that it is
-    sufficient to assume [function_decode] an axiom; the endecode and
-    [deencode] proofs follow from puzzle 2. *)
+(** Homework: Using the solution to Puzzle 2, show that it is sufficient to assume [function_decode] an axiom; the endecode and [deencode] proofs follow from puzzle 2. *)
 
 Definition function_code' : forall {A B} (f g : forall a : A, B a), Type
   := admit.
