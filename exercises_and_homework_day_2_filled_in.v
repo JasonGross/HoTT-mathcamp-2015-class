@@ -20,24 +20,32 @@ Axiom admit3 : forall {T}, T.
 (** We'll fill in these first few together.  Any ideas for how to to prove something like this? *)
 
 Definition id : forall A, A -> A
-  := admit.
+  := fun A pfA => pfA.
 
 (** We can also write the colon on a line of its own; I set up this file in this way so that I can use a large font in my presentation. *)
 
 Definition modus_ponens
 : forall P Q, (P -> Q) -> P -> Q
-  := admit.
+  := fun P Q P_implies_Q pfP
+       => P_implies_Q pfP.
 
 (** N.B. [A -> (B -> C)] and [A -> B -> C] are the same; [->] associates to the right. *)
 
 Definition first_argument
 : forall A B, A -> (B -> A)
-  := admit.
+  := fun A B pfA pfB => pfA.
+
+Definition first_argument'
+: forall A B, A -> (B -> A)
+  := fun A B pfA => (fun pfB => pfA).
 
 Definition compose
 : forall A B C,
     (A -> B) -> (B -> C) -> (A -> C)
-  := admit.
+  := fun A B C
+         A_implies_B B_implies_C
+         pfA
+       => B_implies_C (A_implies_B pfA).
 
 (** We can also fill in the functions bit by bit, as follows: *)
 
@@ -45,8 +53,12 @@ Definition compose'
 : forall A B C,
     (A -> B) -> (B -> C) -> (A -> C).
 Proof.
-  refine _.
-  refine admit.
+  refine (fun A B C => _).
+  refine (fun A_implies_B B_implies_C => _).
+  refine (fun pfA => _).
+  refine (B_implies_C _).
+  refine (A_implies_B _).
+  refine pfA.
 Defined.
 
 (** These two are exercises to do individually or with the people sitting next to you. *)
@@ -54,8 +66,10 @@ Defined.
 Definition introduce_intermediate
 : forall A B C,
     (A -> (B -> C))
-    -> ((A -> B) -> (A -> C))
-  := admit.
+    -> ((A -> B) -> (A -> C)).
+Proof.
+  refine admit.
+Defined.
 
 Definition swap_args
 : forall A B C,
@@ -183,23 +197,34 @@ Fail Check 1 = true. (* [1] is a [nat], and so isn't comparable to [true], which
 (** A note on syntax *)
 Definition id'
 : forall A, A -> A
-  := admit.
+  := fun A pfA => pfA.
 
 Definition id''
 : forall (A : Type), A -> A
-  := admit.
+  := fun A pfA => pfA.
 
 Definition id'''
 : forall (A : Type) (pf : A), A
-  := admit.
+  := fun A pfA => pfA.
 
 (** Pattern matching is case analysis, on things that are defined by cases (like, [bool], [nat]).  This is a technical meaning for "pattern matching" or "case analysis", namely, "using a [match ... with ... end] statement in Coq". *)
 
 Definition is_positive : nat -> bool
-  := admit.
+  := fun n => match n with
+               | 0 => false
+               | _ => true
+              end.
 
 Definition is_zero : nat -> bool
-  := admit.
+  := fun n => match n with
+               | 0 => true
+               | _ => false
+              end.
+
+Compute is_zero 0.
+Compute is_zero 1.
+Compute is_positive 42.
+Compute is_positive 20000.
 
 Definition If_Then_Else
 : forall (A : Type)
@@ -207,7 +232,13 @@ Definition If_Then_Else
          (true_case : A)
          (false_case : A),
     A
-  := admit.
+  := fun _ b true_true_case false_case
+       => match b with
+               | true => true_true_case
+               | false => false_case
+              end.
+
+Compute If_Then_Else nat true 6 7.
 
 (** [unit] is a type with one element. *)
 Print unit.
@@ -216,8 +247,17 @@ Fail Definition all_units_equal
 : forall x y : unit, x = y
   := fun x y => refl.
 (** But we can pattern match *)
-Definition all_units_equal : forall x y : unit, x = y
-  := admit.
+Definition all_units_equal : forall x y : unit, x = y.
+Proof.
+  refine (fun x y
+          => match x with
+               | tt => _
+             end).
+  refine (match y with
+            | tt => _
+          end).
+  refine refl.
+Defined.
 
 (** Optional Homework for More Practice *)
 
