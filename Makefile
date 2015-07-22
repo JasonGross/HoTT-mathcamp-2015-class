@@ -38,7 +38,9 @@ not-containing = $(foreach v,$2,$(if $(findstring $1,$v),,$v))
 
 HASNATDYNLINK = true
 
-.PHONY: all clean download-packages
+PUBLISH_FOLDER = ~/public_html/classes/mathcamp-2015
+
+.PHONY: all clean download-packages publish-1 publish-2 publish-3 publish-4 publish-5
 
 FAST_TARGETS := clean archclean Makefile.coq HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
 
@@ -55,6 +57,17 @@ all: HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf \
 
 COQDOCFLAGS?=-interpolate -utf8 -s
 
+
+
+publish-1: HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
+	cp HoTT-homework-day-1.pdf $(PUBLISH_FOLDER)/day-1-homework.pdf
+	cp HoTT-homework-day-1.tex $(PUBLISH_FOLDER)/day-1-homework.tex
+	cp HoTT-notes-day-1.pdf $(PUBLISH_FOLDER)/day-1-notes.pdf
+	cp HoTT-notes-day-1.tex $(PUBLISH_FOLDER)/day-1-notes.tex
+
+publish-2: publish-1 exercises_and_homework_day_2.v exercises_and_homework_day_2.html
+	cp coqdoc.css exercises_and_homework_day_2.v exercises_and_homework_day_2.html $(PUBLISH_FOLDER)/
+
 %.pdf: %.tex
 	@ pdflatex -synctex=1 $<
 	@ pdflatex -synctex=1 $<
@@ -68,7 +81,7 @@ $(addsuffix .html,$(EXERCISES)) : %.html : %.v %.vo
 
 Makefile.coq: Makefile _CoqProject
 	$(VECHO) "COQ_MAKEFILE -f _CoqProject > $@"
-	$(Q)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'/^\(-include.*\)$$/ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif/g' | tr '~' '\n' | sed s'/^clean:$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' > $@
+	$(Q)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'/^\(-include.*\)$$/ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif/g' | tr '~' '\n' | sed s'/^clean::\?$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' | sed s'/^\(\$$(HTMLFILES): %.html: %.v %.glob\)/#\1/g' | sed s'/^\(\s\$$(COQDOC) \$$(COQDOCFLAGS) -html \$$< -o \$$@\)/#\1/g' | sed s'/^\(\$$(VFILES:.v=.tex): %.tex: %.v\)/#\1/g' | sed s'/^\(\s\$$(COQDOC) \$$(COQDOCFLAGS) -latex \$$< -o \$$@\)/#\1/g' > $@
 
 -include Makefile.coq
 
