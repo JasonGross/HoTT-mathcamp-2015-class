@@ -1,7 +1,7 @@
-(** * Exploring equality via homotopy and proof assistants - Day 2 - Equality in Coq *)
+(** * Exploring equality via homotopy and proof assistants - Day 3 - Equality in Coq *)
 (** Note: You may use either the lab computers, or your laptop.  Coq may not be installed on the Windows computers, you should use the Macs.  If the Macs do not have CoqIDE installed, you can go to https://coq.inria.fr/coq-85, download CoqIDE_8.5beta2.dmg, open it, and run CoqIDE directly, without installing it.
 
-  This file contains the exercises for Day 2.  Some are explicitly marked as "Homework"; the rest can be done either in class or for homework.
+  This file contains the exercises for Day 3, which are just the exercises for Day 2, with what we did yesterday filled in.  Some are explicitly marked as "Homework"; the rest can be done either in class or for homework.
 
   When doing exercises on your own, feel free to skip around; there are some interesting puzzles near the bottom (around [J_implies_UIP]).
 
