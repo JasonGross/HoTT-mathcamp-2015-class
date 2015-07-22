@@ -27,6 +27,11 @@
 
 Axiom admit : forall {T}, T.
 
+(** Compatibility between Coq 8.5 and 8.4 *)
+
+Set Asymmetric Patterns.
+
+(* begin hide *)
 (** Some filled in exercises from yesterday; feel free to paste more here. *)
 
 Notation refl := eq_refl.
@@ -290,6 +295,8 @@ Definition prop_decode : forall {A} (allpaths : is_prop A) {x y : A},
 Definition prop_deencode : forall {A} (allpaths : is_prop A) {x y : A} (p : x = y),
                              prop_decode allpaths (prop_encode allpaths p) = p
   := admit.
+
+(* end hide *)
 
 (** ** Equality of types *)
 

@@ -9,6 +9,10 @@
 
 Axiom admit : forall {T}, T.
 
+(** Compatibility between Coq 8.5 and 8.4 *)
+
+Set Asymmetric Patterns.
+
 (* begin hide *)
 (** Some filled in exercises from yesterday; feel free to paste more here. *)
 
