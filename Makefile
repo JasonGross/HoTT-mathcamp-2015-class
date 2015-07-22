@@ -40,7 +40,7 @@ HASNATDYNLINK = true
 
 .PHONY: all clean download-packages
 
-FAST_TARGETS := clean archclean Makefile.coq HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf
+FAST_TARGETS := clean archclean Makefile.coq HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
 
 EXERCISES = \
 	exercises_and_homework_day_2 \
@@ -49,7 +49,7 @@ EXERCISES = \
 	exercises_and_homework_day_4_teacher_answer_key \
 	exercises_and_homework_day_5_teacher_answer_key
 
-all: HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf \
+all: HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf \
 	$(addsuffix .pdf,$(EXERCISES)) \
 	$(addsuffix .html,$(EXERCISES))
 
@@ -97,5 +97,5 @@ clean::
 	$(Q)rm -f all.ps all-gal.ps all.pdf all-gal.pdf all.glob $(VFILES:.v=.glob) $(VFILES:.v=.tex) $(VFILES:.v=.g.tex) all-mli.tex $(VFILES:.v=.html) $(VFILES:.v=.pdf) *.synctex.gz
 	- rm -rf html mlihtml
 	rm -f Makefile.coq .depend
-	rm -f HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf
+	rm -f HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
 	@ rm -f *.aux *.out *.nav *.toc *.vrb *.pdf *.snm *.log *.bbl *.blg
