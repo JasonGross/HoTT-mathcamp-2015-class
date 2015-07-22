@@ -1,0 +1,265 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{pageslts}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{scrextend}
+
+\newtheorem{thm}{Theorem}
+\newtheorem*{thm*}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem*{lem*}{Lemma}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem*{defn*}{Definition}
+
+% interitemtext.sty
+%
+% For inserting text between \item's in a list environment
+%
+% Suggested by Michel Bovani.
+% <http://www.esm.psu.edu/mac-tex/MacOSX-TeX-Digests/2004/MacOSX- TeX_Digest_07-12-04.html>
+%
+% Useage:
+%
+% \item This is an item.
+%
+% \interitemtext{This is some text not part of an item.}
+%
+% \item This is another item.
+
+\pagenumbering{arabic}
+
+\makeatletter
+\newcommand{\interitemtext}[1]{%
+\begin{list}{}
+{\itemindent 0mm\labelsep 0mm
+\labelwidth 0mm\leftmargin 0mm
+\addtolength{\leftmargin}{-\@totalleftmargin}}
+\item #1
+\end{list}}
+\makeatother
+
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+\lhead{Exploring equality} % via homotopy and proof assistants}
+\chead{Class Notes}
+\pagestyle{fancy}
+\rhead{Day 1}
+\cfoot{Page \theCurrentPage\space of \lastpageref{LastPage}}
+
+\begin{document}
+\section{Motivating Question}
+  Is $2 \in \pi$?
+  
+  We want to say: ``Invalid question!''
+  
+  Set theory says: It depends on how you define $2$ and $\pi$.
+  
+  Type theory lets us say ``invalid question.''  Types are kind-of like sets, except equality is a little strange.  In particular, if you squint hard enough, proofs of equality look like paths in topological spaces.  The goal of today's class is to convince you that proofs of equality look like paths.
+
+\section{Proving Equality}
+How can we prove equality?  What are properties of equality?
+\begin{itemize}
+  \item $x = x$ for all $x$ (reflexivity)
+  \item $x = y \to y = x$ for all $x$ and $y$ (symmetry)
+  \item $x = y \to (y = z \to x = y)$ for all $x$, $y$, and $z$ (transitivity)
+  \item $x = y \to f~x = f~y$ for all $x$, $y$, and functions $f$ (Leibniz property / substitution)
+  \begin{trivlist}
+    \item N.B. We write $f~x$ to denote the function $f$ applied to $x$ (traditionally written $f(x)$), because that is the notation that we will use in our proof assistant Coq.
+  \end{trivlist}
+\end{itemize}
+
+\section{Paths}
+What paths exist?  What paths can we construct?
+
+N.B. A path in a space $X$ from $A$ to $B$ is a \emph{directed} piece of (ideal, mathematical) string living in $X$ which 
+\begin{itemize}
+  \item there is a path from $A$ to $A$, for all points $A$ (the constant path)
+  \item given a path $p$ from $A$ to $B$, there is a path $p^{-1}$ from $B$ to $A$ (inverse paths)
+  \item given a path $p$ from $A$ to $B$ and a path $q$ from $B$ to $C$, there is a path $p \cdot q$ from $A$ to $C$ (concatenation)
+  \item given a path $p$ from $A$ to $B$ in a space $X$, and a (continuous) function $f$ from $X$ to $Y$, there is a path from $f~A$ to $f~B$, which we can denote $f~p$.
+  \item given a path $p$ from $A$ to $B$, the concatenation of $p$ with its inverse, $p \cdot p^{-1}$, is in some sense ``the same as'' the constant path at $A$.
+\end{itemize}
+
+\section{Equality of proofs of equality?}
+Can we find an analogue of this last property on the side of proofs of equality?
+
+Consider the following two proofs:
+
+{\setlength{\parskip}{0pt}%
+\begin{thm*} $1 = 1$
+\end{thm*}
+\begin{proof}[Proof 1]
+  By reflexivity.
+\end{proof}
+\begin{proof}[Proof 2]  We have a proof that $1 = 0 + 1$.  (Exercise for the students.)  Call this proof $H$.  By symmetry on $H$, we have that $0 + 1 = 1$.  By transitivity, we thus have $1 = 0 + 1 = 1$.
+\end{proof}
+}
+
+This is a rather stupid proof.  But so is the first one!  In fact, they are stupidly the same proof.  Let's prove this.  To do so, we have to define equality.
+
+\section{Defining Equality}
+N.B. Our equality is homogeneous, which means that in order to ask the question ``is $x$ equal to $y$?'' we must already have that $x$ and $y$ have the same type.  If $x$ and $y$ have different types, the assertion $x = y$ is invalid (so the assertion $1 = \text{apple}$ is invalid).
+
+{\setlength{\parskip}{0pt}%
+\begin{defn*}[Equality, version 1]
+$\left.\right.$\\
+\begin{enumerate}
+\item[] There is a proof ``By reflexivity'' of the fact that $x = x$.\footnote{More precisely, for any type $A$ and any $x$ of type $A$, there is a proof ``By reflexivity at $x$'' which proves that $x = x$.}
+\item[($\ast$)] Given $x$, $y$, and a proof that $x = y$, to prove any property of $y$, it suffices to prove that property of $x$.
+\end{enumerate}
+\end{defn*}
+}
+
+With this definition, we can \emph{prove} symmetry, transitivity, and substitution.
+
+We use the notation $H~:~x = y$ to mean ``$H$ is a proof that $x = y$'' or ``$H$ is of type $x = y$.''
+
+{\setlength{\parskip}{0pt}%
+\begin{thm*}[symmetry]
+Given $x$, $y$, and a proof $H : x = y$, we can prove $y = x$
+\end{thm*}
+\begin{proof}
+$\left.\right.$\\
+\begin{itemize}
+  \item By ($\ast$), using the property $\square = x$, to prove $y = x$, it suffices to prove $x = x$
+  \item have: $x = x$
+  \begin{itemize}
+    \item[-] by reflexivity
+  \end{itemize}
+\end{itemize}
+\end{proof}
+\begin{thm*}[transitivity]
+Given $x$, $y$, $z$, and a proof $H : x = y$, we can prove $y = z \to x = z$
+\end{thm*}
+\begin{proof}
+$\left.\right.$\\
+\begin{itemize}
+  \item By ($\ast$), using the property $\square = z \to x = z$, to prove $y = z \to x = z$, it suffices to prove $x = z \to x = z$
+  \item have $x = z \to x = z$
+  \begin{itemize}
+    \item[-] trivially
+  \end{itemize}
+\end{itemize}
+\end{proof}
+\begin{thm*}[substitution]
+Given $x$, $y$, a function $f$, and a proof $H : x = y$, we can prove $f~x = f~y$
+\end{thm*}
+\begin{proof}
+$\left.\right.$\\
+\begin{itemize}
+  \item By ($\ast$), using the property $f~x = f~\square$, to prove $f~x = f~y$, it suffices to prove $f~x = f~x$
+  \item have $f~x = f~x$
+  \begin{itemize}
+    \item[-] by reflexivity
+  \end{itemize}
+\end{itemize}
+\end{proof}
+}
+
+Let's rewrite a slight generalization of our two proofs that $1 = 1$, and prove them equal.
+
+{\setlength{\parskip}{0pt}%
+Suppose we are given $x$, $y$, and a proof $H : x = y$.
+\begin{thm*} $x = x$
+\end{thm*}
+\begin{proof}[Proof 1]
+  By reflexivity.
+\end{proof}
+\begin{proof}[Proof 2]
+$\left.\right.$\\
+  \begin{itemize}
+    \item have a proof $H_0 : x = y$
+    \begin{itemize}
+      \item[-] by $H$
+    \end{itemize}
+    \item have a proof $H_1 : y = x$
+      \begin{itemize}
+        \item[-] by symmetry applied to $H$
+      \end{itemize}
+    \item have $x = x$
+      \begin{itemize}
+        \item[-] by transitivity applied to $H_0$ and $H_1$
+      \end{itemize}
+  \end{itemize}
+\end{proof}
+}
+
+Now let's prove that proof 1 and proof 2 are equal.  To do this, we need a version of equality with a few more bells and whistles.  Text that has been modified is underlined.
+
+{\setlength{\parskip}{0pt}%
+\begin{defn*}[Equality, version 2]
+$\left.\right.$\\
+\begin{enumerate}
+\item[] There is a proof ``By reflexivity'' of the fact that $x = x$.
+\item[($\ast'$)] Given $x$, $y$, and a proof \underline{$H$} that $x = y$, to prove any property of \underline{$y$ and $H$}, it suffices to prove that property of \underline{$x$ and ``by reflexivity''}.
+\end{enumerate}
+\end{defn*}
+}
+
+
+\begin{thm*}
+Given $x$, $y$, and a proof $H : x = y$, \\ (Proof 1 of $x$, $y$, and $H$) $=$ (Proof 2 of $x$, $y$, and $H$)
+\end{thm*}
+\begin{proof} By ($\ast'$), using the property ``(Proof 1 of $x$, $\square_y$, and $\square_H$) $=$ (Proof 2 of $x$, $\square_y$, and $\square_H$)'', to prove this theorem, it suffices to prove that (Proof 1 of $x$, $x$, and ``by reflexivity'') $=$ (Proof 2 of $x$, $x$, and ``by reflexivity'').
+
+Let's plug this in to the body of the proof; we underline the values that we've plugged in.
+
+{\setlength{\parskip}{0pt}%
+\begin{proof}[Proof 2 on $x$, $x$, and ``by reflexivity'']
+$\left.\right.$\\
+  \begin{itemize}
+    \item have a proof $H_0 : x = \underline{x}$
+    \begin{itemize}
+      \item[-] \underline{by reflexivity}
+    \end{itemize}
+    \item have a proof $H_1 : \underline{x} = x$
+      \begin{itemize}
+        \item[-] by symmetry applied to \underline{reflexivity}
+      \end{itemize}
+    \item have $x = x$
+      \begin{itemize}
+        \item[-] by transitivity applied to $H_0$ and $H_1$
+      \end{itemize}
+  \end{itemize}
+\end{proof}
+}
+
+Consider what this proof looks like as a path: We want to construct a path from $x$ to $x$.  First, we have a path, call it $H_0$, from $x$ to $x$: let it be the constant path.  Now, we have a path, call it $H_1$, from $x$ to $x$: let it be the inverse of the constant path.  Now concatenate $H_0$ and $H_1$ to get our path from $x$ to $x$.  This should really just be the constant path, trivially.
+
+To prove this formally, we need one more property of equality.
+
+
+
+{\setlength{\parskip}{0pt}%
+\begin{defn*}[Equality, version 3]
+$\left.\right.$\\
+\begin{enumerate}
+\item[] There is a proof ``By reflexivity'' of the fact that $x = x$.
+\item[($\ast''$)] Given $x$, $y$, and a proof \underline{$H$} that $x = y$, to prove any property of \underline{$y$ and $H$}, it suffices to prove that property of \underline{$x$ and ``by reflexivity''}.
+\item[($\dagger$)] Given $x$, a property $P$, and a proof $K$ that $P$ is true of $x$ and ``by reflexivity'', $K$ is trivially equal to ($\ast''$) applied to $x$, $x$, ``by reflexivity'', the property $P$, and $K$.
+\end{enumerate}
+\end{defn*}
+}
+
+By straightforward application of $\dagger$, we can see the following:
+\begin{lem*}
+Symmetry applied to ``by reflexivity'' is trivially ``by reflexivity''
+\end{lem*}
+
+If we further assume that the trivial proof that $x = x \to x = x$, when applied to ``by reflexivity'', gives ``by reflexivity'', then $\dagger$ also shows that
+\begin{lem*}
+Transitivity applied to ``by reflexivity'' and ``by reflexivity'' is trivially ``by reflexivity''
+\end{lem*}
+
+With these two lemmas, it is straightforward to show that (Proof 1 of $x$, $x$, and ``by reflexivity'') is trivially equal to (Proof 2 of $x$, $x$, and ``by reflexivity''), which is what we wanted to show.  Thus, Proof 1 and Proof 2 are equal.
+\end{proof}
+
+If these last few steps seem a bit hand-wavy, that's fine; we'll be doing them more formally in the proof assistant Coq tomorrow.
+\end{document}
