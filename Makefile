@@ -59,13 +59,13 @@ COQDOCFLAGS?=-interpolate -utf8 -s
 
 
 
-publish-1: HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
+publish-1:: HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
 	cp HoTT-homework-day-1.pdf $(PUBLISH_FOLDER)/day-1-homework.pdf
 	cp HoTT-homework-day-1.tex $(PUBLISH_FOLDER)/day-1-homework.tex
 	cp HoTT-notes-day-1.pdf $(PUBLISH_FOLDER)/day-1-notes.pdf
 	cp HoTT-notes-day-1.tex $(PUBLISH_FOLDER)/day-1-notes.tex
 
-publish-2: publish-1 exercises_and_homework_day_2.v exercises_and_homework_day_2.html
+publish-2:: publish-1 exercises_and_homework_day_2.v exercises_and_homework_day_2.html
 	cp coqdoc.css exercises_and_homework_day_2.v exercises_and_homework_day_2.html $(PUBLISH_FOLDER)/
 
 exercises_and_homework_day_2_student.v: exercises_and_homework_day_2.v exercises_and_homework_day_2.patch
@@ -80,6 +80,7 @@ $(addsuffix .tex,$(EXERCISES)) : %.tex : %.v %.vo
 
 $(addsuffix .html,$(EXERCISES)) : %.html : %.v %.vo
 	$(COQDOC) $(COQDOCFLAGS) -html $(COQDOCLIBS) -d . $<
+	cp -f Top.$@ $@
 	sed s'/background-color: #90bdff;/background-color: aliceblue;/g' -i coqdoc.css
 
 Makefile.coq: Makefile _CoqProject
