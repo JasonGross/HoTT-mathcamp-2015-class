@@ -58,9 +58,10 @@ Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
 
 Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
-Definition J : forall {A} {x : A} (P : forall y, x = y -> Type),
-                 P x refl -> forall {y} (H : x = y), P y H
-  := fun A x P k y H
+Definition J : forall {A} {x y : A} (H : x = y)
+                      (P : forall y, x = y -> Type),
+                 P x refl -> P y H
+  := fun A x y H P k
      => match H with
           | eq_refl => k
         end.
@@ -229,7 +230,7 @@ Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 
 Definition sigma_code : forall {A B} (x y : { a : A | B a }), Type
   := fun A B x y
-     => { p : x.1 = y.1 | J (fun a _ => B a) x.2 p = y.2 }.
+     => { p : x.1 = y.1 | J p (fun a _ => B a) x.2 = y.2 }.
 
 Definition sigma_encode : forall {A B} {x y : { a : A | B a }}, x = y -> sigma_code x y
   := fun A B x y p

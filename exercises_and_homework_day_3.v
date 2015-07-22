@@ -18,6 +18,7 @@
 
 Axiom admit : forall {T}, T.
 
+(* begin hide *)
 (** Some filled in exercises from yesterday; feel free to paste more here. *)
 
 Notation refl := eq_refl.
@@ -41,13 +42,17 @@ Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
 
 Arguments trans {A x y z} p q, A x y z p q.
 
-Definition J : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type),
-                 P x refl -> forall (y : A) (H : x = y), P y H
-  := fun A x P k y H => match H with
+Definition J : forall (A : Type) (x : A) (y : A)
+                      (H : x = y)
+                      (P : forall (y' : A) (H' : x = y'), Type),
+                 P x refl -> P y H
+  := fun A x y H P k => match H with
                           | refl => k
                         end.
 
-Arguments J {A} {x} P _ {y} H.
+Arguments J {A} {x} {y} H P _.
+
+(* end hide *)
 
 (** ** Guiding Puzzles *)
 
