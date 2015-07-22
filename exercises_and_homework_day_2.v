@@ -1,30 +1,15 @@
 (** * Exploring equality via homotopy and proof assistants - Day 2 - Equality in Coq *)
-(** Note: You may use either the lab computers, or your laptop.  Coq
-    may not be installed on the Windows computers, you should use the
-    Macs.  If the Macs do not have CoqIDE installed, you can go to
-    https://coq.inria.fr/coq-85, download CoqIDE_8.5beta2.dmg, open
-    it, and run CoqIDE directly, without installing it.
+(** Note: You may use either the lab computers, or your laptop.  Coq may not be installed on the Windows computers, you should use the Macs.  If the Macs do not have CoqIDE installed, you can go to https://coq.inria.fr/coq-85, download CoqIDE_8.5beta2.dmg, open it, and run CoqIDE directly, without installing it.
 
-    This file contains the exercises for Day 2.  Some are explicitly
-    marked as "Homework"; the rest can be done either in class or for
-    homework.
+  This file contains the exercises for Day 2.  Some are explicitly marked as "Homework"; the rest can be done either in class or for homework.
 
-    When doing exercises on your own, feel free to skip around; there
-    are some interesting puzzles near the bottom (around
-    [J_implies_UIP]).
+  When doing exercises on your own, feel free to skip around; there are some interesting puzzles near the bottom (around [J_implies_UIP]).
 
-    If you feel like you know exactly how a proof will go, but find it
-    painful and tedious to write out the proof terms explicitly, come
-    find me.  Coq has a lot of support for automation and taking care
-    of things that are easy and verbose, so you don't have to.
-    Proving should feel like a game.  If it doesn't, I can probably
-    help you with that.
+  If you feel like you know exactly how a proof will go, but find it painful and tedious to write out the proof terms explicitly, come find me.  Coq has a lot of support for automation and taking care of things that are easy and verbose, so you don't have to. Proving should feel like a game.  If it doesn't, I can probably help you with that.
 
-    N.B. There are many theorem provers out there, e.g., Agda, Idris,
-    NuPRL, Otter, Twelf, Isabelle/HOL, Mizar, Metamath *)
+  N.B. There are many theorem provers out there, e.g., Agda, Idris, NuPRL, Otter, Twelf, Isabelle/HOL, Mizar, Metamath *)
 
-(** The following are placeholders; [admit] indicates that something
-    should be filled in later. *)
+(** The following are placeholders; [admit] indicates that something should be filled in later. *)
 Axiom admit : forall {T}, T.
 Axiom admit1 : forall {T}, T.
 Axiom admit2 : forall {T}, T.
@@ -32,8 +17,7 @@ Axiom admit3 : forall {T}, T.
 
 (** ** Tautologies *)
 
-(** We'll fill in these first few together.  Any ideas for how to to
-    prove something like this? *)
+(** We'll fill in these first few together.  Any ideas for how to to prove something like this? *)
 
 Definition id : forall A, A -> A
   := admit.
@@ -57,8 +41,7 @@ Proof.
   refine admit.
 Defined.
 
-(** These two are exercises to do individually or with the people
-    sitting next to you. *)
+(** These two are exercises to do individually or with the people sitting next to you. *)
 
 Definition introduce_intermediate : forall A B C, (A -> (B -> C)) -> ((A -> B) -> (A -> C))
   := admit.
@@ -83,8 +66,7 @@ Definition explode : forall A B F, (forall C, F -> C) -> (A -> F) -> (A -> B)
 
 (** Challenge Homework Problems *)
 
-(** Come ask me about disjunction and negation during TAU if you are
-    interested in playing with these. *)
+(** Come ask me about disjunction and negation during TAU if you are interested in playing with these. *)
 
 (** Prove that the Law of Excluded Middle implies Double Negation Elimination *)
 
@@ -117,25 +99,15 @@ Print eq.
 
 Notation refl := eq_refl.
 
-(** Interesting question: Are all proofs of equality themselves equal?
-    Keep this in the back of your mind as we define what equality is.
-    To do this we need to define two notions of equality: judgmental,
-    and propositional.  *)
+(** Interesting question: Are all proofs of equality themselves equal? Keep this in the back of your mind as we define what equality is. To do this we need to define two notions of equality: judgmental, and propositional.  *)
 
-(** Coq knows some things about equality.  If Coq judges that two
-    things are equal (and equally trivially), then you can prove them
-    (propositionally) equal by reflexivity, with [refl].  In this
-    case, we say that they are also judgmentally equal.  For example:
-    *)
+(** Coq knows some things about equality.  If Coq judges that two things are equal (and equally trivially), then you can prove them (propositionally) equal by reflexivity, with [refl].  In this case, we say that they are also judgmentally equal.  For example: *)
 
 (** Propositional equality is denoted as [x = y]. *)
 
-(** Definition of judgmental equality, version 1: intuitively, [x] and
-    [y] are judgmentally equal if there is a really stupid, trivial
-    proof that [x = y]. *)
+(** Definition of judgmental equality, version 1: intuitively, [x] and [y] are judgmentally equal if there is a really stupid, trivial proof that [x = y]. *)
 
-(** Definition of judgmental equality, version 2: [x] and [y] are
-    judgmentally equal if (Coq says that) [refl] proves [x = y]. *)
+(** Definition of judgmental equality, version 2: [x] and [y] are judgmentally equal if (Coq says that) [refl] proves [x = y]. *)
 
 Definition one_plus_one_equals_two : 1 + 1 = 2
   := refl.
@@ -169,14 +141,9 @@ Compute 2 + 2.
 
 Compute 2 * 3.
 
-(** Definition of judgmental equality, version 3: [x] and [y] are
-    judgmentally equal if [Compute] gives you the same normal form for
-    [x] and [y].  N.B.  This is equivalent to what Coq is doing
-    internally. *)
+(** Definition of judgmental equality, version 3: [x] and [y] are judgmentally equal if [Compute] gives you the same normal form for [x] and [y].  N.B.  This is equivalent to what Coq is doing internally. *)
 
-(** Note that equality is homogeneous; the things you're comparing for
-    equality need to already have the same type.  You can ask if a
-    statement is valid using [Check]: *)
+(** Note that equality is homogeneous; the things you're comparing for equality need to already have the same type.  You can ask if a statement is valid using [Check]: *)
 
 Check 1. (* [1] is a number (a [nat]) *)
 
@@ -196,10 +163,7 @@ Definition id'' : forall (A : Type), A -> A
 Definition id''' : forall (A : Type) (pf : A), A
   := admit.
 
-(** Pattern matching is case analysis, on things that are defined by
-    cases (like, [bool], [nat]).  This is a technical meaning for
-    "pattern matching" or "case analysis", namely, "using a [match
-    ... with ... end] statement in Coq". *)
+(** Pattern matching is case analysis, on things that are defined by cases (like, [bool], [nat]).  This is a technical meaning for "pattern matching" or "case analysis", namely, "using a [match ... with ... end] statement in Coq". *)
 
 Definition is_positive : nat -> bool
   := admit.
@@ -292,13 +256,11 @@ Definition boolean_biconditional : bool -> bool -> bool
 
 
 
-(** Recall: Are all proofs of equality themselves equal?  Here we
-    define what equality is, i.e., how to use it. *)
+(** Recall: Are all proofs of equality themselves equal?  Here we define what equality is, i.e., how to use it. *)
 
 (** We can prove the J-rule by pattern matching.  *)
 
-(** We start off with the simpler version, called the "non-dependent"
-    version. *)
+(** We start off with the simpler version, called the "non-dependent" version. *)
 
 Definition J_nondep : forall (A : Type) (x : A) (y : A)
                              (H : x = y)
@@ -306,16 +268,13 @@ Definition J_nondep : forall (A : Type) (x : A) (y : A)
                         P x -> P y
   := admit.
 
-(** If you want to not always have to pass all of the arguments to [J]
-    explicitly, you can uncomment the following lines, removing the <<
-    and >>, to make [A], [x], and [y] be inferred automatically. *)
+(** If you want to not always have to pass all of the arguments to [J] explicitly, you can uncomment the following lines, removing the << and >>, to make [A], [x], and [y] be inferred automatically. *)
 (**
 <<
 Arguments J_nondep {A} {x} {y} H P _.
 >> *)
 
-(** Recall the blackboard proof of symmetry, that [x = y -> y = x].
-    Someone remind me how it goes. *)
+(** Recall the blackboard proof of symmetry, that [x = y -> y = x]. Someone remind me how it goes. *)
 
 (** First prove this by passing arguments to [J_nondep]. *)
 
@@ -361,16 +320,14 @@ Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
 
 Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
-(** Now the version with more bells and whistles, again provable by
-    pattern matching. *)
+(** Now the version with more bells and whistles, again provable by pattern matching. *)
 
 Definition J : forall (A : Type) (x : A) (y : A) (H : x = y)
                       (P : forall (y' : A) (H' : x = y'), Type),
                  P x refl -> P y H
   := admit.
 
-(** [J] also has a computation rule, which holds judgmentally.  We
-    start with the rule for [J_nondep]. *)
+(** [J] also has a computation rule, which holds judgmentally.  We start with the rule for [J_nondep]. *)
 
 Definition J_nondep_computes
 : forall (A : Type) (x : A)
@@ -386,9 +343,7 @@ Definition J_computes
     J A x x refl P k = k
   := admit.
 
-(** If you want to not always have to pass all of the arguments to [J]
-    explicitly, you can uncomment the following lines, removing the <<
-    and >>, to make [A], [x], and [y] be inferred automatically. *)
+(** If you want to not always have to pass all of the arguments to [J] explicitly, you can uncomment the following lines, removing the << and >>, to make [A], [x], and [y] be inferred automatically. *)
 (**
 <<
 Arguments J {A} {x} {y} H P _.
@@ -443,29 +398,11 @@ Definition sym_refl_J : forall A (x : A), sym_J (refl x) = refl x
 Definition sym_refl : forall A (x : A), sym (refl x) = refl x
   := admit.
 
-(** Recall the informal proof from yesterday's homework, which
-    "proved" that all proofs of [x = y] are themselves equal:
+(** Recall the informal proof from yesterday's homework, which "proved" that all proofs of [x = y] are themselves equal:
 
-    The [J] rule says informally that if you have a proof [p] of [x =
-    y], it suffices to assume that [y] _is_ [x] (to substitute [x] for
-    [y] in what you are trying to prove), and to assume that [p] is
-    [refl x] (to substitute [refl x] for [p] in what you are trying to
-    prove).  Suppose we have a type [A], two inhabitants [x] and [y]
-    of type [A], and two proofs [p] and [q] that [x = y].  By [J], it
-    suffices to assume that [y] is [x], that [p] is [refl x], and
-    hence it suffices to prove that [refl x = q], where [q] now has
-    type [x = x].  To prove this, again by [J], it suffices to assume
-    that [x] is [x] (it already is) and that [q] is [refl x], and
-    hence it suffices to prove [refl x = refl x].  We can prove this
-    by [refl (refl x)].  Thus for any proofs [p] and [q] that [x = y],
-    we have [p = q].  Qed.
+  The [J] rule says informally that if you have a proof [p] of [x = y], it suffices to assume that [y] _is_ [x] (to substitute [x] for [y] in what you are trying to prove), and to assume that [p] is [refl x] (to substitute [refl x] for [p] in what you are trying to prove).  Suppose we have a type [A], two inhabitants [x] and [y] of type [A], and two proofs [p] and [q] that [x = y].  By [J], it suffices to assume that [y] is [x], that [p] is [refl x], and hence it suffices to prove that [refl x = q], where [q] now has type [x = x].  To prove this, again by [J], it suffices to assume that [x] is [x] (it already is) and that [q] is [refl x], and hence it suffices to prove [refl x = refl x].  We can prove this by [refl (refl x)].  Thus for any proofs [p] and [q] that [x = y], we have [p = q].  Qed.
 
-    Try to formalize this proof in Coq, and see what goes wrong.  It
-    may help to use [refine] so that you can construct the proof
-    sentence by sentence.  If you are having trouble figuring out how
-    to instantiate [J] for a proof of equality [H : x = y], you can
-    ask Coq to figure it out for you by running [destruct H.].  You
-    can see what it did by typing [Show Proof.] afterwards. *)
+  Try to formalize this proof in Coq, and see what goes wrong.  It may help to use [refine] so that you can construct the proof sentence by sentence.  If you are having trouble figuring out how to instantiate [J] for a proof of equality [H : x = y], you can ask Coq to figure it out for you by running [destruct H.].  You can see what it did by typing [Show Proof.] afterwards. *)
 
 Definition J_implies_UIP : forall A (x y : A) (p q : x = y), p = q.
 Proof.
@@ -473,18 +410,14 @@ Proof.
   refine admit.
 Abort.
 
-(** The rest of these are explicitly Homework; feel free to take a
-    break now, or to keep going. *)
+(** The rest of these are explicitly Homework; feel free to take a break now, or to keep going. *)
 
 (** Recall from yesterday's homework that the [K] rule says: *)
 
 Definition K_rule_type
   := forall A (x : A) (H : x = x) (P : x = x -> Type), P refl -> P H.
 
-(** Prove that [K] implies uniqueness of identity proofs.  If you do
-    this interactively with [refine], you may find it useful to
-    [unfold K_rule_type in *] to see the definition of [K] in your
-    goals window. *)
+(** Prove that [K] implies uniqueness of identity proofs.  If you do this interactively with [refine], you may find it useful to [unfold K_rule_type in *] to see the definition of [K] in your goals window. *)
 
 Definition K_implies_UIP : forall (K : K_rule_type),
                            forall A (x y : A) (p q : x = y), p = q
@@ -495,9 +428,7 @@ Definition K_implies_UIP : forall (K : K_rule_type),
 Definition J_implies_K : K_rule_type
   := admit.
 
-(** Can you write down three "different" proofs of transitivity (they
-    should all be judgmentally different; [refl] should not prove any
-    two of them the same. *)
+(** Can you write down three "different" proofs of transitivity (they should all be judgmentally different; [refl] should not prove any two of them the same. *)
 
 Definition trans1 : forall A (x y z : A), x = y -> y = z -> x = z
   := admit1.
@@ -539,16 +470,11 @@ Definition trans_sym : forall A (x y z : A) (p : x = y) (q : y = z),
 
 (** *** Category theory *)
 
-(** Those of you familiar with category theory might find the
-    following properties interesting. *)
+(** Those of you familiar with category theory might find the following properties interesting. *)
 
 (** All exercises in this section are optional homework. *)
 
-(** We can look at [ap] as describing the action on morphisms
-    (equality proofs) of any function; the type of morphisms from [x :
-    A] to [y : A] is the type [x = y]; the action of [f : A -> B] on a
-    morphism [m : x = y] is [ap f m : f x = f y].  We can prove the
-    relevant functoriality properties. *)
+(** We can look at [ap] as describing the action on morphisms (equality proofs) of any function; the type of morphisms from [x : A] to [y : A] is the type [x = y]; the action of [f : A -> B] on a morphism [m : x = y] is [ap f m : f x = f y].  We can prove the relevant functoriality properties. *)
 
 (** Action on identity: *)
 
@@ -567,8 +493,7 @@ Definition ap_sym : forall {A B} (f : A -> B) {x y : A} (p : x = y),
                          ap f (sym p) = sym (ap f p)
   := admit.
 
-(** Furthermore, every function that specifies the action of a natural
-    transformation on objects is automatically natural: *)
+(** Furthermore, every function that specifies the action of a natural transformation on objects is automatically natural: *)
 
 Definition concat_Ap
 : forall {A B} (f g : A -> B)
@@ -579,20 +504,10 @@ Definition concat_Ap
 
 (** *** Further exploration:
 
-    These are completely optional, and moderately challenging.  If you
-    are interested, here are some problems that draw interesting
-    connections between this material and category theory.
+    These are completely optional, and moderately challenging.  If you are interested, here are some problems that draw interesting connections between this material and category theory.
 
 1. Can you find and prove a statement relating [sym_sym] to [sym_trans]?
 
-2. Can you find and prove a statement relating [sym] to [trans_assoc]
-   and [sym_trans] via [ap]?
+2. Can you find and prove a statement relating [sym] to [trans_assoc] and [sym_trans] via [ap]?
 
-3. The equality relation on a type forms a weak ω-groupoid (sometimes
-   written as a weak ∞-groupoid).  This means that there is structure
-   at every level.  The first few levels are given by [refl], [sym],
-   and [trans] (level 1); [sym_sym], [sym_trans], [trans_assoc],
-   [sym_refl], [trans_1p], [trans_p1], [trans_pV], and [trans_Vp]
-   (level 2).  The theorem statements in general are known as the
-   Stasheff polyhedra or Stasheff associahedra.  Can you discover more
-   of these rules? *)
+3. The equality relation on a type forms a weak ω-groupoid (sometimes written as a weak ∞-groupoid).  This means that there is structure at every level.  The first few levels are given by [refl], [sym], and [trans] (level 1); [sym_sym], [sym_trans], [trans_assoc], [sym_refl], [trans_1p], [trans_p1], [trans_pV], and [trans_Vp] (level 2).  The theorem statements in general are known as the Stasheff polyhedra or Stasheff associahedra.  Can you discover more of these rules? *)
