@@ -1,5 +1,9 @@
 (** * Exploring equality via homotopy and proof assistants - Day 2 - Equality in Coq *)
-(** Note: You may use either the lab computers, or your laptop.
+(** Note: You may use either the lab computers, or your laptop.  Coq
+    may not be installed on the Windows computers, you should use the
+    Macs.  If the Macs do not have CoqIDE installed, you can go to
+    https://coq.inria.fr/coq-85, download CoqIDE_8.5beta2.dmg, open
+    it, and run CoqIDE directly, without installing it.
 
     This file contains the exercises for Day 2.  Some are explicitly
     marked as "Homework"; the rest can be done either in class or for
@@ -28,7 +32,8 @@ Axiom admit3 : forall {T}, T.
 
 (** ** Tautologies *)
 
-(** We'll fill in these first few together.  Any ideas for how to to prove something like this? *)
+(** We'll fill in these first few together.  Any ideas for how to to
+    prove something like this? *)
 
 Definition id : forall A, A -> A
   := admit.
@@ -166,7 +171,8 @@ Compute 2 * 3.
 
 (** Definition of judgmental equality, version 3: [x] and [y] are
     judgmentally equal if [Compute] gives you the same normal form for
-    [x] and [y].  N.B.  This is what Coq is doing internally. *)
+    [x] and [y].  N.B.  This is equivalent to what Coq is doing
+    internally. *)
 
 (** Note that equality is homogeneous; the things you're comparing for
     equality need to already have the same type.  You can ask if a
@@ -294,19 +300,10 @@ Definition boolean_biconditional : bool -> bool -> bool
 (** We start off with the simpler version, called the "non-dependent"
     version. *)
 
-Definition J_nondep : forall (A : Type) (x : A) (P : A -> Type),
-                        P x -> forall (y : A), P y
-  := admit.
-
-Definition J : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type),
-                 P x refl -> forall (y : A) (H : x = y), P y H
-  := admit.
-
-(** [J] also has a computation rule, which holds judgmentally: *)
-
-Definition J_computes : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x = y'), Type)
-                               (k : P x refl),
-                          J A x P k x refl = k
+Definition J_nondep : forall (A : Type) (x : A) (y : A)
+                             (H : x = y)
+                             (P : A -> Type),
+                        P x -> P y
   := admit.
 
 (** If you want to not always have to pass all of the arguments to [J]
@@ -314,11 +311,20 @@ Definition J_computes : forall (A : Type) (x : A) (P : forall (y' : A) (H' : x =
     and >>, to make [A], [x], and [y] be inferred automatically. *)
 (**
 <<
-Arguments J {A} {x} P _ {y} H.
-Arguments J_computes {A x} P k.
+Arguments J_nondep {A} {x} {y} H P _.
 >> *)
 
-(** First prove this by pattern matching. *)
+(** Recall the blackboard proof of symmetry, that [x = y -> y = x].
+    Someone remind me how it goes. *)
+
+(** First prove this by passing arguments to [J_nondep]. *)
+
+Definition sym_J : forall A (x y : A), x = y -> y = x
+  := admit.
+
+Arguments sym_J {A x y} p, A x y p.
+
+(** Now prove this by pattern matching. *)
 
 Definition sym : forall A (x y : A), x = y -> y = x
   := admit.
@@ -327,26 +333,26 @@ Definition sym : forall A (x y : A), x = y -> y = x
 
 Arguments sym {A x y} p, A x y p.
 
-(** Now prove this by passing arguments to [J]. *)
+(** First prove this by passing arguments to [J_nondep]. *)
 
-Definition sym_J : forall A (x y : A), x = y -> y = x
+Definition trans_J : forall A (x y z : A), x = y -> y = z -> x = z
   := admit.
 
-Arguments sym_J {A x y} p, A x y p.
+Arguments trans_J {A x y z} p q, A x y z p q.
 
-(** First prove this by pattern matching. *)
+(** Now prove this by pattern matching. *)
 
 Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
   := admit.
 
 Arguments trans {A x y z} p q, A x y z p q.
 
-(** First prove this by passing arguments to [J]. *)
+(** First prove this by passing arguments to [J_nondep]. *)
 
-Definition trans_J : forall A (x y z : A), x = y -> y = z -> x = z
+Definition ap_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
   := admit.
 
-Arguments trans_J {A x y z} p q, A x y z p q.
+Arguments ap_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 (** First prove this by pattern matching. *)
 
@@ -355,43 +361,86 @@ Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
 
 Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
-(** Now prove this by passing arguments to [J]. *)
+(** Now the version with more bells and whistles, again provable by
+    pattern matching. *)
 
-Definition ap_J : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
+Definition J : forall (A : Type) (x : A) (y : A) (H : x = y)
+                      (P : forall (y' : A) (H' : x = y'), Type),
+                 P x refl -> P y H
   := admit.
 
-Arguments ap_J {A B} f {x y} p, {A B} f x y p, A B f x y p.
+(** [J] also has a computation rule, which holds judgmentally.  We
+    start with the rule for [J_nondep]. *)
+
+Definition J_nondep_computes
+: forall (A : Type) (x : A)
+         (P : A -> Type)
+         (k : P x),
+    J_nondep A x x refl P k = k
+  := admit.
+
+Definition J_computes
+: forall (A : Type) (x : A)
+         (P : forall (y' : A) (H' : x = y'), Type)
+         (k : P x refl),
+    J A x x refl P k = k
+  := admit.
+
+(** If you want to not always have to pass all of the arguments to [J]
+    explicitly, you can uncomment the following lines, removing the <<
+    and >>, to make [A], [x], and [y] be inferred automatically. *)
+(**
+<<
+Arguments J {A} {x} {y} H P _.
+Arguments J_computes {A x} P k.
+Arguments J_non_computes {A x} P k.
+>> *)
+
+
+(** First prove this by passing arguments to [J]. *)
+
+Definition trans_pV_J : forall A (x y : A) (p : x = y),
+                          trans_J p (sym_J p) = refl
+  := admit.
+
+(** Now prove this by pattern matching. *)
+
+Definition trans_pV : forall A (x y : A) (p : x = y),
+                        trans p (sym p) = refl
+  := admit.
 
 (** Exercises to do individually, or with the people next to you. *)
 
-(** First prove this by pattern matching. *)
+(** First prove this by filling in arguments to [J] explicitly. *)
+
+Definition sym_sym_J : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
+  := admit.
+
+Arguments sym_sym_J {A x y} p, A x y p.
+
+(** Now prove this by pattern matching. *)
 
 Definition sym_sym : forall A (x y : A) (p : x = y), sym (sym p) = p
   := admit.
 
 Arguments sym_sym {A x y} p, A x y p.
 
-(** Now prove this by filling in arguments to [J] explicitly. *)
-
-Definition sym_sym_J : forall A (x y : A) (p : x = y), sym_J (sym_J p) = p
+Definition trans_1p_J : forall A (x y : A) (p : x = y), trans_J refl p = p
   := admit.
 
 Definition trans_1p : forall A (x y : A) (p : x = y), trans refl p = p
   := admit.
 
-Definition trans_1p_J : forall A (x y : A) (p : x = y), trans_J refl p = p
+Definition trans_p1_J : forall A (x y : A) (p : x = y), trans_J p refl = p
   := admit.
 
 Definition trans_p1 : forall A (x y : A) (p : x = y), trans p refl = p
   := admit.
 
-Definition trans_p1_J : forall A (x y : A) (p : x = y), trans_J p refl = p
+Definition sym_refl_J : forall A (x : A), sym_J (refl x) = refl x
   := admit.
 
 Definition sym_refl : forall A (x : A), sym (refl x) = refl x
-  := admit.
-
-Definition sym_refl_J : forall A (x : A), sym_J (refl x) = refl x
   := admit.
 
 (** Recall the informal proof from yesterday's homework, which
@@ -430,7 +479,7 @@ Abort.
 (** Recall from yesterday's homework that the [K] rule says: *)
 
 Definition K_rule_type
-  := forall A (x : A) (P : x = x -> Type), P refl -> forall (H : x = x), P H.
+  := forall A (x : A) (H : x = x) (P : x = x -> Type), P refl -> P H.
 
 (** Prove that [K] implies uniqueness of identity proofs.  If you do
     this interactively with [refine], you may find it useful to
@@ -478,10 +527,6 @@ Definition trans_23 : forall A (x y z : A) (p : x = y) (q : y = z),
 
 Definition trans_assoc : forall A (x y z w : A) (p : x = y) (q : y = z) (r : z = w),
                            trans p (trans q r) = trans (trans p q) r
-  := admit.
-
-Definition trans_pV : forall A (x y : A) (p : x = y),
-                        trans p (sym p) = refl
   := admit.
 
 Definition trans_Vp : forall A (x y : A) (p : x = y),
@@ -540,11 +585,10 @@ Definition concat_Ap
 
 1. Can you find and prove a statement relating [sym_sym] to [sym_trans]?
 
-2. Can you find and prove a statement relating [trans] to [ap]?
+2. Can you find and prove a statement relating [sym] to [trans_assoc]
+   and [sym_trans] via [ap]?
 
-3. Can you find and prove a statement relating [sym] to [trans_assoc] and [sym_trans] via [ap]?
-
-4. The equality relation on a type forms a weak ω-groupoid (sometimes
+3. The equality relation on a type forms a weak ω-groupoid (sometimes
    written as a weak ∞-groupoid).  This means that there is structure
    at every level.  The first few levels are given by [refl], [sym],
    and [trans] (level 1); [sym_sym], [sym_trans], [trans_assoc],
