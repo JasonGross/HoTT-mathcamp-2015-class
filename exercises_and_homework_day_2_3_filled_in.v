@@ -339,30 +339,57 @@ Definition boolean_biconditional
 
 (** Recall: Are all proofs of equality themselves equal?  Here we define what equality is, i.e., how to use it. *)
 
+(** Defining equality:
+1. There's a proof "by reflexivity" which proves x = x (for all x)
+2. Given x, y, and a proof that x = y, to prove a property of y, it suffices to prove that property of x
+ *)
+
 (** We can prove the J-rule by pattern matching.  *)
 
 (** We start off with the simpler version, called the "non-dependent" version. *)
 
+(* A -> B is the same as forall (_ : A), B *)
+
 Definition J_nondep
 : forall (A : Type) (x : A) (y : A)
          (H : x = y)
-         (P : A -> Type),
-    P x -> P y
-  := admit.
+         (P : A -> Type)
+         (Px : P x),
+      P y
+  := fun A x y H P Px
+       => match H with
+           | refl => Px
+          end.
 
 (** If you want to not always have to pass all of the arguments to [J] explicitly, you can uncomment the following lines, removing the << and >>, to make [A], [x], and [y] be inferred automatically. *)
-(**
-<<
 Arguments J_nondep {A} {x} {y} H P _.
->> *)
 
 (** Recall the blackboard proof of symmetry, that [x = y -> y = x]. Someone remind me how it goes. *)
 
+(** 
+  * want y = x
+    - suffices to prove x = x by J
+             (property _ = x)
+      * have x = x by reflexivity
+*)
+
 (** First prove this by passing arguments to [J_nondep]. *)
 
+(**
+
+(x = y) -> ((y = z) -> (x = z))
+(x = y /\ y = z) -> (x = z)
+
+forall (x : A), B -> C
+fun (x : A) => ((fun b => c) : B -> C)
+fun (x : A) b => (c : C)
+
+*)
+
 Definition sym_J
-: forall A (x y : A), x = y -> y = x
-  := admit.
+: forall A (x y : A), (x = y) -> (y = x)
+  := fun A x y H
+       => J_nondep H (fun y' => y' = x) (refl _).
 
 Arguments sym_J {A x y} p, A x y p.
 
@@ -370,7 +397,17 @@ Arguments sym_J {A x y} p, A x y p.
 
 Definition sym
 : forall A (x y : A), x = y -> y = x
-  := admit.
+  := fun A x y H
+       => match H with
+           | refl => refl
+          end.
+
+Definition sym'
+: forall A (x y : A), x = y -> y = x
+  := fun A x y H
+       => match H in (_ = y') return (y' = x) with
+           | refl => refl
+          end.
 
 (** We allow writing [sym p] to mean [sym _ _ _ p] *)
 
@@ -378,10 +415,24 @@ Arguments sym {A x y} p, A x y p.
 
 (** First prove this by passing arguments to [J_nondep]. *)
 
+(**
+Given x = y
+Want: y = z -> x = z
+(Property _ = z -> x = z)
+Suffices to prove x = z -> x = z by J
+  *)
+
 Definition trans_J
 : forall A (x y z : A),
-    x = y -> y = z -> x = z
-  := admit.
+    x = y -> y = z -> x = z.
+Proof.
+  refine (fun A x y z H => _).
+  refine (J_nondep
+           H
+           (fun y' => y' = z -> x = z)
+           _).
+  refine (fun I => I).
+Defined.
 
 Arguments trans_J {A x y z} p q, A x y z p q.
 
@@ -414,6 +465,11 @@ Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 (** Now the version with more bells and whistles, again provable by pattern matching. *)
 
+(** Defining equality:
+1. There's a proof "by reflexivity" which proves x = x (for all x)
+2. Given x, y, and a proof _H_ that x = y, to prove a property of _y and H_, it suffices to prove that property of _x and "by reflexivity"_
+ *)
+
 Definition J
 : forall
     (A : Type) (x : A) (y : A)
@@ -421,8 +477,14 @@ Definition J
     (P : forall (y' : A)
                 (H' : x = y'),
            Type),
-    P x refl -> P y H
-  := admit.
+    P x refl -> P y H.
+Proof.
+  refine (fun A x y H P => _).
+  refine (fun Pxrefl => _).
+  refine (match H with
+           | refl => Pxrefl
+          end).
+Defined.
 
 (** [J] also has a computation rule, which holds judgmentally.  We start with the rule for [J_nondep]. *)
 
@@ -430,31 +492,39 @@ Definition J_nondep_computes
 : forall (A : Type) (x : A)
          (P : A -> Type)
          (k : P x),
-    J_nondep A x x refl P k = k
-  := admit.
+    J_nondep refl P k = k
+  := fun A x P k => refl.
+
+Eval compute in J_nondep refl.
+
+Arguments J {A} {x} {y} H P _.
 
 Definition J_computes
 : forall (A : Type) (x : A)
          (P : forall (y' : A) (H' : x = y'), Type)
          (k : P x refl),
-    J A x x refl P k = k
-  := admit.
+    J refl P k = k
+  := fun A x P k => refl.
 
 (** If you want to not always have to pass all of the arguments to [J] explicitly, you can uncomment the following lines, removing the << and >>, to make [A], [x], and [y] be inferred automatically. *)
-(**
-<<
-Arguments J {A} {x} {y} H P _.
 Arguments J_computes {A x} P k.
-Arguments J_non_computes {A x} P k.
->> *)
+Arguments J_nondep_computes {A x} P k.
 
 
 (** First prove this by passing arguments to [J]. *)
 
 Definition trans_pV_J
 : forall A (x y : A) (H : x = y),
-    trans_J H (sym_J H) = refl
-  := admit.
+    trans_J H (sym_J H) = refl.
+Proof.
+  refine (fun A x y H => _).
+  refine
+   (J H
+      (fun y' H'
+        => (trans_J H' (sym_J H') = refl x))
+      _).
+  refine refl.
+Defined.
 
 (** Now prove this by pattern matching. *)
 
