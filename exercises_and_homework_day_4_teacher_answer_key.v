@@ -1,29 +1,15 @@
 (** * Exploring equality via homotopy and proof assistants - Day 4 - Equality of types *)
-(** This file contains the exercises for Day 4.  Some are explicitly
-    marked as "Homework"; the rest can be done either in class or for
-    homework.
+(** This file contains the exercises for Day 4.  Some are explicitly marked as "Homework"; the rest can be done either in class or for homework.
 
-    When doing exercises on your own, feel free to skip around; there
-    are some interesting puzzles near the bottom.
+  If the Macs in the computer lab do not have CoqIDE installed, you can go to https://coq.inria.fr/coq-85, download CoqIDE_8.5beta2.dmg, open it, and run CoqIDE directly, without installing it.
 
-    If you feel like you know exactly how a proof will go, but find it
-    painful and tedious to write out the proof terms explicitly, come
-    find me.  Coq has a lot of support for automation and taking care
-    of things that are easy and verbose, so you don't have to.
-    Proving should feel like a game.  If it doesn't, I can probably
-    help you with that.
+  When doing exercises on your own, feel free to skip around; there are some interesting puzzles near the bottom.
 
-    This file is set up a bit differently from previous days; I want
-    you to generate more of the ideas for this one.  So I've left in
-    only the stubs at the top for you, without the comments that
-    pepper my version of the file.  You should follow along, copying
-    the the code as I reveal or type it on the screen, so you can play
-    with it to make suggestions.  I'll be releasing my (filled in)
-    version of the file after class today, so that you have the
-    comments for future reference. *)
+  If you feel like you know exactly how a proof will go, but find it painful and tedious to write out the proof terms explicitly, come find me.  Coq has a lot of support for automation and taking care of things that are easy and verbose, so you don't have to. Proving should feel like a game.  If it doesn't, I can probably help you with that.
 
-(** The following are placeholders; [admit] indicates that something
-    should be filled in later. *)
+  This file is set up a bit differently from previous days; I want you to generate more of the ideas for this one.  So I've left in only the stubs at the top for you, without the comments that pepper my version of the file.  You should follow along, copying the the code as I reveal or type it on the screen, so you can play with it to make suggestions.  I'll be releasing my (filled in) version of the file after class today, so that you have the comments for future reference. *)
+
+(** The following are placeholders; [admit] indicates that something should be filled in later. *)
 
 Axiom admit : forall {T}, T.
 
@@ -303,8 +289,7 @@ Definition prop_deencode : forall {A} (allpaths : is_prop A) {x y : A} (p : x = 
 
 (** *** Motivating Puzzle *)
 
-(** Puzzle for the day: classify the equalities of types.  That is,
-    fill in the following: *)
+(** Puzzle for the day: classify the equalities of types.  That is, fill in the following: *)
 
 Definition Type_code : forall (x y : Type), Type
   := admit.
@@ -312,8 +297,7 @@ Definition Type_code : forall (x y : Type), Type
 Definition Type_encode : forall {x y : Type}, x = y -> Type_code x y
   := admit.
 
-(** The following are unprovable in Coq, currently.  They are
-    collectively known as the "univalence axiom". *)
+(** The following are unprovable in Coq, currently.  They are collectively known as the "univalence axiom". *)
 
 Axiom Type_decode : forall {x y : Type}, Type_code x y -> x = y.
 Axiom Type_endecode : forall {x y : Type} (p : Type_code x y),
@@ -470,8 +454,7 @@ Arguments iso_fun {A B} _ _.
 
 Coercion iso_fun : Isomorphic >-> Funclass.
 
-(** Tell Coq that the function associated to an [Isomorphic] object is
-    always an isomorphism. *)
+(** Tell Coq that the function associated to an [Isomorphic] object is always an isomorphism. *)
 
 Existing Instance iso_isiso.
 
@@ -509,9 +492,7 @@ Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f
 
 (** But it's not provable!  Here's a counter-example: *)
 
-(** Recall the taboo from earlier; we can't prove equality of two
-    identical types defined separately.  But if we could prove
-    [Isomorphic_ap], then we could prove this! *)
+(** Recall the taboo from earlier; we can't prove equality of two identical types defined separately.  But if we could prove [Isomorphic_ap], then we could prove this! *)
 
 Definition iso_unit2_unit1 : unit2 ≅ unit1
   := admit.
@@ -521,19 +502,16 @@ Definition taboo1 : unit1 = unit2 :> Type
 
 (** Ooops!  We'll be coming back to this soon. *)
 
-(** More practice: You can prove the higher groupoid laws about
-    isomorphisms, but it's a bit of a pain. *)
+(** More practice: You can prove the higher groupoid laws about isomorphisms, but it's a bit of a pain. *)
 
-(** Before dealing with the taboo above, let's classify the equality
-    space of isomorphisms. *)
+(** Before dealing with the taboo above, let's classify the equality space of isomorphisms. *)
 
 (** Recall the encode-decode method of yesterday: *)
 
 Definition unit_code : forall (x y : unit), Type
   := fun _ _ => unit.
 
-(** We use curlie braces to not have to pass the [x] and [y] around
-    all the time. *)
+(** We use curlie braces to not have to pass the [x] and [y] around all the time. *)
 
 Definition unit_encode : forall {x y : unit}, x = y -> unit_code x y
   := fun _ _ _ => tt.
@@ -605,11 +583,7 @@ End assume_funext.
 
 (** *** Equivalences *)
 
-(** We can define a slight variation on isomorphisms, called
-    "contractible fibers", which generalizes the notion of
-    injective+surjective.  If you're interested in the various ways of
-    formulating equivalences, Chapter 4 of the HoTT Book
-    (http://homotopytypetheory.org/book/) is an excellent resource. *)
+(** We can define a slight variation on isomorphisms, called "contractible fibers", which generalizes the notion of injective+surjective.  If you're interested in the various ways of formulating equivalences, Chapter 4 of the HoTT Book (http://homotopytypetheory.org/book/) is an excellent resource. *)
 
 Class Contr (A : Type)
   := { center : A;
@@ -639,8 +613,7 @@ Existing Instance equiv_isequiv.
 Notation "A <~> B" := (Equiv A B) (at level 70).
 Notation "A ≃ B" := (Equiv A B) (at level 70).
 
-(** We can prove that an equivalence gives us an isomorphism very
-    easily. *)
+(** We can prove that an equivalence gives us an isomorphism very easily. *)
 
 Definition iso_of_equiv : forall {A B}, A ≃ B -> A ≅ B.
 Proof.
@@ -697,9 +670,7 @@ Proof.
     rewrite trans_pV, trans_1p; reflexivity. }
 Defined.
 
-(** Now, we prove the following helper lemma, which lets us get the
-    right codes for [Equiv].  We again assume functional
-    extensionality. *)
+(** Now, we prove the following helper lemma, which lets us get the right codes for [Equiv].  We again assume functional extensionality. *)
 
 Section assume_funext'.
   Context (function_decode : forall {A B} {f g : forall a : A, B a}, function_code f g -> f = g)
@@ -756,9 +727,7 @@ Section assume_funext'.
     := admit.
 End assume_funext'.
 
-(** Now that we have a "good" type of isomorphism/equivalence (one
-    with the right equality type), we can go back to the question of
-    [Isomorphic_ap]; Recall that we want to prove:
+(** Now that we have a "good" type of isomorphism/equivalence (one with the right equality type), we can go back to the question of [Isomorphic_ap]; Recall that we want to prove:
 
 <<
 Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f B.
@@ -772,8 +741,7 @@ Definition Type_code' : forall (x y : Type), Type
 Definition Type_encode' : forall {x y : Type}, x = y -> Type_code' x y
   := admit.
 
-(** The following are unprovable in Coq, currently.  They are
-    collectively known as the "univalence axiom". *)
+(** The following are unprovable in Coq, currently.  They are collectively known as the "univalence axiom". *)
 
 Axiom Type_decode' : forall {x y : Type}, Type_code' x y -> x = y.
 Axiom Type_endecode' : forall {x y : Type} (p : Type_code' x y),
@@ -809,20 +777,16 @@ Definition bool_arrow_bool_eq : (bool -> bool) = (bool * bool)%type
 Definition prod_commutes : forall (A B : Type), (A * B = B * A)%type
   := admit.
 
-(** Challenge: Show, without axioms, that univalence implies
-    functional extensionality: *)
+(** Challenge: Show, without axioms, that univalence implies functional extensionality: *)
 
 Definition univalence_implies_funext
 : (forall A B, IsEquiv (@Type_encode' A B))
   -> (forall A B (f g : forall a : A, B a), (forall a, f a = g a) -> f = g)
   := admit.
 
-(** Exercise 2.17 from the HoTT Book
-    (http://homotopytypetheory.org/book/ - don't worry about reading
-    the book):
+(** Exercise 2.17 from the HoTT Book (http://homotopytypetheory.org/book/ - don't worry about reading the book):
 
-    Show that if [A ≃ A'] and [B ≃ B'], then [(A * B) ≃ (A' * B')] in
-    two ways: once using univalence, and once without assuming it. *)
+  Show that if [A ≃ A'] and [B ≃ B'], then [(A * B) ≃ (A' * B')] in two ways: once using univalence, and once without assuming it. *)
 
 Definition equiv_functor_prod_univalence
 : (forall A B, IsEquiv (@Type_encode A B))

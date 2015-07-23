@@ -40,12 +40,14 @@ HASNATDYNLINK = true
 
 PUBLISH_FOLDER = ~/public_html/classes/mathcamp-2015
 
-.PHONY: all clean download-packages publish-1 publish-2 publish-3 publish-4 publish-5
+.PHONY: all clean download-packages publish-1 publish-2-pre publish-2-post publish-3-pre publish-3-post publish-4-pre publish-4-post publish-5-pre publish-5-post
 
 FAST_TARGETS := clean archclean Makefile.coq HoTT-syllabus-Jason.pdf HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
 
 EXERCISES = \
 	exercises_and_homework_day_2 \
+	exercises_and_homework_day_2_filled_in \
+	exercises_and_homework_day_2_3_filled_in \
 	exercises_and_homework_day_3 \
 	exercises_and_homework_day_4_student \
 	exercises_and_homework_day_4_teacher_answer_key \
@@ -65,11 +67,20 @@ publish-1:: HoTT-homework-day-1.pdf HoTT-notes-day-1.pdf
 	cp HoTT-notes-day-1.pdf $(PUBLISH_FOLDER)/day-1-notes.pdf
 	cp HoTT-notes-day-1.tex $(PUBLISH_FOLDER)/day-1-notes.tex
 
-publish-2:: publish-1 exercises_and_homework_day_2.v exercises_and_homework_day_2.html
+publish-2-pre:: publish-1 exercises_and_homework_day_2.v exercises_and_homework_day_2.html
 	cp coqdoc.css exercises_and_homework_day_2.v exercises_and_homework_day_2.html $(PUBLISH_FOLDER)/
 
-exercises_and_homework_day_2_student.v: exercises_and_homework_day_2.v exercises_and_homework_day_2.patch
-	sed -f exercises_and_homework_day_2.patch exercises_and_homework_day_2.v > $@
+publish-3-pre:: publish-2-pre exercises_and_homework_day_2_filled_in.v exercises_and_homework_day_2_filled_in.html
+	cp exercises_and_homework_day_2_filled_in.v  $(PUBLISH_FOLDER)/exercises_and_homework_day_3.v
+	cp exercises_and_homework_day_2_filled_in.html  $(PUBLISH_FOLDER)/exercises_and_homework_day_3.html
+
+publish-3-2:: publish-3-pre exercises_and_homework_day_3.v exercises_and_homework_day_3.html
+	cp exercises_and_homework_day_3.v  $(PUBLISH_FOLDER)/exercises_and_homework_day_3_part_2.v
+	cp exercises_and_homework_day_3.html  $(PUBLISH_FOLDER)/exercises_and_homework_day_3_part_2.html
+
+publish-4-pre:: publish-3-pre exercises_and_homework_day_2_3_filled_in.v exercises_and_homework_day_2_3_filled_in.html
+	cp exercises_and_homework_day_2_3_filled_in.v  $(PUBLISH_FOLDER)/exercises_and_homework_day_3_filled_in.v
+	cp exercises_and_homework_day_2_3_filled_in.html  $(PUBLISH_FOLDER)/exercises_and_homework_day_3_filled_in.html
 
 %.pdf: %.tex
 	@ pdflatex -synctex=1 $<

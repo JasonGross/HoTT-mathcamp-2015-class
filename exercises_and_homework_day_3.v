@@ -1,6 +1,8 @@
 (** * Exploring equality via homotopy and proof assistants - Day 3 - Inductive types and their equalities *)
 (** This file contains the exercises for Day 3.  Some are explicitly marked as "Homework"; the rest can be done either in class or for homework.
 
+  If the Macs in the computer lab do not have CoqIDE installed, you can go to https://coq.inria.fr/coq-85, download CoqIDE_8.5beta2.dmg, open it, and run CoqIDE directly, without installing it.
+
   When doing exercises on your own, feel free to skip around; there are some interesting puzzles near the bottom.
 
   If you feel like you know exactly how a proof will go, but find it painful and tedious to write out the proof terms explicitly, come find me.  Coq has a lot of support for automation and taking care of things that are easy and verbose, so you don't have to. Proving should feel like a game.  If it doesn't, I can probably help you with that.  *)
