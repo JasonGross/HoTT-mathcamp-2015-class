@@ -59,6 +59,9 @@ Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 Notation "{ x  |  P }" := ({ x : _ & P }) : type_scope.
 Notation "{ x : A  |  P }" := ({ x : A & P }) : type_scope.
 Notation "( x ; p )" := (existT _ x p).
+Notation "x .1" := (projT1 x) (at level 3, format "x '.1'").
+Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
+
 
 (** A type is called contractible if there is a (continuous!) function showing that all inhabitants are equal to a particular one. *)
 
@@ -185,6 +188,8 @@ Axiom Type_deencode
 
 (** This was all very abstract.  Let's drill down with some exmples. *)
 
+(** * Class Notes *)
+
 (** *** Provable equalities *)
 
 (** What equalities of types are provable? *)
@@ -267,13 +272,29 @@ Notation "A ≅ B" := (Isomorphic A B) (at level 70).
 (** We can prove the standard properties about isomorphisms: *)
 
 Definition Isomorphic_refl : forall {A}, A ≅ A
-  := admit.
+  := fun A => {| iso_fun x := x;
+                 iso_isiso := {| iso_inv x := x;
+                                 right_inv x := refl : (fun x => x) x = x;
+                                 left_inv x := refl |} |}.
 
 Definition Isomorphic_inverse : forall {A B}, A ≅ B -> B ≅ A
-  := admit.
+  := fun A B e =>
+       {| iso_fun := iso_inv e;
+          iso_isiso := {| iso_inv := iso_fun e;
+                          right_inv := left_inv e;
+                          left_inv := right_inv e |} |}.
 
-Definition Isomorphic_compose : forall {A B C}, A ≅ B -> B ≅ C -> A ≅ C
-  := admit.
+Definition Isomorphic_compose : forall {A B C}, A ≅ B -> B ≅ C -> A ≅ C.
+Proof.
+  refine (fun A B C e1 e2 =>
+            {| iso_fun x := iso_fun e2 (iso_fun e1 x);
+               iso_isiso := {| iso_inv x := iso_inv e1 (iso_inv e2 x) |} |}).
+  { refine (fun x => trans (ap e2 (right_inv e1 (iso_inv e2 x)))
+                           (right_inv e2 x)). }
+  { refine (fun x => trans (ap (iso_inv e1) (left_inv e2 (e1 x)))
+                           (left_inv e1 x)). }
+Defined.
+
 
 (** We would like to prove the last corresponding law: *)
 
@@ -284,87 +305,133 @@ Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f
 
 (** Recall the taboo from earlier; we can't prove equality of two identical types defined separately.  But if we could prove [Isomorphic_ap], then we could prove this! *)
 
-Definition iso_unit2_unit1 : unit2 ≅ unit1
-  := admit.
+Definition iso_unit2_unit1 : unit2 ≅ unit1.
+Proof.
+  refine {| iso_fun := fun x => tt1;
+            iso_isiso := {| iso_inv := fun x => tt2 |} |}.
+  { refine (fun x => match x with tt1 => refl end). }
+  { refine (fun x => match x with tt2 => refl end). }
+Defined.
 
 Definition taboo1 : unit1 = unit2 :> Type
   := Isomorphic_ap (fun T => T = unit2) iso_unit2_unit1 refl.
 
 (** Ooops!  We'll be coming back to this soon. *)
 
-(** More practice: You can prove the higher groupoid laws about isomorphisms, but it's a bit of a pain. *)
-
 (** Before dealing with the taboo above, let's classify the equality space of isomorphisms. *)
 
-(** ** Equality classification *)
+(** Two isomorphisms should be equal if the underlying functions are equal. *)
 
-(** We can classify the equality types.  For each type, we come up with a simpler type that represents ("codes for") its equality type.  Then we prove that this type is isomorphic to the given equality type.  The exercises here are all to help understand how the encode-decode method works, to build up to function extensionality and univalence, and, for sigma types, to solve the first puzzle.  We'll do them as needed to explain the method; the rest are (optional) homework.  There are more exercises at the bottom of the file. *)
+Definition iso_code : forall {A B} (x y : A ≅ B), Type
+  := fun A B x y => iso_fun x = iso_fun y.
 
-(** *** [unit] *)
+Definition iso_encode : forall {A B} {x y : A ≅ B}, x = y -> iso_code x y
+  := fun A B x y H => match H with
+                       | refl => refl
+                      end.
 
-Definition unit_code : forall (x y : unit), Type
+Definition iso_decode : forall {A B} {x y : A ≅ B}, iso_code x y -> x = y
   := admit.
 
-(** We use curlie braces to not have to pass the [x] and [y] around all the time. *)
+(** Ooops.  Turns out this isn't provable.  Challenge: Figure out why. *)
 
-Definition unit_encode : forall {x y : unit}, x = y -> unit_code x y
+(** *** Equivalences *)
+
+(** We can define a slight variation on isomorphisms, called "contractible fibers", which generalizes the notion of injective+surjective.  If you're interested in the various ways of formulating equivalences, Chapter 4 of the HoTT Book (http://homotopytypetheory.org/book/) is an excellent resource. *)
+
+Class Contr (A : Type)
+  := { center : A;
+       contr : forall y, center = y }.
+
+Arguments center A {_}.
+
+Class IsEquiv {A B} (f : A -> B)
+  := Build_IsEquiv : forall b, Contr { a : A | f a = b }.
+
+Record Equiv A B
+  := { equiv_fun : A -> B;
+       equiv_isequiv : IsEquiv equiv_fun }.
+
+Arguments equiv_fun {A B} _ _.
+Arguments equiv_isequiv {A B} _ _.
+
+(** Let us use an object of type [Equiv] as a function: *)
+
+Coercion equiv_fun : Equiv >-> Funclass.
+
+(** Tell Coq that the function associated to an [Equiv] object is
+    always an equivalence. *)
+
+Existing Instance equiv_isequiv.
+
+Notation "A <~> B" := (Equiv A B) (at level 70).
+Notation "A ≃ B" := (Equiv A B) (at level 70).
+
+(** The following
+
+(** We can prove that an equivalence gives us an isomorphism very easily. *)
+
+Definition iso_of_equiv : forall {A B}, A ≃ B -> A ≅ B.
+Proof.
+  refine (fun A B e
+          => {| iso_fun x := e x;
+                iso_isiso := {| iso_inv x := (@center _ (equiv_isequiv e x)).1 |} |}).
+  { intro x.
+    refine ((center {a : A | e a = x}).2). }
+  { intro x.
+    refine (@trans _ _ (existT (fun a => e a = e x) x (refl (e x))).1 _ _ _).
+    { refine (ap _ _).
+      refine (contr _). }
+    { simpl.
+      refine (refl x). } }
+Defined.
+
+(** We can go the other way with more work. *)
+
+(** Optional Homework: Complete this proof. *)
+
+Definition equiv_of_iso : forall {A B}, A ≅ B -> A ≃ B.
+Proof.
+  refine (fun A B e
+          => {| equiv_fun := e |}).
+  refine (fun b => _).
+  refine {| center := existT (fun a => e a = b) (iso_inv e b) (right_inv e b);
+            contr := _ |}.
+  refine admit.
+Defined.
+
+(** We can prove iso_of_equiv; it's further down.  For now *)
+
+(** Now that we have a "good" type of isomorphism/equivalence (one with the right equality type), we can go back to the question of [Isomorphic_ap]; Recall that we want to prove:
+
+<<
+Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f B.
+>> *)
+
+(** We can prove this by axiomatizing the codes for types: *)
+
+Definition Type_code' : forall (x y : Type), Type
+  := fun x y => x ≃ y.
+
+Definition Type_encode' : forall {x y : Type}, x = y -> Type_code' x y
   := admit.
 
-Definition unit_decode : forall {x y : unit}, unit_code x y -> x = y
-  := admit.
+(** The following are unprovable in Coq, currently.  They are collectively known as the "univalence axiom". *)
 
-Definition unit_endecode : forall {x y} (p : unit_code x y),
-                             unit_encode (unit_decode p) = p
-  := admit.
+Axiom Type_decode' : forall {x y : Type}, Type_code' x y -> x = y.
+Axiom Type_endecode' : forall {x y : Type} (p : Type_code' x y),
+                         Type_encode' (Type_decode' p) = p.
+Axiom Type_deencode' : forall {x y : Type} (p : x = y),
+                         Type_decode' (Type_encode' p) = p.
 
-Definition unit_deencode : forall {x y} (p : x = y),
-                             unit_decode (unit_encode p) = p
-  := admit.
-
-
-Definition unit_iso : forall x y : unit, (x = y) ≅ unit_code x y
-  := admit.
-
-(** *** [bool] *)
-
-Definition bool_code : forall (x y : bool), Type
-  := admit.
-
-Definition bool_encode : forall {x y : bool}, x = y -> bool_code x y
-  := admit.
-
-Definition bool_decode : forall {x y : bool}, bool_code x y -> x = y
-  := admit.
-
-Definition bool_endecode : forall {x y : bool} (p : bool_code x y),
-                             bool_encode (bool_decode p) = p
-  := admit.
-
-Definition bool_deencode : forall {x y : bool} (p : x = y),
-                             bool_decode (bool_encode p) = p
+Definition Univalence : forall {x y : Type}, IsEquiv (@Type_encode' x y)
   := admit.
 
 
-(** *** [Empty_set] *)
 
-Definition Empty_set_code : forall (x y : Empty_set), Type
-  := admit.
+(** To prove the following two, you will need to first do the codes for sigma types and function types. *)
 
-Definition Empty_set_encode : forall {x y : Empty_set},
-                                x = y -> Empty_set_code x y
-  := admit.
 
-Definition Empty_set_decode : forall {x y : Empty_set},
-                                Empty_set_code x y -> x = y
-  := admit.
-
-Definition Empty_set_endecode : forall {x y : Empty_set} (p : Empty_set_code x y),
-                                  Empty_set_encode (Empty_set_decode p) = p
-  := admit.
-
-Definition Empty_set_deencode : forall {x y : Empty_set} (p : x = y),
-                                  Empty_set_decode (Empty_set_encode p) = p
-  := admit.
 
 
 (** *** arrow types *)
@@ -403,7 +470,6 @@ Axiom function_deencode : forall {A B} {f g : forall a : A, B a} (p : f = g),
                             function_decode (function_encode p) = p.
 
 
-
 (** *** [sigma] (dependent pairs) *)
 
 (** Homework *)
@@ -425,77 +491,6 @@ Definition sigma_deencode : forall {A B} {x y : { a : A | B a }} (p : x = y),
                              sigma_decode (sigma_encode p) = p
   := admit.
 
-
-(** Back to isomorphisms. *)
-
-Definition iso_code : forall {A B} (x y : A ≅ B), Type
-  := fun A B x y => (x : A -> B) = (y : A -> B).
-
-Definition iso_encode : forall {A B} {x y : A ≅ B}, x = y -> iso_code x y
-  := fun A B x y H => match H with
-                       | refl => refl
-                      end.
-
-Definition iso_decode : forall {A B} {x y : A ≅ B}, iso_code x y -> x = y
-  := admit.
-
-Definition iso_endecode : forall {A B} {x y : A ≅ B} (p : iso_code x y),
-                            iso_encode (iso_decode p) = p
-  := admit.
-
-Definition iso_deencode : forall {A B} {x y : A ≅ B} (p : x = y),
-                            iso_decode (iso_encode p) = p
-  := admit.
-
-(** Ooops.  Turns out this isn't provable.  Challenge: Figure out why. *)
-
-(** *** Equivalences *)
-
-(** We can define a slight variation on isomorphisms, called "contractible fibers", which generalizes the notion of injective+surjective.  If you're interested in the various ways of formulating equivalences, Chapter 4 of the HoTT Book (http://homotopytypetheory.org/book/) is an excellent resource. *)
-
-Class Contr (A : Type)
-  := { center : A;
-       contr : forall y, center = y }.
-
-Arguments center A {_}.
-
-Class IsEquiv {A B} (f : A -> B)
-  := Build_IsEquiv : forall b, Contr { a : A | f a = b }.
-
-Record Equiv A B
-  := { equiv_fun : A -> B;
-       equiv_isequiv : IsEquiv equiv_fun }.
-
-Arguments equiv_fun {A B} _ _.
-Arguments equiv_isequiv {A B} _ _.
-
-(** Let us use an object of type [Equiv] as a function: *)
-
-Coercion equiv_fun : Equiv >-> Funclass.
-
-(** Tell Coq that the function associated to an [Equiv] object is
-    always an equivalence. *)
-
-Existing Instance equiv_isequiv.
-
-Notation "A <~> B" := (Equiv A B) (at level 70).
-Notation "A ≃ B" := (Equiv A B) (at level 70).
-
-(** We can prove that an equivalence gives us an isomorphism very easily. *)
-
-Definition iso_of_equiv : forall {A B}, A ≃ B -> A ≅ B.
-Proof.
-  refine admit.
-Defined.
-
-(** We can go the other way with more work. *)
-
-(** Optional Homework: Complete this proof. *)
-
-Definition equiv_of_iso : forall {A B}, A ≅ B -> A ≃ B.
-Proof.
-  refine admit.
-Defined.
 
 (** Now, we prove the following helper lemma, which lets us get the right codes for [Equiv].  We again assume functional extensionality. *)
 
@@ -524,31 +519,6 @@ Definition equiv_endecode : forall {A B} {f g : A ≃ B} (p : equiv_code f g),
 
 Definition equiv_deencode : forall {A B} {f g : A ≃ B} (p : f = g),
                               equiv_decode (equiv_encode p) = p
-  := admit.
-
-(** Now that we have a "good" type of isomorphism/equivalence (one with the right equality type), we can go back to the question of [Isomorphic_ap]; Recall that we want to prove:
-
-<<
-Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f B.
->> *)
-
-(** We can prove this by axiomatizing the codes for types: *)
-
-Definition Type_code' : forall (x y : Type), Type
-  := fun x y => x ≃ y.
-
-Definition Type_encode' : forall {x y : Type}, x = y -> Type_code' x y
-  := admit.
-
-(** The following are unprovable in Coq, currently.  They are collectively known as the "univalence axiom". *)
-
-Axiom Type_decode' : forall {x y : Type}, Type_code' x y -> x = y.
-Axiom Type_endecode' : forall {x y : Type} (p : Type_code' x y),
-                         Type_encode' (Type_decode' p) = p.
-Axiom Type_deencode' : forall {x y : Type} (p : x = y),
-                         Type_decode' (Type_encode' p) = p.
-
-Definition Univalence : forall {x y : Type}, IsEquiv (@Type_encode' x y)
   := admit.
 
 (** *** Homework: Playing with univalence *)
@@ -766,116 +736,74 @@ Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 
 (** Note well: [J] is the eliminator for the equality type. *)
 
+(** ** Equality classification *)
 
-(** *** [prod] *)
+(** We can classify the equality types.  For each type, we come up with a simpler type that represents ("codes for") its equality type.  Then we prove that this type is isomorphic to the given equality type.  The exercises here are all to help understand how the encode-decode method works, to build up to function extensionality and univalence, and, for sigma types, to solve the first puzzle.  We'll do them as needed to explain the method; the rest are (optional) homework.  There are more exercises at the bottom of the file. *)
 
-Definition prod_code : forall {A B} (x y : A * B), Type
+(** *** [unit] *)
+
+Definition unit_code : forall (x y : unit), Type
   := admit.
 
-Definition prod_encode : forall {A B} {x y : A * B}, x = y -> prod_code x y
+(** We use curlie braces to not have to pass the [x] and [y] around all the time. *)
+
+Definition unit_encode : forall {x y : unit}, x = y -> unit_code x y
   := admit.
 
-Definition prod_decode : forall {A B} {x y : A * B}, prod_code x y -> x = y
+Definition unit_decode : forall {x y : unit}, unit_code x y -> x = y
   := admit.
 
-Definition prod_endecode : forall {A B} {x y : A * B} (p : prod_code x y),
-                             prod_encode (prod_decode p) = p
+Definition unit_endecode : forall {x y} (p : unit_code x y),
+                             unit_encode (unit_decode p) = p
   := admit.
 
-Definition prod_deencode : forall {A B} {x y : A * B} (p : x = y),
-                             prod_decode (prod_encode p) = p
-  := admit.
-
-
-(** *** [sum] *)
-
-Definition sum_code : forall {A B} (x y : A + B), Type
-  := admit.
-
-Definition sum_encode : forall {A B} {x y : A + B}, x = y -> sum_code x y
-  := admit.
-
-Definition sum_decode : forall {A B} {x y : A + B}, sum_code x y -> x = y
-  := admit.
-
-Definition sum_endecode : forall {A B} {x y : A + B} (p : sum_code x y),
-                             sum_encode (sum_decode p) = p
-  := admit.
-
-Definition sum_deencode : forall {A B} {x y : A + B} (p : x = y),
-                             sum_decode (sum_encode p) = p
+Definition unit_deencode : forall {x y} (p : x = y),
+                             unit_decode (unit_encode p) = p
   := admit.
 
 
-(** *** [nat] *)
-
-(** Warmup: *)
-
-Definition zero_ne_one : 0 = 1 -> Empty_set
+Definition unit_iso : forall x y : unit, (x = y) ≅ unit_code x y
   := admit.
 
-(** Hint for the above: Use [J]. *)
+(** *** [bool] *)
 
-Definition zero_ne_succ : forall n, 0 = S n -> Empty_set
+Definition bool_code : forall (x y : bool), Type
   := admit.
 
-Definition nat_code : forall (x y : nat), Type
+Definition bool_encode : forall {x y : bool}, x = y -> bool_code x y
   := admit.
 
-Definition nat_encode : forall {x y : nat},
-                                x = y -> nat_code x y
+Definition bool_decode : forall {x y : bool}, bool_code x y -> x = y
   := admit.
 
-Definition nat_decode : forall {x y : nat},
-                                nat_code x y -> x = y
+Definition bool_endecode : forall {x y : bool} (p : bool_code x y),
+                             bool_encode (bool_decode p) = p
   := admit.
 
-Definition nat_endecode : forall {x y : nat} (p : nat_code x y),
-                                  nat_encode (nat_decode p) = p
-  := admit.
-
-Definition nat_deencode : forall {x y : nat} (p : x = y),
-                                  nat_decode (nat_encode p) = p
+Definition bool_deencode : forall {x y : bool} (p : x = y),
+                             bool_decode (bool_encode p) = p
   := admit.
 
 
-(** *** [option] *)
+(** *** [Empty_set] *)
 
-Definition option_code : forall {A} (x y : option A), Type
+Definition Empty_set_code : forall (x y : Empty_set), Type
   := admit.
 
-Definition option_encode : forall {A} {x y : option A}, x = y -> option_code x y
+Definition Empty_set_encode : forall {x y : Empty_set},
+                                x = y -> Empty_set_code x y
   := admit.
 
-Definition option_decode : forall {A} {x y : option A}, option_code x y -> x = y
+Definition Empty_set_decode : forall {x y : Empty_set},
+                                Empty_set_code x y -> x = y
   := admit.
 
-Definition option_endecode : forall {A} {x y : option A} (p : option_code x y),
-                             option_encode (option_decode p) = p
+Definition Empty_set_endecode : forall {x y : Empty_set} (p : Empty_set_code x y),
+                                  Empty_set_encode (Empty_set_decode p) = p
   := admit.
 
-Definition option_deencode : forall {A} {x y : option A} (p : x = y),
-                             option_decode (option_encode p) = p
-  := admit.
-
-
-(** *** [list] *)
-
-Definition list_code : forall {A} (x y : list A), Type
-  := admit.
-
-Definition list_encode : forall {A} {x y : list A}, x = y -> list_code x y
-  := admit.
-
-Definition list_decode : forall {A} {x y : list A}, list_code x y -> x = y
-  := admit.
-
-Definition list_endecode : forall {A} {x y : list A} (p : list_code x y),
-                             list_encode (list_decode p) = p
-  := admit.
-
-Definition list_deencode : forall {A} {x y : list A} (p : x = y),
-                             list_decode (list_encode p) = p
+Definition Empty_set_deencode : forall {x y : Empty_set} (p : x = y),
+                                  Empty_set_decode (Empty_set_encode p) = p
   := admit.
 
 
