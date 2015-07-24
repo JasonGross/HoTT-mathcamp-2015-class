@@ -311,53 +311,17 @@ Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 
 (** What equalities of types are provable? *)
 
-(** Ask the students to come up with this. *)
+
+Definition some_type_equality : unit = unit
+  := refl.
+
+Inductive unit1 : Type := tt1.
+Inductive unit2 : Type := tt2.
+
+Fail Definition unit1_equals_unit2 : unit1 = unit2
+  := refl.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Definition unit_refl : unit = unit
-  := admit.
-
-(** Can you prove this one?  (Take a minute to try on your own.) *)
-
-Inductive unit1 := tt1.
-Inductive unit2 := tt2.
-
-Definition unit12 : unit1 = unit2
-  := admit.
 
 (** Can you prove other ones? *)
 
@@ -365,7 +329,33 @@ Definition unit12 : unit1 = unit2
 
 (** What equalities of types are provably absurd? *)
 
-(** Ask the students to come up with this. *)
+Definition unit_ne_empty_set
+ : unit = Empty_set -> Empty_set.
+Proof.
+  refine (fun P => _).
+  refine (J P (fun x _ => x) _).
+  refine tt.
+Defined.
+
+Definition true_ne_false
+: true = false -> Empty_set.
+Proof.
+  refine (fun P => _).
+  refine (J P (fun f _ => if f then unit else Empty_set) _).
+  refine tt.
+Defined.
+
+Definition unit_ne_bool
+ : bool = unit -> Empty_set.
+Proof.
+  refine (fun P => _).
+  refine (let alleq : forall x y : unit, x = y := _ in _).
+  { intros [] [].
+    refine refl. }
+  refine (J P (fun T _ => (forall x y : T, x = y) -> Empty_set) _ alleq).
+  refine (fun alleq_bool => _).
+  refine (true_ne_false (alleq_bool true false)).
+Defined.
 
 
 
@@ -378,23 +368,6 @@ Definition unit12 : unit1 = unit2
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Definition unit_Empty_set_absurd : unit = Empty_set -> Empty_set
-  := admit.
-
-(** More generally, when are two types provably different? *)
 
 
 
@@ -585,10 +558,13 @@ Axiom arrow_deencode : forall {A B} {f g : A -> B} (p : f = g),
 (** *** Pi types (dependent function types) *)
 
 Definition function_code : forall {A B} (f g : forall a : A, B a), Type
-  := admit.
+  := fun A B f g => forall a, f a = g a.
 
 Definition function_encode : forall {A B} {f g : forall a : A, B a}, f = g -> function_code f g
-  := admit.
+  := fun A B f g H
+       => match H with
+           | refl => fun a => refl (f a)
+          end.
 
 (** The rest aren't currently provable in Coq; it's the axiom of functional extensionality. *)
 
@@ -625,10 +601,12 @@ Definition sigma_deencode : forall {A B} {x y : { a : A | B a }} (p : x = y),
 (** Back to isomorphisms. *)
 
 Definition iso_code : forall {A B} (x y : A ≅ B), Type
-  := admit.
+  := fun A B x y => (x : A -> B) = (y : A -> B).
 
 Definition iso_encode : forall {A B} {x y : A ≅ B}, x = y -> iso_code x y
-  := admit.
+  := fun A B x y H => match H with
+                       | refl => refl
+                      end.
 
 Definition iso_decode : forall {A B} {x y : A ≅ B}, iso_code x y -> x = y
   := admit.
@@ -704,7 +682,7 @@ Proof.
 Defined.
 
 Definition equiv_code : forall {A B} (f g : A ≃ B), Type
-  := admit.
+  := fun A B f g => (f : A -> B) = (g : A -> B).
 
 Definition equiv_encode : forall {A B} {f g : A ≃ B}, f = g -> equiv_code f g
   := admit.

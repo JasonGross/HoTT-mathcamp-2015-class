@@ -194,7 +194,7 @@ Inductive unit : Set := tt.
 
 (** Inductive Empty_set : Type := ... *)
 
-(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by recursion on [unit], if we assume that [False = (True -> True)] *)
+(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by recursion on [unit], if we assume that [True = (False -> False)] *)
 
 (** Any that we don't do in class are homework *)
 
