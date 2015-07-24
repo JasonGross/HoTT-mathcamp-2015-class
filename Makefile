@@ -48,7 +48,9 @@ EXERCISES = \
 	exercises_and_homework_day_2 \
 	exercises_and_homework_day_2_filled_in \
 	exercises_and_homework_day_2_3_filled_in \
-	exercises_and_homework_day_3 \
+	exercises_and_homework_day_3_student \
+	exercises_and_homework_day_3_teacher \
+	exercises_and_homework_day_3_teacher_cheat_sheet \
 	exercises_and_homework_day_4_student \
 	exercises_and_homework_day_4_teacher_answer_key \
 	exercises_and_homework_day_5_teacher_answer_key

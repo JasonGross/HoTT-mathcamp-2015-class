@@ -366,7 +366,7 @@ Arguments J_nondep {A} {x} {y} H P _.
 
 (** Recall the blackboard proof of symmetry, that [x = y -> y = x]. Someone remind me how it goes. *)
 
-(** 
+(**
   * want y = x
     - suffices to prove x = x by J
              (property _ = x)
@@ -467,7 +467,7 @@ Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
 (** Defining equality:
 1. There's a proof "by reflexivity" which proves x = x (for all x)
-2. Given x, y, and a proof _H_ that x = y, to prove a property of _y and H_, it suffices to prove that property of _x and "by reflexivity"_
+2. Given x, y, and a proof *H* that x = y, to prove a property of *y and H*, it suffices to prove that property of *x and "by reflexivity"*
  *)
 
 Definition J
