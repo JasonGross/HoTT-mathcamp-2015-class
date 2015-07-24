@@ -346,6 +346,8 @@ Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
 
 
 
+Inductive unit1 := tt1.
+Inductive unit2 := tt2.
 
 (** *** Provable inequalities *)
 
