@@ -19,12 +19,26 @@ Set Asymmetric Patterns.
 (** Some filled in exercises from yesterday; feel free to paste more here. *)
 
 Notation refl := eq_refl.
-Definition sym : forall A (x y : A), x = y -> y = x := eq_sym.
+Definition sym : forall A (x y : A), x = y -> y = x
+  := fun A x y p
+     => match p in (_ = y) return y = x with
+          | refl => refl
+        end.
+
 (** We allow writing [sym p] to mean [sym _ _ _ p] *)
+
 Arguments sym {A x y} p, A x y p.
+
 Definition trans : forall A (x y z : A), x = y -> y = z -> x = z
-  := eq_trans.
+  := fun A x y z p
+     => match p in (_ = y) return y = z -> x = z with
+          | refl => fun q => match q in (_ = z) return x = z with
+                               | refl => refl
+                             end
+        end.
+
 Arguments trans {A x y z} p q, A x y z p q.
+
 Definition J : forall (A : Type) (x : A) (y : A)
                       (H : x = y)
                       (P : forall (y' : A) (H' : x = y'), Type),
@@ -32,25 +46,17 @@ Definition J : forall (A : Type) (x : A) (y : A)
   := fun A x y H P k => match H with
                           | refl => k
                         end.
+
 Arguments J {A} {x} {y} H P _.
-Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
-  := fun A B f x y p
-     => match p with
-          | refl => refl
-        end.
-
-Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
-
 
 (* end hide *)
 
 (** ** Guiding Puzzles *)
 
-(** There are three guiding questions for today:
+(** There are two guiding questions for today:
 
  1. What are (inductive) types?
- 2. What does it mean to say that two inhabitants of a given type are equal?
- 3. Where is equality under-specified, and how can we extend the patterns we see to fill in these areas? *)
+ 2. What does it mean to say that two inhabitants of a given type are equal? *)
 
 (** *** Puzzle 1: contractibility of based path spaces *)
 
@@ -59,9 +65,6 @@ Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 Notation "{ x  |  P }" := ({ x : _ & P }) : type_scope.
 Notation "{ x : A  |  P }" := ({ x : A & P }) : type_scope.
 Notation "( x ; p )" := (existT _ x p).
-Notation "x .1" := (projT1 x) (at level 3, format "x '.1'").
-Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
-
 
 (** A type is called contractible if there is a (continuous!) function showing that all inhabitants are equal to a particular one. *)
 
@@ -70,26 +73,19 @@ Definition is_contractible : Type -> Type
 
 (** Puzzle: The following theorem is provable.  Prove it. *)
 
-Definition contractible_pointed
-: forall (A : Type) (y : A),
-    is_contractible { x : A | x = y }.
-Proof.
-  refine (fun A y => _).
-  refine ((y; refl); _).
-  refine (fun y' => _).
-  refine admit.
-Defined.
+Definition contractible_pointed : forall (A : Type) (y : A),
+                                    is_contractible { x : A | y = x }
+  := admit.
 
 (** Note that [x = y :> T] means [x : T], [y : T], and [x = y].  It is the notation for [@eq T x y].  It is how we write $x =_T y$ #<span class="inlinecode">x =<sub>T</sub> y</span># in Coq. *)
 
 (** Since equals are inter-substitutable, we should be able to prove: *)
 
-Definition contractible_to_UIP
-: forall (A : Type) (y : A)
-         (x : A)
-         (p p' : y = x),
-    ((x; p) = (x; p') :> { x : A | y = x })
-    -> p = p'
+Definition contractible_to_UIP : forall (A : Type) (y : A)
+                                        (x : A)
+                                        (p p' : y = x),
+                                   ((x; p) = (x; p') :> { x : A | y = x })
+                                   -> p = p'
   := admit.
 
 (** But it turns out that we can't prove this.  Why not?  Give both a formal, type theoretic reason (what terms don't typecheck?), and a topological reason. *)
@@ -104,8 +100,7 @@ Definition contractible_to_UIP
 
 Section general_classification.
 
-  Definition code_correct_P
-  : forall {A : Type} (code : A -> A -> Type), Type
+  Definition code_correct_P : forall {A : Type} (code : A -> A -> Type), Type
     := admit.
 
   (** We assume we are given a type, a [code], an [encode], and a [decode].  We introduce the assumptions as we get to definitions that should need them. *)
@@ -113,24 +108,21 @@ Section general_classification.
   Context {A : Type} (code : A -> A -> Type)
           (decode' : forall x y, code x y -> x = y).
 
-  Definition decode
-  : forall {x y}, code x y -> x = y
+  Definition decode : forall {x y}, code x y -> x = y
     := admit.
 
   Context (encode : forall x y, x = y -> code x y).
 
-  Definition deencode
-  : forall {x y} (p : x = y),
-      decode (encode _ _ p) = p
+  Definition deencode : forall {x y} (p : x = y),
+                          decode (encode _ _ p) = p
     := admit.
 
   (** For this last one, we'll need the correctness property on codes. *)
 
   Context (code_correct : code_correct_P code).
 
-  Definition endecode
-  : forall {x y} (p : code x y),
-      encode _ _ (decode p) = p
+  Definition endecode : forall {x y} (p : code x y),
+                          encode _ _ (decode p) = p
     := admit.
 
 End general_classification.
@@ -141,9 +133,8 @@ Section sanity_checks.
 
   (** [x = y] should be a valid code *)
 
-  Definition eq_is_valid_code
-  : forall {A : Type},
-      code_correct_P (fun x y : A => x = y)
+  Definition eq_is_valid_code : forall {A : Type},
+                                  code_correct_P (fun x y : A => x = y)
     := admit.
 
   (** If you didn't choose a silly correctness property like [code = (fun x y => x = y)], then your proof should generalize to the following: *)
@@ -163,256 +154,7 @@ Section sanity_checks.
 
 End sanity_checks.
 
-(** *** Puzzle 3 *)
-
-(** Classify the equalities of types.  That is, fill in the following: *)
-
-Definition Type_code
-: forall (x y : Type), Type
-  := admit.
-
-Definition Type_encode
-: forall {x y : Type}, x = y -> Type_code x y
-  := admit.
-
-(** The following are unprovable in Coq, currently.  They are collectively known as the "univalence axiom". *)
-
-Axiom Type_decode
-: forall {x y : Type}, Type_code x y -> x = y.
-Axiom Type_endecode
-: forall {x y : Type} (p : Type_code x y),
-    Type_encode (Type_decode p) = p.
-Axiom Type_deencode
-: forall {x y : Type} (p : x = y),
-    Type_decode (Type_encode p) = p.
-
 (** This was all very abstract.  Let's drill down with some exmples. *)
-
-(** * Class Notes *)
-
-(** *** Provable equalities *)
-
-(** What equalities of types are provable? *)
-
-
-Definition some_type_equality : unit = unit
-  := refl.
-
-Inductive unit1 : Type := tt1.
-Inductive unit2 : Type := tt2.
-
-Fail Definition unit1_equals_unit2 : unit1 = unit2
-  := refl.
-
-(** Can you prove other ones? *)
-
-(** *** Provable inequalities *)
-
-(** What equalities of types are provably absurd? *)
-
-Definition unit_ne_empty_set
- : unit = Empty_set -> Empty_set.
-Proof.
-  refine (fun P => _).
-  refine (J P (fun x _ => x) _).
-  refine tt.
-Defined.
-
-Definition true_ne_false
-: true = false -> Empty_set.
-Proof.
-  refine (fun P => _).
-  refine (J P (fun f _ => if f then unit else Empty_set) _).
-  refine tt.
-Defined.
-
-Definition unit_ne_bool
- : bool = unit -> Empty_set.
-Proof.
-  refine (fun P => _).
-  refine (let alleq : forall x y : unit, x = y := _ in _).
-  { refine (fun x y => match x, y with
-                         | tt, tt => refl
-                       end). }
-  refine (J P (fun T _ => (forall x y : T, x = y) -> Empty_set) _ alleq).
-  refine (fun alleq_bool => _).
-  refine (true_ne_false (alleq_bool true false)).
-Defined.
-
-(** *** Isomorphisms *)
-
-(** We can define a notion of isomorphism: *)
-
-Class IsIsomorphism {A B} (f : A -> B)
-  := { iso_inv : B -> A;
-       right_inv : forall x : B, f (iso_inv x) = x;
-       left_inv : forall x : A, iso_inv (f x) = x }.
-
-Arguments iso_inv {A B} f {_} _.
-Arguments right_inv {A B f _ _}, {A B} f {_} _.
-Arguments left_inv {A B f _ _}, {A B} f {_} _.
-
-Record Isomorphic A B
-  := { iso_fun : A -> B;
-       iso_isiso : IsIsomorphism iso_fun }.
-
-Arguments iso_fun {A B} _ _.
-
-(** Let us use an object of type [Isomorphic] as a function: *)
-
-Coercion iso_fun : Isomorphic >-> Funclass.
-
-(** Tell Coq that the function associated to an [Isomorphic] object is always an isomorphism. *)
-
-Existing Instance iso_isiso.
-
-Notation "A <~=~> B" := (Isomorphic A B) (at level 70).
-Notation "A ≅ B" := (Isomorphic A B) (at level 70).
-
-(** We can prove the standard properties about isomorphisms: *)
-
-Definition Isomorphic_refl : forall {A}, A ≅ A
-  := fun A => {| iso_fun x := x;
-                 iso_isiso := {| iso_inv x := x;
-                                 right_inv x := refl : (fun x => x) x = x;
-                                 left_inv x := refl |} |}.
-
-Definition Isomorphic_inverse : forall {A B}, A ≅ B -> B ≅ A
-  := fun A B e =>
-       {| iso_fun := iso_inv e;
-          iso_isiso := {| iso_inv := iso_fun e;
-                          right_inv := left_inv e;
-                          left_inv := right_inv e |} |}.
-
-Definition Isomorphic_compose : forall {A B C}, A ≅ B -> B ≅ C -> A ≅ C.
-Proof.
-  refine (fun A B C e1 e2 =>
-            {| iso_fun x := iso_fun e2 (iso_fun e1 x);
-               iso_isiso := {| iso_inv x := iso_inv e1 (iso_inv e2 x) |} |}).
-  { refine (fun x => trans (ap e2 (right_inv e1 (iso_inv e2 x)))
-                           (right_inv e2 x)). }
-  { refine (fun x => trans (ap (iso_inv e1) (left_inv e2 (e1 x)))
-                           (left_inv e1 x)). }
-Defined.
-
-
-(** We would like to prove the last corresponding law: *)
-
-Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f B
-  := admit.
-
-(** But it's not provable!  Here's a counter-example: *)
-
-(** Recall the taboo from earlier; we can't prove equality of two identical types defined separately.  But if we could prove [Isomorphic_ap], then we could prove this! *)
-
-Definition iso_unit2_unit1 : unit2 ≅ unit1.
-Proof.
-  refine {| iso_fun := fun x => tt1;
-            iso_isiso := {| iso_inv := fun x => tt2 |} |}.
-  { refine (fun x => match x with tt1 => refl end). }
-  { refine (fun x => match x with tt2 => refl end). }
-Defined.
-
-Definition taboo1 : unit1 = unit2 :> Type
-  := Isomorphic_ap (fun T => T = unit2) iso_unit2_unit1 refl.
-
-(** Ooops!  We'll be coming back to this soon. *)
-
-(** Before dealing with the taboo above, let's classify the equality space of isomorphisms. *)
-
-(** Two isomorphisms should be equal if the underlying functions are equal. *)
-
-Definition iso_code : forall {A B} (x y : A ≅ B), Type
-  := fun A B x y => iso_fun x = iso_fun y.
-
-Definition iso_encode : forall {A B} {x y : A ≅ B}, x = y -> iso_code x y
-  := fun A B x y H => match H with
-                       | refl => refl
-                      end.
-
-Definition iso_decode : forall {A B} {x y : A ≅ B}, iso_code x y -> x = y
-  := admit.
-
-(** Ooops.  Turns out this isn't provable.  Challenge: Figure out why. *)
-
-(** *** Equivalences *)
-
-(** We can define a slight variation on isomorphisms, called "contractible fibers", which generalizes the notion of injective+surjective.  If you're interested in the various ways of formulating equivalences, Chapter 4 of the HoTT Book (http://homotopytypetheory.org/book/) is an excellent resource. *)
-
-Class Contr (A : Type)
-  := { center : A;
-       contr : forall y, center = y }.
-
-Arguments center A {_}.
-
-Class IsEquiv {A B} (f : A -> B)
-  := Build_IsEquiv : forall b, Contr { a : A | f a = b }.
-
-Record Equiv A B
-  := { equiv_fun : A -> B;
-       equiv_isequiv : IsEquiv equiv_fun }.
-
-Arguments equiv_fun {A B} _ _.
-Arguments equiv_isequiv {A B} _ _.
-
-(** Let us use an object of type [Equiv] as a function: *)
-
-Coercion equiv_fun : Equiv >-> Funclass.
-
-(** Tell Coq that the function associated to an [Equiv] object is
-    always an equivalence. *)
-
-Existing Instance equiv_isequiv.
-
-Notation "A <~> B" := (Equiv A B) (at level 70).
-Notation "A ≃ B" := (Equiv A B) (at level 70).
-
-Definition Equiv_refl : forall A, A ≃ A.
-Proof.
-  refine (fun A => {| equiv_fun := fun x => x;
-                      equiv_isequiv := fun b => _ |}).
-  refine ({| center := (b; refl) |}).
-  refine (fun y => match y with
-                     | existT a p => _
-                   end).
-  refine (match p with
-            | refl => refl
-          end).
-Defined.
-
-(** We can now state univalence; take on faith for now that all proofs of "f is an equivalence are equal"; there is a homework problem to prove it below. *)
-
-(** Now that we have a "good" type of isomorphism/equivalence (one with the right equality type), we can go back to the question of [Isomorphic_ap]; Recall that we want to prove:
-
-<<
-Definition Isomorphic_ap : forall (f : Type -> Type) {A B}, A ≅ B -> f A ≅ f B.
->> *)
-
-(** We can prove this by axiomatizing the codes for types: *)
-
-Definition Type_code' : forall (x y : Type), Type
-  := fun x y => x ≃ y.
-
-Definition Type_encode' : forall {x y : Type}, x = y -> Type_code' x y
-  := fun x y H => match H with
-                    | refl => Equiv_refl x
-                  end.
-
-(** The following are unprovable in Coq, currently.  They are collectively known as the "univalence axiom". *)
-
-Axiom Type_decode' : forall {x y : Type}, Type_code' x y -> x = y.
-Axiom Type_endecode' : forall {x y : Type} (p : Type_code' x y),
-                         Type_encode' (Type_decode' p) = p.
-Axiom Type_deencode' : forall {x y : Type} (p : x = y),
-                         Type_decode' (Type_encode' p) = p.
-
-(** We can collect these together into a single axiom: *)
-
-Axiom Univalence : forall {x y : Type}, IsEquiv (@Type_encode' x y).
-
-(** * Homework (Optional) *)
-
-(** Now we go back and see these things in more detail.  The goal of these exercises is to make the above seem obvious. *)
 
 (** ** Inductive Types *)
 
@@ -420,59 +162,30 @@ Axiom Univalence : forall {x y : Type}, IsEquiv (@Type_encode' x y).
 
 (** An inductive type is specified by introduction and elimination rules; introduction rules tell you how to create inhabitants (elements) of a type, and elimination rules tell you how to use such inhabitants.  Coq generate eliminations rules automatically, but we will try to come up with the first few without peeking. *)
 
-(** Here are some examples. *)
-
 Inductive unit : Type := tt.
 
-(** To prove a property of any unit, it suffices to prove that property of [tt]. *)
-
-Definition unit_elim : forall (P : unit -> Type) (x : unit), P tt -> P x
-  := fun P x Ptt => match x with
-                      | tt => Ptt
-                    end.
-
 Inductive bool : Type := true | false.
-
-(** To prove a property of any boolean, it suffices to prove that property of [true] and [false]. *)
-
-Definition bool_elim : forall (P : bool -> Type) (x : bool), P true -> P false -> P x
-  := fun P x Pt Pf => match x with
-                        | true => Pt
-                        | false => Pf
-                      end.
 
 (** A notational helper. *)
 
 Add Printing If bool.
 
+(** Now it's your turn to tell me what the constructors should be. *)
+
 (** Coq has special syntax for [nat], so we don't overwrite it. *)
 
-Inductive nat' : Type := zero | successor (x : nat').
+(** Inductive nat' : Type := ... *)
 
-(** We use [Fixpoint] to allow recursion. *)
+(** Inductive Empty_set : Type := ... *)
 
-Fixpoint nat'_elim (P : nat' -> Type) (x : nat')
-: P zero
-  -> (forall n, P n -> P (successor n))
-  -> P x
-  := fun Pz Ps => match x with
-                    | zero => Pz
-                    | successor x' => Ps x' (nat'_elim P x' Pz Ps)
-                  end.
+(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by recursion on [unit], if we assume that [False = (True -> True)] *)
 
-Inductive Empty_set : Type := .
-
-(** How can you prove this one? *)
-
-Definition Empty_set_elim : forall (P : Empty_set -> Type) (x : Empty_set), P x
-  := admit.
-
-(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by recursion on [unit], if we assume that [True = (False -> False)] *)
-
-Inductive prod (A B : Type) : Type := pair (a : A) (b : B).
+(** Inductive prod (A B : Type) : Type := ... *)
 
 (** Some notational helpers *)
 
+(**
+<<
 Arguments pair {A B} _ _.
 
 Add Printing Let prod.
@@ -486,13 +199,6 @@ Example prod_3 := (true, true) : bool * bool.
 Example prod_4 := (1, true) : nat * bool.
 
 (** We use curlie braces so that we don't have to pass the arguments explicitly all the time. *)
-
-(** Try filling these in. *)
-
-(**
-<<
-Definition prod_elim : admit
-  := admit.
 
 Definition fst : forall {A B}, A * B -> A
 := admit.
@@ -551,14 +257,11 @@ Fail Example dependent_pair_4 :=
 
 (** The projections *)
 
-(**
-<<
 Definition projT1 : forall {A B}, { a : A | B a } -> A
   := admit.
 
 Definition projT2 : forall {A B} (x : { a : A | B a}), B (projT1 x)
   := admit.
->> *)
 
 (** Notational helpers for the projections *)
 
@@ -782,13 +485,10 @@ Definition list_deencode : forall {A} {x y : list A} (p : x = y),
 (** *** arrow types *)
 
 Definition arrow_code : forall {A B} (f g : A -> B), Type
-  := fun A B f g => forall a, f a = g a.
+  := admit.
 
 Definition arrow_encode : forall {A B} {f g : A -> B}, f = g -> arrow_code f g
-  := fun A B f g H
-       => match H with
-           | refl => fun a => refl (f a)
-          end.
+  := admit.
 
 (** The rest aren't currently provable in Coq; it's the axiom of functional extensionality. *)
 
@@ -801,13 +501,10 @@ Axiom arrow_deencode : forall {A B} {f g : A -> B} (p : f = g),
 (** *** Pi types (dependent function types) *)
 
 Definition function_code : forall {A B} (f g : forall a : A, B a), Type
-  := fun A B f g => forall a, f a = g a.
+  := admit.
 
 Definition function_encode : forall {A B} {f g : forall a : A, B a}, f = g -> function_code f g
-  := fun A B f g H
-       => match H with
-           | refl => fun a => refl (f a)
-          end.
+  := admit.
 
 (** The rest aren't currently provable in Coq; it's the axiom of functional extensionality. *)
 
@@ -931,115 +628,4 @@ Definition function_endecode' : forall {A B} {f g : forall a : A, B a} (p : func
   := admit.
 Definition function_deencode' : forall {A B} {f g : forall a : A, B a} (p : f = g),
                                   function_decode_adjusted' (function_encode' p) = p
-  := admit.
-
-(** ** Isomorphisms *)
-
-(** We can prove that an equivalence gives us an isomorphism very easily. *)
-
-Definition iso_of_equiv : forall {A B}, A ≃ B -> A ≅ B.
-Proof.
-  refine (fun A B e
-          => {| iso_fun x := e x;
-                iso_isiso := {| iso_inv x := (@center _ (equiv_isequiv e x)).1 |} |}).
-  { intro x.
-    refine ((center {a : A | e a = x}).2). }
-  { intro x.
-    refine (@trans _ _ (existT (fun a => e a = e x) x (refl (e x))).1 _ _ _).
-    { refine (ap _ _).
-      refine (contr _). }
-    { simpl.
-      refine (refl x). } }
-Defined.
-
-(** We can go the other way with more work. *)
-
-(** Optional Homework: Complete this proof. *)
-
-Definition equiv_of_iso : forall {A B}, A ≅ B -> A ≃ B.
-Proof.
-  refine (fun A B e
-          => {| equiv_fun := e |}).
-  refine (fun b => _).
-  refine {| center := existT (fun a => e a = b) (iso_inv e b) (right_inv e b);
-            contr := _ |}.
-  refine admit.
-Defined.
-
-
-(** Now, prove the following helper lemma, which lets us get the right codes for [Equiv].  You will need [function_code] and [sigma_code]. *)
-
-Definition allpath_contr : forall {A} (x y : Contr A), x = y.
-Proof.
-  refine admit.
-Defined.
-
-Definition allpath_isequiv : forall {A B} (f : A -> B) (e1 e2 : IsEquiv f), e1 = e2.
-Proof.
-  refine admit.
-Defined.
-
-Definition equiv_code : forall {A B} (f g : A ≃ B), Type
-  := fun A B f g => equiv_fun f = equiv_fun g.
-
-Definition equiv_encode : forall {A B} {f g : A ≃ B}, f = g -> equiv_code f g
-  := admit.
-
-Definition equiv_decode : forall {A B} {f g : A ≃ B}, equiv_code f g -> f = g
-  := admit.
-
-Definition equiv_endecode : forall {A B} {f g : A ≃ B} (p : equiv_code f g),
-                              equiv_encode (equiv_decode p) = p
-  := admit.
-
-Definition equiv_deencode : forall {A B} {f g : A ≃ B} (p : f = g),
-                              equiv_decode (equiv_encode p) = p
-  := admit.
-
-(** *** More Homework: Playing with univalence *)
-
-(** Using univalence, we can prove some things. *)
-
-Definition Empty_set_eq : (Empty_set = Empty_set) = unit :> Type
-  := admit.
-
-Definition unit_eq : (unit = unit) = unit :> Type
-  := admit.
-
-Definition bool_eq : (bool = bool) = bool :> Type
-  := admit.
-
-Definition bool_arrow_bool_eq : (bool -> bool) = (bool * bool)%type
-  := admit.
-
-Definition prod_commutes : forall (A B : Type), (A * B = B * A)%type
-  := admit.
-
-(** Challenge: Show, without axioms, that univalence implies functional extensionality: *)
-
-Definition univalence_implies_funext
-: (forall A B, IsEquiv (@Type_encode' A B))
-  -> (forall A B (f g : forall a : A, B a), (forall a, f a = g a) -> f = g)
-  := admit.
-
-(** Exercise 2.17 from the HoTT Book (http://homotopytypetheory.org/book/ - don't worry about reading the book):
-
-  Show that if [A ≃ A'] and [B ≃ B'], then [(A * B) ≃ (A' * B')] in two ways: once using univalence, and once without assuming it. *)
-
-Definition equiv_functor_prod_univalence
-: (forall A B, IsEquiv (@Type_encode A B))
-  -> forall A A' B B',
-       A ≃ A' -> B ≃ B' -> (A * B ≃ A' * B')%type
-  := admit.
-
-Definition equiv_functor_prod_no_univalence
-: forall A A' B B',
-    A ≃ A' -> B ≃ B' -> (A * B ≃ A' * B')%type
-  := admit.
-
-(** Now prove that these two ways are equal *)
-
-Definition equiv_functor_prod_eq
-: forall univalence,
-    equiv_functor_prod_univalence univalence = equiv_functor_prod_no_univalence
   := admit.

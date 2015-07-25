@@ -49,6 +49,8 @@ EXERCISES = \
 	exercises_and_homework_day_2_filled_in \
 	exercises_and_homework_day_2_3_filled_in \
 	exercises_and_homework_day_3_student \
+	exercises_and_homework_day_3_filled_in \
+	exercises_and_homework_day_3_homework \
 	exercises_and_homework_day_3_teacher \
 	exercises_and_homework_day_3_teacher_cheat_sheet \
 	exercises_and_homework_day_4_student \
@@ -81,8 +83,15 @@ publish-3-post:: publish-3-pre exercises_and_homework_day_2_3_filled_in.v exerci
 	cp exercises_and_homework_day_2_3_filled_in.html  $(PUBLISH_FOLDER)/exercises_and_homework_day_3_filled_in.html
 
 publish-4-pre:: publish-3-post exercises_and_homework_day_3_student.v exercises_and_homework_day_3_student.html
-	cp exercises_and_homework_day_3_student.v  $(PUBLISH_FOLDER)/exercises_and_homework_day_4.v
-	cp exercises_and_homework_day_3_student.html  $(PUBLISH_FOLDER)/exercises_and_homework_day_4.html
+	rm -f $(PUBLISH_FOLDER)/exercises_and_homework_day_4.v $(PUBLISH_FOLDER)/exercises_and_homework_day_4.html
+	cp exercises_and_homework_day_3_student.v  $(PUBLISH_FOLDER)/exercises_day_4.v
+	cp exercises_and_homework_day_3_student.html  $(PUBLISH_FOLDER)/exercises_day_4.html
+
+publish-4-post:: publish-4-pre exercises_and_homework_day_3_filled_in.v exercises_and_homework_day_3_student.html
+	cp exercises_and_homework_day_3_filled_in.v  $(PUBLISH_FOLDER)/exercises_day_4_filled_in.v
+	cp exercises_and_homework_day_3_filled_in.html  $(PUBLISH_FOLDER)/exercises_day_4_filled_in.html
+	cp exercises_and_homework_day_3_homework.v  $(PUBLISH_FOLDER)/optional_homework_day_4.v
+	cp exercises_and_homework_day_3_homework.html  $(PUBLISH_FOLDER)/optional_homework_day_4.html
 
 
 
