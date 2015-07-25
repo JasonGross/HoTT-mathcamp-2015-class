@@ -83,7 +83,6 @@ publish-3-post:: publish-3-pre exercises_and_homework_day_2_3_filled_in.v exerci
 	cp exercises_and_homework_day_2_3_filled_in.html  $(PUBLISH_FOLDER)/exercises_and_homework_day_3_filled_in.html
 
 publish-4-pre:: publish-3-post exercises_and_homework_day_3_student.v exercises_and_homework_day_3_student.html
-	rm -f $(PUBLISH_FOLDER)/exercises_and_homework_day_4.v $(PUBLISH_FOLDER)/exercises_and_homework_day_4.html
 	cp exercises_and_homework_day_3_student.v  $(PUBLISH_FOLDER)/exercises_day_4.v
 	cp exercises_and_homework_day_3_student.html  $(PUBLISH_FOLDER)/exercises_day_4.html
 
