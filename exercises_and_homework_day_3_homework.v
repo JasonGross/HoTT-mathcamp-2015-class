@@ -12,7 +12,7 @@
 Axiom admit : forall {T}, T.
 
 (** Compatibility between Coq 8.5 and 8.4 *)
-
+Set Universe Polymorphism.
 Set Asymmetric Patterns.
 
 (* begin hide *)
@@ -41,6 +41,12 @@ Definition ap : forall A B (f : A -> B) (x y : A), x = y -> f x = f y
 
 Arguments ap {A B} f {x y} p, {A B} f x y p, A B f x y p.
 
+(** A polymorphic definition of sigma types *)
+Record sigT {A} P := existT { projT1 : A ; projT2 : P projT1 }.
+Arguments projT1 {A P} _.
+Arguments projT2 {A P} _.
+Arguments existT {A} P _ _.
+Notation "{ x : A  & P }" := (sigT (A:=A) (fun x => P)) : type_scope.
 
 (* end hide *)
 
