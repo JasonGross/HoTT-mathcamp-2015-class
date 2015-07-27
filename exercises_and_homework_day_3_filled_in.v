@@ -69,13 +69,8 @@ Definition is_contractible : Type -> Type
 
 Definition contractible_pointed
 : forall (A : Type) (y : A),
-    is_contractible { x : A | y = x }.
-Proof.
-  refine (fun A y => _).
-  refine ((y; refl); _).
-  refine (fun y' => _).
-  refine admit.
-Defined.
+    is_contractible { x : A | y = x }
+  := admit.
 
 (** Note that [x = y :> T] means [x : T], [y : T], and [x = y].  It is the notation for [@eq T x y].  It is how we write $x =_T y$ #<span class="inlinecode">x =<sub>T</sub> y</span># in Coq. *)
 
@@ -185,6 +180,133 @@ Axiom Type_deencode
 
 (** This was all very abstract.  Let's drill down with some exmples. *)
 
+(** ** Inductive Types *)
+
+(** First, we must understand the types which we are classifying the path-spaces of. *)
+
+(** An inductive type is specified by introduction and elimination rules; introduction rules tell you how to create inhabitants (elements) of a type, and elimination rules tell you how to use such inhabitants.  Coq generate eliminations rules automatically, but we will try to come up with the first few without peeking. *)
+
+Inductive unit : Set := tt.
+
+(** Coq has special syntax for [nat], so we don't overwrite it. *)
+
+(** Inductive nat' : Type := ... *)
+
+(** Inductive Empty_set : Type := ... *)
+
+(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by recursion on [unit], if we assume that [True = (False -> False)] *)
+
+(** Any that we don't do in class are homework *)
+
+Inductive bool : Type := true | false.
+
+(** A notational helper. *)
+
+Add Printing If bool.
+
+(** Inductive prod (A B : Type) : Type := ... *)
+
+(** Some notational helpers *)
+
+(**
+<<
+Arguments pair {A B} _ _.
+
+Add Printing Let prod.
+
+Notation "x * y" := (prod x y) : type_scope.
+Notation "( x , y , .. , z )" := (pair .. (pair x y) .. z) : core_scope.
+
+Example prod_1 := (1, 1) : nat * nat.
+Example prod_2 := (1, 2) : nat * nat.
+Example prod_3 := (true, true) : bool * bool.
+Example prod_4 := (1, true) : nat * bool.
+
+(** We use curlie braces so that we don't have to pass the arguments explicitly all the time. *)
+
+Definition fst
+: forall {A B}, A * B -> A
+:= admit.
+
+Definition snd
+: forall {A B}, A * B -> B
+:= admit.
+
+>> *)
+
+(** [sum A B], written [A + B], is the disjoint sum of [A] and [B] *)
+
+(** Inductive sum (A B : Type) : Type := ... *)
+
+(** Notational helpers *)
+
+(**
+<<
+Notation "x + y" := (sum x y) : type_scope.
+
+Arguments inl {A B} _ , [A] B _.
+Arguments inr {A B} _ , A [B] _.
+>> *)
+
+Example sum_1 := inl tt : unit + nat.
+Example sum_2 := inr 0 : unit + nat.
+
+(** Inductive sigT A (B : A -> Type) : Type := ... *)
+
+(** Notational helpers *)
+
+(**
+<<
+Arguments sigT {A} B.
+Arguments existT {A} B _ _.
+Notation "{ a : A  & B }" := (sigT (A:=A) (fun a => B)) : type_scope.
+>> *)
+
+Notation "{ a  |  B }" := ({ a : _ & B }) : type_scope.
+Notation "{ a : A  |  B }" := ({ a : A & B }) : type_scope.
+Notation "( a ; b )" := (existT _ a b).
+
+Example non_dependent_pair_1 :=
+  (true; 0) : sigT (fun a : bool => nat).
+Example non_dependent_pair_2 :=
+  (true; 1) : { a : bool | nat }.
+Example non_dependent_pair_3 :=
+  (false; 1) : { a : bool | nat }.
+Example dependent_pair_1 :=
+  (true; 1) : { a : bool | if a then nat else unit }.
+Example dependent_pair_2 :=
+  (true; 0) : { a : bool | if a then nat else unit }.
+Example dependent_pair_3 :=
+  (false; tt) : { a : bool | if a then nat else unit }.
+Fail Example dependent_pair_4 :=
+  (false; 0) : { a : bool | if a then nat else unit }.
+
+(** The projections *)
+
+(**
+<<
+Definition projT1
+: forall {A B}, { a : A | B a } -> A
+  := admit.
+
+Definition projT2
+: forall {A B} (x : { a : A | B a}), B (projT1 x)
+  := admit.
+>> *)
+
+(** Notational helpers for the projections *)
+
+Notation "x .1" := (projT1 x) (at level 3, format "x '.1'").
+Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
+
+(** Inductive option (A : Type) : Type := ... *)
+
+(** Inductive list (A : Type) : Type := ... *)
+
+(** Function types also have intro and elim rules, though they don't have syntactic forms.  Can you describe them? *)
+
+(** Note well: [J] is the eliminator for the equality type. *)
+
 (** *** Provable equalities *)
 
 (** What equalities of types are provable? *)
@@ -198,6 +320,8 @@ Inductive unit2 : Type := tt2.
 
 Fail Definition unit1_equals_unit2 : unit1 = unit2
   := refl.
+
+
 
 (** Can you prove other ones? *)
 
@@ -226,13 +350,61 @@ Definition unit_ne_bool
 Proof.
   refine (fun P => _).
   refine (let alleq : forall x y : unit, x = y := _ in _).
-  { refine (fun x y => match x, y with
-                         | tt, tt => refl
-                       end). }
+  { intros [] [].
+    refine refl. }
   refine (J P (fun T _ => (forall x y : T, x = y) -> Empty_set) _ alleq).
   refine (fun alleq_bool => _).
   refine (true_ne_false (alleq_bool true false)).
 Defined.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (** *** Isomorphisms *)
 
@@ -510,7 +682,7 @@ Proof.
 Defined.
 
 Definition equiv_code : forall {A B} (f g : A ≃ B), Type
-  := fun A B f g => (f : A -> B) = (g : A -> B).
+  := admit.
 
 Definition equiv_encode : forall {A B} {f g : A ≃ B}, f = g -> equiv_code f g
   := admit.
@@ -637,134 +809,6 @@ Definition equiv_functor_prod_eq
 
 
 
-
-
-(** ** Inductive Types and Their Eliminators *)
-
-(** First, we must understand the types which we are classifying the path-spaces of. *)
-
-(** An inductive type is specified by introduction and elimination rules; introduction rules tell you how to create inhabitants (elements) of a type, and elimination rules tell you how to use such inhabitants.  Coq generate eliminations rules automatically, but we will try to come up with the first few without peeking. *)
-
-Inductive unit : Set := tt.
-
-(** Coq has special syntax for [nat], so we don't overwrite it. *)
-
-(** Inductive nat' : Type := ... *)
-
-(** Inductive Empty_set : Type := ... *)
-
-(** Anecdote: Proving [unit -> Empty_set] (i.e., [True -> False]) by recursion on [unit], if we assume that [True = (False -> False)] *)
-
-(** Any that we don't do in class are homework *)
-
-Inductive bool : Type := true | false.
-
-(** A notational helper. *)
-
-Add Printing If bool.
-
-(** Inductive prod (A B : Type) : Type := ... *)
-
-(** Some notational helpers *)
-
-(**
-<<
-Arguments pair {A B} _ _.
-
-Add Printing Let prod.
-
-Notation "x * y" := (prod x y) : type_scope.
-Notation "( x , y , .. , z )" := (pair .. (pair x y) .. z) : core_scope.
-
-Example prod_1 := (1, 1) : nat * nat.
-Example prod_2 := (1, 2) : nat * nat.
-Example prod_3 := (true, true) : bool * bool.
-Example prod_4 := (1, true) : nat * bool.
-
-(** We use curlie braces so that we don't have to pass the arguments explicitly all the time. *)
-
-Definition fst
-: forall {A B}, A * B -> A
-:= admit.
-
-Definition snd
-: forall {A B}, A * B -> B
-:= admit.
-
->> *)
-
-(** [sum A B], written [A + B], is the disjoint sum of [A] and [B] *)
-
-(** Inductive sum (A B : Type) : Type := ... *)
-
-(** Notational helpers *)
-
-(**
-<<
-Notation "x + y" := (sum x y) : type_scope.
-
-Arguments inl {A B} _ , [A] B _.
-Arguments inr {A B} _ , A [B] _.
->> *)
-
-Example sum_1 := inl tt : unit + nat.
-Example sum_2 := inr 0 : unit + nat.
-
-(** Inductive sigT A (B : A -> Type) : Type := ... *)
-
-(** Notational helpers *)
-
-(**
-<<
-Arguments sigT {A} B.
-Arguments existT {A} B _ _.
-Notation "{ a : A  & B }" := (sigT (A:=A) (fun a => B)) : type_scope.
->> *)
-
-Notation "{ a  |  B }" := ({ a : _ & B }) : type_scope.
-Notation "{ a : A  |  B }" := ({ a : A & B }) : type_scope.
-Notation "( a ; b )" := (existT _ a b).
-
-Example non_dependent_pair_1 :=
-  (true; 0) : sigT (fun a : bool => nat).
-Example non_dependent_pair_2 :=
-  (true; 1) : { a : bool | nat }.
-Example non_dependent_pair_3 :=
-  (false; 1) : { a : bool | nat }.
-Example dependent_pair_1 :=
-  (true; 1) : { a : bool | if a then nat else unit }.
-Example dependent_pair_2 :=
-  (true; 0) : { a : bool | if a then nat else unit }.
-Example dependent_pair_3 :=
-  (false; tt) : { a : bool | if a then nat else unit }.
-Fail Example dependent_pair_4 :=
-  (false; 0) : { a : bool | if a then nat else unit }.
-
-(** The projections *)
-
-(**
-<<
-Definition projT1
-: forall {A B}, { a : A | B a } -> A
-  := admit.
-
-Definition projT2
-: forall {A B} (x : { a : A | B a}), B (projT1 x)
-  := admit.
->> *)
-
-(** Notational helpers for the projections *)
-
-Notation "x .1" := (projT1 x) (at level 3, format "x '.1'").
-Notation "x .2" := (projT2 x) (at level 3, format "x '.2'").
-
-(** Inductive option (A : Type) : Type := ... *)
-
-(** Inductive list (A : Type) : Type := ... *)
-
-(** Function types also have intro and elim rules, though they don't have syntactic forms.  Can you describe them? *)
-
-(** Note well: [J] is the eliminator for the equality type. *)
 
 
 (** *** [prod] *)
