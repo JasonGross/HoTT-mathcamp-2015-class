@@ -108,7 +108,7 @@ $(addsuffix .html,$(EXERCISES)) : %.html : %.v %.vo
 
 Makefile.coq: Makefile _CoqProject
 	$(VECHO) "COQ_MAKEFILE -f _CoqProject > $@"
-	$(Q)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'/^\(-include.*\)$$/ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif/g' | tr '~' '\n' | sed s'/^clean::\?$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' | sed s'/^\(\$$(HTMLFILES): %.html: %.v %.glob\)/#\1/g' | sed s'/^\(\s\$$(COQDOC) \$$(COQDOCFLAGS) -html \$$< -o \$$@\)/#\1/g' | sed s'/^\(\$$(VFILES:.v=.tex): %.tex: %.v\)/#\1/g' | sed s'/^\(\s\$$(COQDOC) \$$(COQDOCFLAGS) -latex \$$< -o \$$@\)/#\1/g' > $@
+	$(Q)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'/^\(-include.*\)$$/ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif/g' | tr '~' '\n' | sed s'/^clean:/clean-old:/g' | sed s'/^Makefile: /Makefile-old: /g' | sed s'/^\(\$$(HTMLFILES): %.html: %.v %.glob\)/#\1/g' | sed s'/^\(\s\$$(COQDOC) \$$(COQDOCFLAGS) -html \$$< -o \$$@\)/#\1/g' | sed s'/^\(\$$(VFILES:.v=.tex): %.tex: %.v\)/#\1/g' | sed s'/^\(\s\$$(COQDOC) \$$(COQDOCFLAGS) -latex \$$< -o \$$@\)/#\1/g' > $@
 
 -include Makefile.coq
 
